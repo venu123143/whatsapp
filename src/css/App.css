@@ -1,0 +1,55 @@
+/* const colorObj={
+    outGoing:"#00a884"
+    incoming:#848488,
+    backDeeper:#0a1014,
+    background:#0c1317,
+    primary:3b4a54
+    rgb(0,168,132)
+    avatarborder:#aebac1
+    avatarbg-#111b21
+202c33
+header color- 233138
+111b21
+
+3b3b3b
+} */
+
+.body-css {
+    @apply overflow-y-hidden
+}
+
+.singleuser {
+    @apply bg-[#111b21] hover:bg-[#111b21] hover:bg-opacity-90 text-white cursor-pointer border-b border-gray-800
+}
+
+.username {
+    @apply text-[#e9deef] line-clamp-1
+}
+
+.lastmsg {
+    @apply text-[#8696a0] line-clamp-1
+}
+
+.time {
+    @apply text-[#8696a0] line-clamp-1 text-[0.81rem]
+}
+
+.header-bg {
+    @apply bg-[#202c33]
+}
+
+.profile {
+    @apply bg-[#111b21] w-full h-screen
+}
+
+.profileheader {
+    @apply bg-[#202c33] px-4 py-[0.4rem] flex justify-between items-center text-[#8696a0]
+}
+
+.profileinput {
+    @apply bg-transparent w-full p-2 text-sm text-white font-[450] text-[1rem] border-b-2 border-[#008069] outline-none opacity-50 focus:border-[#008069]
+}
+
+.icons {
+    @apply text-[#e9deef] hover:bg-[#111b21] cursor-pointer text-xl p-4 rounded-full
+}

@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Use the font stack for the body or general text */
+body {
+    font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Lucida Grande', 'Arial', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
+}
+
+/* Use the same font stack for specific elements like headings */
+h1,
+h2,
+h3 {
+    font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Lucida Grande', 'Arial', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
+}
+
+.backImg {
+    background-image: url('../assets/chat-bg.png');
+}
+
+@layer utilities {
+    @variants responsive {
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+    }
+}
+
+
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+/* / Track / */
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #131c21;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #394045;
+}

@@ -1,0 +1,142 @@
+
+import React, { useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import Message from "../cards/Message";
+import { RootState } from "../../Redux/store";
+import { FcContacts } from "react-icons/fc";
+import { IoMdPhotos } from "react-icons/io";
+import { AiOutlineCamera } from "react-icons/ai";
+import { MdPoll } from "react-icons/md";
+import { PiStickerDuotone } from "react-icons/pi";
+import { IoDocumentTextOutline } from "react-icons/io5";
+import {
+  handleFileChange,
+  handleToggleImagesAndMessage,
+} from "../../Redux/reducers/utils/utilReducer";
+const ChatPage = () => {
+  const dispatch = useDispatch();
+  const {
+    messageArray, showAttachFiles, selectedImage, dummySelectedImage, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
+  // console.log(selectedImage);
+  //   const setRef = useCallback((node) => {
+  //     if (node) {
+  //       node.scrollIntoView({ smooth: true });
+  //     }
+  //   }, []);
+  //
+  // 
+  // 
+  //
+  return (
+    <div className="relative h-full ">
+      <div className=" px-16 py-5 ">
+        {messageArray.map((message: any, index: number) =>
+          typeof message === "string" ? (
+            <Message
+              key={index}
+              message={message}
+              right={index % 2 === 0 ? true : false}
+            />
+          ) : (
+            message.map((image: any, imageIndex: number) => (
+              <div className="flex flex-col items-end">
+                <img
+                  key={imageIndex}
+                  src={URL.createObjectURL(image)}
+                  alt={image.name}
+                  className="h-[150px] w-[150px] mb-4 border-4  border-green-700"
+                />
+              </div>
+            ))
+          )
+        )}
+        {/* <img src={img1.src} className="z-50" /> */}
+
+        <div aria-orientation="vertical" aria-labelledby="menu-button"
+          className={`fixed transition-all ease-in-out duration-200 delay-100 ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"
+            } z-10 bottom-16  mt-2 origin-bottom-left rounded-lg bg-[#233138] text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+          role="menu" >
+          <div className="py-1 px-3 cursor-pointer" role="none">
+            <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
+              <IoDocumentTextOutline
+                size={20}
+                className="inline text-[#9185ce]"
+              />
+              <input type="file" id="document" className="hidden" multiple />
+              <label
+                htmlFor="document"
+                className=" text-md text-white cursor-pointer"
+                role="menuitem"
+              >
+                {" "}
+                document
+              </label>
+            </div>
+            <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
+              <IoMdPhotos size={20} className="inline text-[#007bfc]" />
+              <input
+                type="file"
+                id="photos&videos"
+                className="hidden"
+                multiple
+                onChange={(e: any) => {
+                  dispatch(
+                    handleToggleImagesAndMessage(!toggleImagesAndMessage)
+                  );
+                  dispatch(handleFileChange(e.target.files));
+                }}
+              />
+              <label
+                htmlFor="photos&videos"
+                className=" text-md text-white cursor-pointer"
+                role="menuitem">
+                {" "}
+                photos & videos
+              </label>
+            </div>
+            <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
+              <AiOutlineCamera size={20} className="inline text-[#c78399]" />
+              <p
+                className=" block  text-md  text-white cursor-pointer"
+                role="menuitem"
+              >
+                camera
+              </p>
+            </div>
+            <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
+              <FcContacts size={20} className="inline text-[#007bfc]" />
+              <p
+                className=" block  text-md  text-white cursor-pointer"
+                role="menuitem"
+              >
+                contact
+              </p>
+            </div>
+            <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
+              <MdPoll size={20} className="inline text-[#ffbc38]" />
+              <p
+                className="block  text-md  text-white cursor-pointer"
+                role="menuitem"
+              >
+                poll
+              </p>
+            </div>
+            <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
+              <PiStickerDuotone size={20} className="inline text-[#02a698]" />
+              <input type="file" id="sticker" className="hidden" />
+              <label
+                htmlFor="sticker"
+                className=" text-md text-white cursor-pointer"
+                role="menuitem" >
+                {" "}
+                sticker
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ChatPage;
