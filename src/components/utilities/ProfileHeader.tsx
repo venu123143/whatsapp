@@ -21,7 +21,7 @@ const ProfileHeader = () => {
                 </div>
                 <div className=" flex items-center gap-2">
                     <div className="icons" onClick={() => dispatch(toggleContacts(true))}>
-                        <BsFillChatLeftTextFill title="New Chat"/>
+                        <BsFillChatLeftTextFill title="New Chat" />
                     </div>
                     <div className="icons">
                         <BsThreeDotsVertical title="Menu" />

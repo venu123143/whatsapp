@@ -10,9 +10,9 @@ const Home = () => {
   return (
     <>
       <main className='w-full grid grid-cols-10 '>
-          <section className={`col-span-3 min-w-[300px] ${profileOpen === false ? "overflow-hidden" : ""}`}>
-            <Users />
-          </section>
+        <section className={`col-span-3 min-w-[300px] ${profileOpen === false ? "overflow-hidden" : ""}`}>
+          <Users />
+        </section>
         <section className='col-span-7'>
           <Chat />
         </section>

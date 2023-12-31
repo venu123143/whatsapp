@@ -6,6 +6,7 @@ export interface Users {
     name: string;
     message: string;
     time: string;
+    unreadCount?:number;
 }
 
 export const users = [
@@ -14,16 +15,19 @@ export const users = [
         name: "venu gopal redddy ",
         message: "hi how are you",
         time: "Today",
+        unreadCount:4,
     },
     {
         name: "Naga srinivas",
         message: "When you will reach",
         time: "Today",
+        unreadCount:3,
     },
     {
         name: "Ram parakash",
         message: "Curently Working",
         time: "Yesterday",
+        unreadCount:3,
     },
     {
         name: "Peddireddy",

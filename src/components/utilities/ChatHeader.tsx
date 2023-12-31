@@ -16,18 +16,18 @@ const ChatHeader = () => {
           <span className="time text-sm">online</span>
         </div>
       </div>
-      <div className="flex gap-6 time">
-        <div>
-          <MdCall className="text-panel-header-icon cursor-pointer text-xl" />
+      <div className="flex gap-2 time">
+        <div className="icons">
+          <MdCall className=" cursor-pointer text-xl" />
         </div>
-        <div>
-          <IoMdVideocam className="text-panel-header-icon cursor-pointer text-xl" />
+        <div className="icons">
+          <IoMdVideocam className="" />
         </div>
-        <div>
-          <BsSearch className="text-panel-header-icon cursor-pointer text-xl" />
+        <div className="icons">
+          <BsSearch className="" />
         </div>
-        <div>
-          <BsThreeDotsVertical className="text-panel-header-icon cursor-pointer text-xl" />
+        <div className="icons m-0"> 
+          <BsThreeDotsVertical className="" />
         </div>
       </div>
     </div>

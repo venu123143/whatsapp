@@ -2,7 +2,7 @@
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import {  useState } from "react";
+import { useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -14,6 +14,7 @@ import {
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
+import { FaMicrophone } from "react-icons/fa6";
 
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -39,9 +40,10 @@ const MessageBar = () => {
       message: '',
     },
     onSubmit: (values) => {
-      console.log(values);
-      dispatch(handleSendMessage(values.message));
-      formik.resetForm()
+      if (values.message !== '') {
+        dispatch(handleSendMessage(values.message));
+        formik.resetForm()
+      }
     }
   })
 
@@ -83,10 +85,18 @@ const MessageBar = () => {
                 onChange={formik.handleChange("message")} onBlur={formik.handleBlur("message")} value={formik.values.message} />
             </div>
             <div className="flex w-10 items-center justify-center">
-              <button className="icons" type="submit" >
-                <MdSend title="send" />
-                {/* <FaMicrophone title="Record" /> */}
-              </button>
+              {
+                formik.values.message !== '' ? (
+                  <button className="icons" type="submit" >
+                    <MdSend title="send" />
+                  </button>
+                ) : (
+                  <button className="icons">
+                    <FaMicrophone title="Record" />
+                  </button>
+                )
+              }
+
             </div>
           </>
         </div>

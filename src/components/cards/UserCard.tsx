@@ -16,10 +16,15 @@ const UserCard: React.FC<{ value: Users }> = ({ value }) => {
           <h3 className="username">{value?.name}</h3>
           <p className="lastmsg">{value?.message}</p>
         </div>
-        <div className="col-span-1">
+        <div className="col-span-1 flex flex-col justify-between">
           <div>
-            <span className="time">{value?.time}</span>
+            <span className={value.unreadCount ? "time text-[#02a698] ": "time"}>{value?.time}</span>
           </div>
+          {value.unreadCount ? (
+            <div className="unreadmessage">
+              {value.unreadCount}
+            </div>
+          ) : null}
         </div>
       </section>
     </>

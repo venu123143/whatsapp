@@ -53,3 +53,6 @@ header color- 233138
 .icons {
     @apply text-[#e9deef] hover:bg-[#111b21] cursor-pointer text-xl p-4 rounded-full
 }
+.unreadmessage{
+    @apply bg-[#02a698] rounded-full h-6 w-6 flex items-center justify-center text-white shadow-md
+}
