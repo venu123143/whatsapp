@@ -2,10 +2,10 @@ import img from "../../assets/profile.jpg"
 import { MdCall } from "react-icons/md"
 import { IoMdVideocam } from "react-icons/io"
 import { BsSearch, BsThreeDotsVertical } from "react-icons/bs"
-import { useSelector } from "react-redux"
-import { RootState } from "../../Redux/store"
+// import { useSelector } from "react-redux"
+// import { RootState } from "../../Redux/store"
 const ChatHeader = () => {
-  const { activeChat } = useSelector((store: RootState) => store.features)
+  // const { activeChat } = useSelector((store: RootState) => store.features)
 
   return (
     <div className="h-16 px-4 py-3 flex justify-between items-center bg-[#202c33] ">

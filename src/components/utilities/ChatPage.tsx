@@ -1,5 +1,4 @@
 
-import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { RootState } from "../../Redux/store";
@@ -16,7 +15,7 @@ import {
 const ChatPage = () => {
   const dispatch = useDispatch();
   const {
-    messageArray, showAttachFiles, selectedImage, dummySelectedImage, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
+    messageArray, showAttachFiles, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
   // console.log(selectedImage);
   //   const setRef = useCallback((node) => {
   //     if (node) {

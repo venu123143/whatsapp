@@ -1,6 +1,6 @@
 import { RootState } from "../../Redux/store"
 import { useSelector, useDispatch } from "react-redux"
-import { AiOutlineArrowLeft, AiOutlineCamera } from "react-icons/ai"
+import { AiOutlineArrowLeft } from "react-icons/ai"
 import { handleProfileOpen, handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange } from "../../Redux/reducers/utils/utilReducer"
 import { AiOutlineEdit, AiOutlineCheck } from "react-icons/ai"
 import img from "../../assets/profile.jpg"

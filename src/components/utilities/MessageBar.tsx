@@ -2,39 +2,38 @@
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import { useEffect, useState } from "react";
-import EmojiPicker, { Theme, PickerProps } from "emoji-picker-react";
+import {  useState } from "react";
+import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
 import {
-  handleSendMessageInput,
   handleEmojiClick,
   setShowAttachFiles,
   handleSendMessage,
 } from "../../Redux/reducers/utils/utilReducer"
-import { FaMicrophone } from "react-icons/fa6";
+// import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { messageValue, showAttachFiles } = useSelector((store: RootState) => store.utils);
+  const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   // const { io } = useSelector((state: RootState) => state.socket);
   // const { activeChat } = useSelector((state: RootState) => state.feature);
 
-  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+  const [showEmojiPicker] = useState<boolean>(false);
   const [tagReply, setTagReply] = useState<boolean>(false);
   // const [showAttachFiles, setShowAttachFiles] = useState<boolean>(true);
 
   // io.on("connect", () => {
   //   console.log(`socket id is ${io.id}`);
   // });
-  const handleEmojiModal = () => {
-    setShowEmojiPicker(!showEmojiPicker);
-  };
-  const addMessageToconversation = ({ message }: any) => {
-    dispatch(handleSendMessageInput(message));
-  };
+  // const handleEmojiModal = () => {
+  //   setShowEmojiPicker(!showEmojiPicker);
+  // };
+  // const addMessageToconversation = ({ message }: any) => {
+  //   dispatch(handleSendMessageInput(message));
+  // };
   const formik = useFormik({
     initialValues: {
       message: '',

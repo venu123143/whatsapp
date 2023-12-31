@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import ChatHeader from './ChatHeader'
 import MessageBar from './MessageBar'
 import ChatPage from './ChatPage'
-import image from "../../assets/chat-bg.png"
+// import image from "../../assets/chat-bg.png"
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 

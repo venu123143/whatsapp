@@ -1,7 +1,7 @@
 import { BiCheckDouble } from "react-icons/bi";
 import { AiOutlineDown } from "react-icons/ai";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../Redux/store";
+import {  useDispatch } from "react-redux";
+// import { RootState } from "../../Redux/store";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
 const Message = ({ right, message, }: any) => {

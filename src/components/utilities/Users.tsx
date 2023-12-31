@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import Profile from './Profile'
 import UserCard from '../cards/UserCard'
 import ProfileHeader from './ProfileHeader'
