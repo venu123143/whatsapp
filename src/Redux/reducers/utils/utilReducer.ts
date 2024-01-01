@@ -54,9 +54,11 @@ const utilSlice = createSlice({
             state.messageValue += action.payload.emoji;
         },
         handleSendMessage: (state, action) => {
-            console.log(action.payload, "payload");
+            console.log(action.payload)
             state.messageArray.push(action.payload);
             state.messageValue = "";
+            console.log(state.messageArray);
+            
         },
         handleChatClick: (state, action) => {
             state.singleChat = action.payload;

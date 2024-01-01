@@ -1,10 +1,10 @@
 import { BiCheckDouble } from "react-icons/bi";
 import { AiOutlineDown } from "react-icons/ai";
-import {  useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
-const Message = ({ right, message, }: any) => {
+const Message = ({ right, message,date }: any) => {
     const dispatch = useDispatch();
     return (
         <div className={`flex ${right === true ? null : "flex-row-reverse"}`}>
@@ -16,12 +16,12 @@ const Message = ({ right, message, }: any) => {
             >
                 <span className="break-words">{message} </span>
                 <span className=" flex h-fit w-fit ml-auto items-end justify-end">
-                    <span className="text-[10px] text-[#ffffff99]">2:41 pm
-                        {/* {new Date().toLocaleTimeString("en-US", {
-              hour: "numeric",
-              hour12: true,
-              minute: "numeric",
-            })} */}
+                    <span className="text-[10px] text-[#ffffff99]">
+                        {new Date(date).toLocaleTimeString("en-US", {
+                            hour: "numeric",
+                            hour12: true,
+                            minute: "numeric",
+                        })}
                         <BiCheckDouble
                             className={`${right === true ? "inline text-[#4FB6EC]" : "hidden"
                                 }`}

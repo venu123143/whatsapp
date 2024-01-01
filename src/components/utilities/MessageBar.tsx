@@ -38,10 +38,16 @@ const MessageBar = () => {
   const formik = useFormik({
     initialValues: {
       message: '',
+      date: new Date(),
+      TodayFirstMessage: false
     },
     onSubmit: (values) => {
       if (values.message !== '') {
-        dispatch(handleSendMessage(values.message));
+        const serializedValues = {
+          message: values.message,
+          date: values.date.toISOString(),
+        };
+        dispatch(handleSendMessage(serializedValues));
         formik.resetForm()
       }
     }

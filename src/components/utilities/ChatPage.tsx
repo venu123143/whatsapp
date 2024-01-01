@@ -12,35 +12,79 @@ import {
   handleFileChange,
   handleToggleImagesAndMessage,
 } from "../../Redux/reducers/utils/utilReducer";
+import { useEffect, useState } from "react";
 const ChatPage = () => {
   const dispatch = useDispatch();
   const {
     messageArray, showAttachFiles, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
-  // console.log(selectedImage);
+  const [day, setDay] = useState(false)
   //   const setRef = useCallback((node) => {
   //     if (node) {
   //       node.scrollIntoView({ smooth: true });
   //     }
   //   }, []);
-  //
-  // 
-  // 
-  //
+  // 01-Jan-2024 - format
+  const isValidDateFormat = (inputDate: string) => {
+    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(inputDate);
+  };
+  const formatDate = (inputDate: string) => {
+    const today = new Date();
+    const messageDate = new Date(inputDate);
+
+    // Check if the date is today
+    if (
+      today.getFullYear() === messageDate.getFullYear() &&
+      today.getMonth() === messageDate.getMonth() &&
+      today.getDate() === messageDate.getDate()
+    ) {
+      return 'Today';
+    }
+
+    // Check if the date is this week
+    const daysSinceMessage = Math.floor(
+      (today.getTime() - messageDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (daysSinceMessage < 7) {
+      return messageDate.toLocaleDateString('en-US', { weekday: 'long' });
+    }
+    return messageDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+  const firstMessageDate = (date: Date): any => {
+    let previousDate = new Date(date).toDateString()
+    const currentDate = new Date().toDateString()
+    setDay(previousDate === currentDate)
+  }
+
   return (
     <div className="relative h-full ">
       <div className=" px-16 py-5 ">
+
         {messageArray.map((message: any, index: number) =>
-          typeof message === "string" ? (
-            <Message
-              key={index}
-              message={message}
-              right={index % 2 === 0 ? true : false}
-            />
+          typeof message.message === "string" ? (
+            <div key={index}>
+              {day === false ? (
+                <div className="flex justify-center items-center">
+                  <div className="text-center text-[.81rem] mb-3 bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
+                    {formatDate(message.date)}
+                  </div>
+                </div>
+              ) : null}
+              {/* {firstMessageDate(message.date)} */}
+              <Message
+                key={index}
+                message={message.message}
+                date={message.date}
+                right={index % 2 === 0 ? true : false}
+              />
+            </div>
           ) : (
             message.map((image: any, imageIndex: number) => (
-              <div className="flex flex-col items-end">
+              <div className="flex flex-col items-end" key={imageIndex}>
                 <img
-                  key={imageIndex}
                   src={URL.createObjectURL(image)}
                   alt={image.name}
                   className="h-[150px] w-[150px] mb-4 border-4  border-green-700"
@@ -49,8 +93,8 @@ const ChatPage = () => {
             ))
           )
         )}
-        {/* <img src={img1.src} className="z-50" /> */}
 
+        {/* files  */}
         <div aria-orientation="vertical" aria-labelledby="menu-button"
           className={`fixed transition-all ease-in-out duration-200 delay-100 ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"
             } z-10 bottom-16  mt-2 origin-bottom-left rounded-lg bg-[#233138] text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
