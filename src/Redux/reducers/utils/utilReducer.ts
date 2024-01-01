@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { dummyMessages } from "../../../static/Static"
+// import { dummyMessages } from "../../../static/Static"
 
 type InitialState = {
     chatSearchValue: string;
@@ -13,7 +13,7 @@ type InitialState = {
     profileOpen: boolean;
     nameEditClick: boolean;
     aboutEditClick: boolean;
-    name: string;
+    userName: string;
     about: string;
     selectedImage: any;
     toggleSendImages: boolean;
@@ -26,7 +26,7 @@ type InitialState = {
 const initialState: InitialState = {
     chatSearchValue: "",
     messageValue: "",
-    messageArray: dummyMessages,
+    messageArray: [],
     chatArray: [],
     singleChat: {},
     emptyOrChatToggle: false,
@@ -35,7 +35,7 @@ const initialState: InitialState = {
     profileOpen: true,
     nameEditClick: false,
     aboutEditClick: false,
-    name: "",
+    userName: "",
     about: "",
     selectedImage: [],
     toggleSendImages: false,
@@ -80,7 +80,7 @@ const utilSlice = createSlice({
             state.aboutEditClick = action.payload;
         },
         handleNameChange: (state, action) => {
-            state.name = action.payload;
+            state.userName = action.payload;
         },
         handleAboutChange: (state, action) => {
             state.about = action.payload;

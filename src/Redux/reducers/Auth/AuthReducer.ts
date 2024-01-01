@@ -59,6 +59,7 @@ interface AppState {
     isSuccess: boolean;
     message: string;
     address: boolean;
+    userName: string;
 }
 const initialState: AppState = {
     screen: false,
@@ -68,11 +69,16 @@ const initialState: AppState = {
     isSuccess: false,
     message: "",
     address: false,
+    userName: "",
 };
 const authSlice = createSlice({
     name: 'authSlice',
     initialState,
-    reducers: {},
+    reducers: {
+        setUserName: (state, action: PayloadAction<string>) => {
+            state.userName = action.payload
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(registerUser.pending, (state) => {
             state.isLoading = true
@@ -135,5 +141,5 @@ const authSlice = createSlice({
 
 })
 
-export const { } = authSlice.actions
+export const { setUserName } = authSlice.actions
 export default authSlice.reducer

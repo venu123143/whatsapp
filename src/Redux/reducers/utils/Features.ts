@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getAllData } from "./utilService";
 import { users } from "../../../static/Static";
+import io from "socket.io-client"
 
 interface ActiveChat {
   name: string;
@@ -13,7 +14,11 @@ interface InitialState {
   editmsg: boolean;
   users: Array<any>;
   activeChat: ActiveChat;
+  socket: any;
+
 }
+const socket = io("http://localhost:8000")
+
 const initialState: InitialState = {
   contacts: false,
   editmsg: false,
@@ -24,6 +29,7 @@ const initialState: InitialState = {
     status: "",
     profile: "",
   },
+  socket: socket
 };
 export const getAllUsers = createAsyncThunk("features/getAllUsers", async (_, thunkAPI) => {
   try {

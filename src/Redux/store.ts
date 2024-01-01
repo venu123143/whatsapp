@@ -7,7 +7,8 @@ const Store = configureStore({
     reducer: {
         auth: authReducer,
         utils: utilReducer,
-        features: featureReducer
+        features: featureReducer,
+        
     }
 })
 

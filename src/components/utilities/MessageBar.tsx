@@ -2,7 +2,7 @@
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -18,7 +18,9 @@ import { FaMicrophone } from "react-icons/fa6";
 
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { showAttachFiles } = useSelector((store: RootState) => store.utils);
+  const { showAttachFiles, userName, about } = useSelector((store: RootState) => store.utils);
+  const { socket } = useSelector((store: RootState) => store.features);
+
   // const { io } = useSelector((state: RootState) => state.socket);
   // const { activeChat } = useSelector((state: RootState) => state.feature);
 
@@ -39,19 +41,31 @@ const MessageBar = () => {
     initialValues: {
       message: '',
       date: new Date(),
-      TodayFirstMessage: false
     },
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (values.message !== '') {
         const serializedValues = {
           message: values.message,
           date: values.date.toISOString(),
+          author: userName,
+          room: about,
+          right: true
         };
+        await socket.emit("send_message", serializedValues)
         dispatch(handleSendMessage(serializedValues));
         formik.resetForm()
       }
     }
   })
+
+  useEffect(() => {
+    socket.on("recieve_message", (data: any) => {
+      console.log(data);
+      dispatch(handleSendMessage({ ...data, right: false }));
+
+
+    })
+  }, [socket])
 
   return (
     <>

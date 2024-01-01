@@ -67,7 +67,7 @@ const ChatPage = () => {
         {messageArray.map((message: any, index: number) =>
           typeof message.message === "string" ? (
             <div key={index}>
-              {isFirstMessageOfDay(message,index > 0 ? messageArray[index - 1] : null) ? (
+              {isFirstMessageOfDay(message, index > 0 ? messageArray[index - 1] : null) ? (
                 <div className="flex justify-center items-center">
                   <div className="text-center text-[.81rem] mb-3 bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
                     {formatDate(message.date)}
@@ -79,7 +79,7 @@ const ChatPage = () => {
                 key={index}
                 message={message.message}
                 date={message.date}
-                right={index % 2 === 0 ? true : false}
+                right={message.right}
               />
             </div>
           ) : (

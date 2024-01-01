@@ -7,8 +7,13 @@ import img from "../../assets/profile.jpg"
 
 const Profile = () => {
   const dispatch = useDispatch()
-  const { profileOpen, nameEditClick, aboutEditClick, name, about } = useSelector((state: RootState) => state.utils)
+  const { profileOpen, nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.utils)
+  const { socket } = useSelector((store: RootState) => store.features);
+  const joinRoom = () => {
+    dispatch(handleAboutEditClick(!aboutEditClick))
+    socket.emit("join_room", about)
 
+  }
   return (
     <>
       <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
@@ -30,36 +35,37 @@ const Profile = () => {
             </div>
           </div>
           <div className={`transition-all ease-linear  duration-200 delay-500  ${profileOpen === true ? "translate-y-12" : null} mt-7 ml-5 px-5`}>
-            <p className="text-[#008069]">Your name</p>
+            <p className="text-[#008069] ml-2">Your name</p>
             {nameEditClick ? (
               (<div className="flex justify-between items-center mt-4">
                 <input type="text"
                   onChange={(e: any) => dispatch(handleNameChange(e.target.value))}
                   placeholder="Your Name"
+                  value={userName}
                   className="profileinput" />
                 <AiOutlineCheck size={25} className="text-white mr-6 cursor-pointer w-6" onClick={() => dispatch(handleNameEditClick(!nameEditClick))} />
               </div>)
             ) : (
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-white">{name}</p>
+              <div className={`${userName === "" ? "border border-dashed border-white" : "bg-slate-800 rounded-md bg-opacity-50 px-2 py-3"} flex justify-between items-center mt-4`}>
+                <p className="text-white  ">{userName}</p>
                 <AiOutlineEdit size={25} className="text-white mr-4 cursor-pointer" onClick={() => dispatch(handleNameEditClick(!nameEditClick))} />
               </div>
-            )
-            }
+            )}
           </div>
 
           <div className={`transition-all ease-linear  duration-200 delay-500  ${profileOpen === true ? "translate-y-12" : null} mt-7 ml-5 px-5`}>
-            <p className="text-[#008069]">About</p>
+            <p className="text-[#008069] ml-2">About</p>
             {aboutEditClick ? (
               (<div className="flex justify-between items-center mt-4">
                 <input type="text"
                   placeholder=" About"
                   onChange={(e: any) => dispatch(handleAboutChange(e.target.value))}
+                  value={about}
                   className="profileinput" />
-                <AiOutlineCheck size={25} className="text-white mr-6 cursor-pointer w-6" onClick={() => dispatch(handleAboutEditClick(!aboutEditClick))} />
+                <AiOutlineCheck  onClick={joinRoom} size={25} className="text-white mr-6 cursor-pointer w-6" />
               </div>)
             ) : (
-              <div className="flex justify-between items-center mt-4">
+              <div className={`${about === "" ? "border border-dashed border-white" : "bg-slate-800 rounded-md bg-opacity-50 px-2 py-3"} flex justify-between  items-center mt-4`}>
                 <p className="text-white">{about}</p>
                 <AiOutlineEdit size={25} className="text-white mr-4 cursor-pointer" onClick={() => dispatch(handleAboutEditClick(!aboutEditClick))} />
               </div>
