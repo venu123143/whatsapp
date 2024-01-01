@@ -12,21 +12,18 @@ import {
   handleFileChange,
   handleToggleImagesAndMessage,
 } from "../../Redux/reducers/utils/utilReducer";
-import { useEffect, useState } from "react";
+
 const ChatPage = () => {
   const dispatch = useDispatch();
   const {
     messageArray, showAttachFiles, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
-  const [day, setDay] = useState(false)
   //   const setRef = useCallback((node) => {
   //     if (node) {
   //       node.scrollIntoView({ smooth: true });
   //     }
   //   }, []);
   // 01-Jan-2024 - format
-  const isValidDateFormat = (inputDate: string) => {
-    return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(inputDate);
-  };
+
   const formatDate = (inputDate: string) => {
     const today = new Date();
     const messageDate = new Date(inputDate);
@@ -53,11 +50,15 @@ const ChatPage = () => {
       day: 'numeric',
     });
   };
-  const firstMessageDate = (date: Date): any => {
-    let previousDate = new Date(date).toDateString()
-    const currentDate = new Date().toDateString()
-    setDay(previousDate === currentDate)
-  }
+
+  const isFirstMessageOfDay = (currentMessage: any, previousMessage: any) => {
+    if (!previousMessage) {
+      return true;
+    }
+    const currentDate = new Date(currentMessage.date);
+    const previousDate = new Date(previousMessage.date);
+    return currentDate.toDateString() !== previousDate.toDateString();
+  };
 
   return (
     <div className="relative h-full ">
@@ -66,7 +67,7 @@ const ChatPage = () => {
         {messageArray.map((message: any, index: number) =>
           typeof message.message === "string" ? (
             <div key={index}>
-              {day === false ? (
+              {isFirstMessageOfDay(message,index > 0 ? messageArray[index - 1] : null) ? (
                 <div className="flex justify-center items-center">
                   <div className="text-center text-[.81rem] mb-3 bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
                     {formatDate(message.date)}

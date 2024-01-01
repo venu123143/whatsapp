@@ -1,4 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+import { dummyMessages } from "../../../static/Static"
+
 type InitialState = {
     chatSearchValue: string;
     messageValue: string;
@@ -24,7 +26,7 @@ type InitialState = {
 const initialState: InitialState = {
     chatSearchValue: "",
     messageValue: "",
-    messageArray: [],
+    messageArray: dummyMessages,
     chatArray: [],
     singleChat: {},
     emptyOrChatToggle: false,
@@ -54,11 +56,9 @@ const utilSlice = createSlice({
             state.messageValue += action.payload.emoji;
         },
         handleSendMessage: (state, action) => {
-            console.log(action.payload)
             state.messageArray.push(action.payload);
             state.messageValue = "";
-            console.log(state.messageArray);
-            
+
         },
         handleChatClick: (state, action) => {
             state.singleChat = action.payload;
