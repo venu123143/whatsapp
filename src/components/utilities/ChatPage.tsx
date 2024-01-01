@@ -46,7 +46,7 @@ const ChatPage = () => {
     }
     return messageDate.toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
     });
   };
