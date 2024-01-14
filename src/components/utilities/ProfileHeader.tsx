@@ -1,32 +1,87 @@
 
-import { RootState } from "../../Redux/store";
+import { AppDispatch, RootState } from "../../Redux/store";
 import { BsFillChatLeftTextFill, BsThreeDotsVertical } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
 import { handleProfileOpen } from "../../Redux/reducers/utils/utilReducer"
 import { toggleContacts } from "../../Redux/reducers/utils/Features"
-import img from "../../assets/profile.jpg"
-
+import { FaRegUserCircle } from "react-icons/fa";
+import { logout } from "../../Redux/reducers/Auth/AuthReducer"
+import { useEffect, useState } from "react";
+import { FaCircleChevronDown } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 const ProfileHeader = () => {
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
+    const { user } = useSelector((state: RootState) => state.auth)
     const { profileOpen } = useSelector((state: RootState) => state.utils);
+    const [dropdown, setDropdown] = useState(false)
+    const handleLogout = () => {
+        dispatch(logout())
+        setDropdown(false)
+    }
+    // when click outside close the dropdown.
+    useEffect(() => {
+        const closeDropdown = (event: MouseEvent) => {
+            // Check if the clicked element is outside the dropdown
+            if (dropdown && !event.target || !(event.target as HTMLElement).closest('.dropdown')) {
+                setDropdown(false);
+            }
+        };
+
+        // Attach the event listener to the document body
+        document.body.addEventListener('click', closeDropdown);
+
+        // Cleanup the event listener on component unmount
+        return () => {
+            document.body.removeEventListener('click', closeDropdown);
+        };
+    }, [dropdown]);
+
+    const handleDropdownClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        // Prevent the click event from reaching the document body
+        event.stopPropagation();
+        setDropdown(!dropdown);
+    };
     return (
         // fixed z-0 w-3/12 top-0 left-0
         <section className="">
             <div className="profileheader">
                 <div className="cursor-pointer">
-                    <img src={img} alt="profile" className="w-[40px] h-[40px] rounded-full bg-cover object-cover"
-                        onClick={() => dispatch(handleProfileOpen(!profileOpen))}
-                    />
+                    {
+                        user?.profile === "" || !user?.profile ? (
+                            <div onClick={() => dispatch(handleProfileOpen(!profileOpen))} className="">
+                                <FaRegUserCircle size={40} className="text-black bg-white hover:bg-opacity-80 rounded-full group cursor-pointer " />
+                            </div>
+                        ) :
+                            <img onClick={() => dispatch(handleProfileOpen(!profileOpen))} src={user?.profile} className="group cursor-pointer hover:bg-black hover:opacity-50 rounded-full w-[40px] h-[40px]" alt="Profile" />
+                    }
                 </div>
                 <div className=" flex items-center gap-2">
                     <div className="icons" onClick={() => dispatch(toggleContacts(true))}>
                         <BsFillChatLeftTextFill title="New Chat" />
                     </div>
-                    <div className="icons">
+                    <div className="icons" onClick={handleDropdownClick}>
                         <BsThreeDotsVertical title="Menu" />
                     </div>
                 </div>
+                {
+                    dropdown && (
+                        <div className="dropdown top-16 right-10 ">
+                            <div className="z-10" >
+                                <button onClick={() => setDropdown(false)} className="options " role="menuitem" id="menu-item-0">Profile</button>
+                                <button className="options" role="menuitem" id="menu-item-1">
+                                    <span>Theme</span>
+                                    <FaCircleChevronDown className="inline font-Rubik" />
+                                </button>
+                                <Link onClick={() => setDropdown(false)} to="#" className="options">Account settings</Link>
+
+                                <button onClick={handleLogout} className="options" role="menuitem" id="menu-item-0">Logout</button>
+                            </div>
+                            {/* <div onClick={()=>setDropdown(false)} className="fixed top-0 left-0 right-0 bottom-0 z-0 bg-red-500"  >
+                            </div> */}
+                        </div>
+                    )
+                }
             </div>
         </section>
     );

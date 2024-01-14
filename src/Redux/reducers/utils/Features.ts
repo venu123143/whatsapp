@@ -15,7 +15,11 @@ interface InitialState {
   users: Array<any>;
   activeChat: ActiveChat;
   socket: any;
-
+  createContact: boolean;
+  userName: string;
+  about: string;
+  nameEditClick: boolean;
+  aboutEditClick: boolean;
 }
 const socket = io("http://localhost:8000")
 
@@ -29,7 +33,12 @@ const initialState: InitialState = {
     status: "",
     profile: "",
   },
-  socket: socket
+  socket: socket,
+  createContact: false,
+  userName: "",
+  about: "",
+  nameEditClick: false,
+  aboutEditClick: false,
 };
 export const getAllUsers = createAsyncThunk("features/getAllUsers", async (_, thunkAPI) => {
   try {
@@ -57,6 +66,23 @@ export const FeatureSlice = createSlice({
     handleActiveChat: (state, action) => {
       state.activeChat = action.payload;
     },
+    toggleCreateContact: (state, action: PayloadAction<boolean>) => {
+      state.createContact = action.payload;
+    },
+    handleNameEditClick: (state, action) => {
+      state.nameEditClick = action.payload.nameEditClick;
+      state.userName = action.payload.name
+    },
+    handleAboutEditClick: (state, action) => {
+      state.aboutEditClick = action.payload?.aboutEditClick;
+      state.about = action.payload?.about
+    },
+    handleNameChange: (state, action) => {
+      state.userName = action.payload;
+    },
+    handleAboutChange: (state, action) => {
+      state.about = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getAllUsers.fulfilled, (state, action) => {
@@ -65,7 +91,10 @@ export const FeatureSlice = createSlice({
   },
 });
 
-export const { toggleContacts, toggleEditMessage, handleActiveChat } =
+export const { toggleContacts, toggleEditMessage, handleActiveChat, toggleCreateContact, handleNameChange,
+  handleAboutChange,
+  handleNameEditClick,
+  handleAboutEditClick, } =
   FeatureSlice.actions;
 
 export default FeatureSlice.reducer;

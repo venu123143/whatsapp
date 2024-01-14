@@ -9,6 +9,15 @@ export interface Users {
     unreadCount?: number;
 }
 
+export const backgroundImages = ["https://bsmedia.business-standard.com/_media/bs/img/article/2023-04/01/full/1680325748-8096.jpg",
+    "https://images.indianexpress.com/2023/10/whatsapp-logo-featured-express.jpg",
+    "https://miro.medium.com/v2/resize:fit:720/format:webp/0*EnfvGEllIYzq6As9",
+    "https://cdn.pixabay.com/photo/2021/05/24/17/07/whatsapp-6279868_1280.png",
+    "https://www.meupositivo.com.br/doseujeito/wp-content/uploads/2021/03/webwhatsapp.jpg",
+    "https://cdn.pixabay.com/photo/2016/04/27/20/39/whatsapp-1357489_1280.jpg",
+    "https://cdn.pixabay.com/photo/2016/11/21/08/44/whatsapp-1844471_1280.png",
+    "https://images.unsplash.com/photo-1636751364472-12bfad09b451?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+]
 export const users = [
     {
         profile: p2,

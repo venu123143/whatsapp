@@ -9,8 +9,9 @@ const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(local
 
 export interface UserState {
     _id?: string | null;
-    firstname?: string | null;
-    lastname?: string | null;
+    name?: string;
+    about: string;
+    profile: string;
     email: string | null;
     mobile?: string | null;
     password?: string | null;
@@ -20,15 +21,13 @@ export interface UserState {
     otp?: any;
 }
 
-
-export const login = createAsyncThunk('authSlice/login', async (user: UserState, thunkAPI) => {
+export const upateUser = createAsyncThunk('authSlice/upateUser', async (data: { id: string, value: { name?: string, about?: string } }, thunkAPI) => {
     try {
-        const res = await userService.login(user)
+        const res = await userService.upateUser(data.id, data.value)
         return res
 
     } catch (error: any) {
-        // console.log("error ", error);
-
+        localStorage.removeItem("token")
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -42,12 +41,23 @@ export const logout = createAsyncThunk('authSlice/logoutUser', async (_, thunkAP
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
-export const registerUser = createAsyncThunk('userSlice/registerUser', async (userData: UserState, thunkAPI) => {
+
+export const sendOtp = createAsyncThunk('authSlice/sendOtp', async (mobile: string, thunkAPI) => {
     try {
-        return await userService.register(userData)
+        const res = await userService.sendotp(mobile)
+        return res
     } catch (error: any) {
         return thunkAPI.rejectWithValue(error?.response?.data)
+    }
+})
+export const VerifyOtp = createAsyncThunk('authSlice/Verifyotp', async (data: { mobile: string, otp: string[] }, thunkAPI) => {
+    try {
+        const res = await userService.verifyOtp(data.mobile, data.otp)
+        return res
 
+    } catch (error: any) {
+        localStorage.removeItem("token")
+        return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
 
@@ -74,48 +84,8 @@ const initialState: AppState = {
 const authSlice = createSlice({
     name: 'authSlice',
     initialState,
-    reducers: {
-        setUserName: (state, action: PayloadAction<string>) => {
-            state.userName = action.payload
-        }
-    },
+    reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(registerUser.pending, (state) => {
-            state.isLoading = true
-        }).addCase(registerUser.fulfilled, (state, action: PayloadAction<any>) => {
-            state.isLoading = false
-            state.isSuccess = true
-            state.user = action.payload
-            toast.success("user registered sucessfully", {
-                position: 'top-right'
-            })
-        }).addCase(registerUser.rejected, (state, action: PayloadAction<any>) => {
-            state.isLoading = false
-            state.message = action.payload?.message
-            toast.error(state.message, {
-                position: 'top-right'
-            })
-        })
-        builder.addCase(login.pending, (state) => {
-            state.isLoading = true
-        }).addCase(login.fulfilled, (state, action: PayloadAction<any>) => {
-            state.isLoading = false
-            state.isSuccess = true
-            state.user = action.payload.user
-            state.message = action.payload?.message
-            toast.success(state.message, {
-                position: 'top-right'
-            })
-        }).addCase(login.rejected, (state, action: PayloadAction<any>) => {
-            state.isLoading = false
-            state.isError = true
-            state.isSuccess = false
-            state.user = null
-            state.message = action.payload?.message
-            toast.error(state.message, {
-                position: 'top-right'
-            })
-        })
         builder.addCase(logout.pending, (state) => {
             state.isLoading = true
             state.isSuccess = false
@@ -131,15 +101,70 @@ const authSlice = createSlice({
         }).addCase(logout.rejected, (state, action: PayloadAction<any>) => {
             state.isError = true
             state.isLoading = false
-            state.message = action.payload?.message
             state.user = null
+            state.message = action.payload?.message
             toast.error(state.message, {
                 position: 'top-right'
+            })
+        })
+        builder.addCase(sendOtp.pending, (state) => {
+            state.isLoading = true
+        }).addCase(sendOtp.fulfilled, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isSuccess = true
+            state.message = action.payload?.message
+            toast.success(state.message, {
+                position: 'top-left'
+            })
+        }).addCase(sendOtp.rejected, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isError = true
+            state.isSuccess = false
+            state.message = action.payload?.message
+            toast.error(state.message, {
+                position: 'top-left'
+            })
+        })
+        builder.addCase(VerifyOtp.pending, (state) => {
+            state.isLoading = true
+        }).addCase(VerifyOtp.fulfilled, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isSuccess = true
+            state.message = action.payload?.message
+            state.user = action.payload.user
+            toast.success(state.message, {
+                position: 'top-left'
+            })
+        }).addCase(VerifyOtp.rejected, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isError = true
+            state.isSuccess = false
+            state.user = null
+            state.message = action.payload?.message
+            toast.error(state.message, {
+                position: 'top-left'
+            })
+        })
+        builder.addCase(upateUser.pending, (state) => {
+            state.isLoading = true
+        }).addCase(upateUser.fulfilled, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isSuccess = true
+            state.user = action.payload
+            toast.success("name/ about is updated sucessfully", {
+                position: 'top-left'
+            })
+        }).addCase(upateUser.rejected, (state) => {
+            state.isLoading = false
+            state.isError = true
+            state.isSuccess = false
+            toast.error("Unable to update the user", {
+                position: 'top-left'
             })
         })
     }
 
 })
 
-export const { setUserName } = authSlice.actions
+export const { } = authSlice.actions
 export default authSlice.reducer

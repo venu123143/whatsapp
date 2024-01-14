@@ -53,6 +53,15 @@ header color- 233138
 .icons {
     @apply text-[#e9deef] hover:bg-[#111b21] cursor-pointer text-xl p-4 rounded-full
 }
-.unreadmessage{
+
+.unreadmessage {
     @apply bg-[#02a698] rounded-full h-6 w-6 flex items-center justify-center text-white shadow-md
+}
+
+.dropdown {
+    @apply bg-[#202c33] absolute sm:block hidden mt-2 w-56 rounded-lg shadow-lg ring-1 ring-black focus:outline-none ring-opacity-5
+}
+
+.options {
+    @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:bg-gray-700 dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2 text-lg
 }

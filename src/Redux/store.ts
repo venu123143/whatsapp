@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit"
 import authReducer from "./reducers/Auth/AuthReducer"
 import utilReducer from "./reducers/utils/utilReducer"
 import featureReducer from "./reducers/utils/Features"
+import msgReducer from "./reducers/msg/MsgReducer"
 
 const Store = configureStore({
     reducer: {
         auth: authReducer,
         utils: utilReducer,
         features: featureReducer,
+        msg:msgReducer
         
     }
 })

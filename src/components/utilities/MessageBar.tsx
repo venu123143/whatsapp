@@ -18,7 +18,7 @@ import { FaMicrophone } from "react-icons/fa6";
 
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { showAttachFiles, userName, about } = useSelector((store: RootState) => store.utils);
+  const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { socket } = useSelector((store: RootState) => store.features);
 
   // const { io } = useSelector((state: RootState) => state.socket);
@@ -28,9 +28,9 @@ const MessageBar = () => {
   const [tagReply, setTagReply] = useState<boolean>(false);
   // const [showAttachFiles, setShowAttachFiles] = useState<boolean>(true);
 
-  // io.on("connect", () => {
-  //   console.log(`socket id is ${io.id}`);
-  // });
+  socket.on("connect", () => {
+    dispatch(handleSendMessage({ message: `Your Connection id: ${socket.id}`, date: new Date().toISOString(), right: false }));
+  });
   // const handleEmojiModal = () => {
   //   setShowEmojiPicker(!showEmojiPicker);
   // };
@@ -47,8 +47,6 @@ const MessageBar = () => {
         const serializedValues = {
           message: values.message,
           date: values.date.toISOString(),
-          author: userName,
-          room: about,
           right: true
         };
         await socket.emit("send_message", serializedValues)
@@ -60,11 +58,11 @@ const MessageBar = () => {
 
   useEffect(() => {
     socket.on("recieve_message", (data: any) => {
-      console.log(data);
       dispatch(handleSendMessage({ ...data, right: false }));
-
-
     })
+    return () => {
+      socket.disconnect();
+    };
   }, [socket])
 
   return (

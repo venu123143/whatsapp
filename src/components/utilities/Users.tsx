@@ -5,15 +5,19 @@ import ProfileHeader from './ProfileHeader'
 import SearchBar from './SearchBar'
 import { users } from "../../static/Static"
 import ContactsList from '../../pages/Contacts'
+import CreateContact from './CreateContact'
 const Users = () => {
   return (
     <>
-      <header className='w-full h-screen flex flex-col'>
+      <header className='relative w-full h-screen flex flex-col'>
         <div className='relative z-10' >
           <Profile />
         </div>
         <div className='relative z-10'>
           <ContactsList />
+        </div>
+        <div className='relative z-10'>
+          <CreateContact />
         </div>
         <div className=''>
           <ProfileHeader />

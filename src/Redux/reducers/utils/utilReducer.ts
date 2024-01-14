@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-// import { dummyMessages } from "../../../static/Static"
+import { dummyMessages } from "../../../static/Static"
 
 type InitialState = {
     chatSearchValue: string;
@@ -11,10 +11,8 @@ type InitialState = {
     activeClass: any;
     showAttachFiles: boolean;
     profileOpen: boolean;
-    nameEditClick: boolean;
-    aboutEditClick: boolean;
-    userName: string;
-    about: string;
+    
+
     selectedImage: any;
     toggleSendImages: boolean;
     dummySelectedImage: any[];
@@ -26,17 +24,13 @@ type InitialState = {
 const initialState: InitialState = {
     chatSearchValue: "",
     messageValue: "",
-    messageArray: [],
+    messageArray: dummyMessages,
     chatArray: [],
     singleChat: {},
     emptyOrChatToggle: false,
     activeClass: null,
     showAttachFiles: false,
     profileOpen: true,
-    nameEditClick: false,
-    aboutEditClick: false,
-    userName: "",
-    about: "",
     selectedImage: [],
     toggleSendImages: false,
     dummySelectedImage: [],
@@ -73,18 +67,7 @@ const utilSlice = createSlice({
         handleProfileOpen: (state, action) => {
             state.profileOpen = action.payload;
         },
-        handleNameEditClick: (state, action) => {
-            state.nameEditClick = action.payload;
-        },
-        handleAboutEditClick: (state, action) => {
-            state.aboutEditClick = action.payload;
-        },
-        handleNameChange: (state, action) => {
-            state.userName = action.payload;
-        },
-        handleAboutChange: (state, action) => {
-            state.about = action.payload;
-        },
+       
         handleFileChange: (state, action) => {
             state.selectedImage = [...action.payload];
         },
@@ -109,10 +92,6 @@ export const {
     handleDummySelectImage,
     handleToggleSendImages,
     handleSendMessageInput,
-    handleNameChange,
-    handleAboutChange,
-    handleNameEditClick,
-    handleAboutEditClick,
     setShowAttachFiles,
     handleEmojiClick,
     handleSendMessage,

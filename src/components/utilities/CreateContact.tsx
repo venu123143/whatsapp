@@ -1,42 +1,32 @@
-// import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+// import { useState } from "react";
 
+import { RootState } from "../../Redux/store";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleCreateContact } from "../..//Redux/reducers/utils/Features";
 import { BsSearch } from "react-icons/bs";
+import SingleChat from "../../components/cards/UserCard";
+
 import { AiOutlineArrowLeft  } from "react-icons/ai";
 // AiOutlineArrowRight
-import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
-import { AppDispatch, RootState } from "../Redux/store";
-import SingleChat from "../components/cards/UserCard";
-import { FaCircleUser } from "react-icons/fa6";
-const ContactsList = () => {
-    const dispatch: AppDispatch = useDispatch();
-    // const { chatArray } = useSelector((store: RootState) => store.auth);
-    const { contacts, createContact } = useSelector((state: RootState) => state.features);
-    const { users } = useSelector((state: RootState) => state.msg);
+const CreateContact = () => {
+    const dispatch = useDispatch();
 
+    // const { chatArray } = useSelector((store: RootState) => store.auth);
+    const { users, createContact } = useSelector((state: RootState) => state.features);
     let groupedByInitial: Record<string, any[]> = {};
 
-    users?.forEach((obj: any) => {
+    users.forEach((obj: any) => {
         const initial = obj?.name?.charAt(0);
         if (!groupedByInitial[initial]) {
             groupedByInitial[initial] = [];
         }
         groupedByInitial[initial].push(obj);
     });
-
-    //     useEffect(() = {
-    //         dispatch(allUsers())
-    // }, [])
-    const handleAddUser = () => {
-        dispatch(toggleCreateContact(!createContact))
-    }
     return (
-        <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
-            <div className="icons flex items-center gap-4  "
-                onClick={() => dispatch(toggleContacts(false))}>
-                {/* <AiOutlineArrowRight className="text-white cursor-pointer w-9" /> */}
+        <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${createContact === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
+            <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={() => dispatch(toggleCreateContact(false))}>
                 <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
-                <h1 className="text-white font-[400] ">New Chat</h1>
+                <h1 className="text-white font-[400] ">Profile</h1>
             </div>
             <section className="">
                 <div className=" header-bg flex py-3 px-5 items-center gap-3">
@@ -53,17 +43,10 @@ const ContactsList = () => {
                         </div>
                     </div>
                 </div>
+              
             </section>
-            {/* h-[calc(100vh-100px)] */}
+
             <section className=" overflow-y-scroll custom-scrollbar">
-                <section onClick={handleAddUser} className="singleuser  hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
-                    <div className="col-span-1 flex justify-center ">
-                        <FaCircleUser size={50} className="text-[#00a884]" />
-                    </div>
-                    <div className="col-span-4 flex items-center">
-                        <p className="text-[20px] font-bold">Create Group</p>
-                    </div>
-                </section>
                 {Object.entries(groupedByInitial).sort(([initialA], [initialB]) => initialA.localeCompare(initialB)).map(
                     ([initialLetter, users], index) => (
                         <div key={index}>
@@ -79,8 +62,9 @@ const ContactsList = () => {
                     )
                 )}
             </section>
-        </div>
-    );
-};
 
-export default ContactsList;
+        </div>
+    )
+}
+
+export default CreateContact
