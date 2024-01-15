@@ -1,86 +1,108 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { RxCross2 } from 'react-icons/rx';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../Redux/store';
 interface ShowFullImgProps {
     images: any[];
-    index: number;
-    handleSetImage: (index: number) => void;
+    index?: number;
 }
-
+import { setCurrentImage, setIsFullscreen, setZoomLevel, setCurrentIndex } from '../../Redux/reducers/utils/Features';
 const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
-    const [currentIndex, setCurrentIndex] = useState<number | null>(null);
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const [currentImage, setCurrentImage] = useState(images[0]);
-    const [isZoomed, setIsZoomed] = useState(false); // Track zoom state
-    const [zoomLevel, setZoomLevel] = useState(1);
-    console.log(zoomLevel);
+    const { currentImage, isFullscreen, zoomLevel, currentIndex } = useSelector((state: RootState) => state.features)
+    const dispatch: AppDispatch = useDispatch()
+    // const [currentIndex, setCurrentIndex] = useState<number | null>(null);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    // const [isZoomed, setIsZoomed] = useState(false); // Track zoom state
+
+    const handleScroll = useCallback((e: any) => {
+        const delta = e.deltaY || e.detail || e.wheelDelta;
+
+        // Zooming
+        const newZoomLevel = zoomLevel + (delta > 0 ? -0.3 : 0.3);
+        const constrainedZoom = Math.max(0.5, Math.min(newZoomLevel, 3));
+        dispatch(setZoomLevel(constrainedZoom))
+
+    }, [dispatch, zoomLevel]);
 
     useEffect(() => {
-        const handleScroll = (e: any) => {
-            if (isZoomed) {
-                const delta = e.deltaY || e.detail || e.wheelDelta;
-
-                // Increase or decrease zoom level based on scroll direction
-                setZoomLevel((prevZoom) => (delta > 0 ? prevZoom - 0.1 : prevZoom + 0.1));
-            }
-        };
-
         window.addEventListener('wheel', handleScroll);
 
         return () => {
             window.removeEventListener('wheel', handleScroll);
         };
-    }, [isZoomed]);
+    }, [handleScroll]);
+
+    const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        if (e.buttons === 1) {
+            const panDistance = 30;
+            // Get the window dimensions
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            // Calculate the maximum allowed x and y positions
+            const maxX = windowWidth / 2 - (windowWidth / 2) / zoomLevel;
+            const maxY = windowHeight / 2 - (windowHeight / 2) / zoomLevel;
+            // setPosition((prevPosition) => ({
+            //     x: prevPosition.x + e.movementX * panDistance / zoomLevel,
+            //     y: prevPosition.y + e.movementY * panDistance / zoomLevel,
+            // }));
+            setPosition((prevPosition) => ({
+                x: Math.max(-maxX, Math.min(maxX, prevPosition.x + e.movementX * panDistance / zoomLevel)),
+                y: Math.max(-maxY, Math.min(maxY, prevPosition.y + e.movementY * panDistance / zoomLevel)),
+            }));
+        }
+    }, [setPosition, zoomLevel]);
+
     const closeFullscreen = () => {
+        dispatch(setCurrentImage(null))
+        dispatch(setIsFullscreen(false))
+        setPosition({ x: 0, y: 0 })
         setCurrentIndex(null);
-        setIsFullscreen(false);
-        setCurrentImage(null);
-        setIsZoomed(false);
+        // setIsZoomed(false);
     };
 
     const nextImage = () => {
         if (currentIndex !== null && currentIndex < images.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            setCurrentImage(images[currentIndex + 1]);
-            setIsZoomed(false); // Reset zoom state when changing images
-        } else if (currentIndex !== null && currentIndex >= images.length - 1) {
-            setIsFullscreen(false);
+            setPosition({ x: 0, y: 0 })
+            dispatch(setZoomLevel(1))
+
+            dispatch(setCurrentIndex(currentIndex + 1))
+            dispatch(setCurrentImage(images[currentIndex + 1]))
+
+            // setIsZoomed(false);
+        } else if (currentIndex! >= images.length - 1) {
+            setPosition({ x: 0, y: 0 })
+            dispatch(setIsFullscreen(false))
         }
     };
 
     const prevImage = () => {
         if (currentIndex !== null && currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
+            setPosition({ x: 0, y: 0 })
+            dispatch(setZoomLevel(1))
+            dispatch(setCurrentIndex(currentIndex - 1))
+
             // setCurrentImage(URL.createObjectURL(images[currentIndex - 1]));
-            setCurrentImage(images[currentIndex - 1]);
-            setIsZoomed(false); // Reset zoom state when changing images
-        } else if (currentIndex !== null && currentIndex <= 0) {
-            setIsFullscreen(false);
+            dispatch(setCurrentImage(images[currentIndex - 1]))
+            // setIsZoomed(false); // Reset zoom state when changing images
+        } else if (currentIndex! <= 0) {
+            setPosition({ x: 0, y: 0 })
+            dispatch(setIsFullscreen(false));
         }
     };
 
-    // const handleSetImage = (index: number) => {
-    //     setCurrentIndex(index);
-    //     setIsFullscreen(true);
-    //     // setCurrentImage(URL.createObjectURL(images[index]));
-    //     setCurrentImage(images[index]);
-    // };
-    const toggleZoom = () => {
-        setIsZoomed(!isZoomed); // Toggle zoom state
-    };
     return (
         <div>
-            <div className={`fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
+            <div className={`transition-all  fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
                 <div
                     className={`fullscreen-modal overflow-hidden relative`}>
-                    <img
+                    <img onMouseMove={handleMouseMove}
                         src={currentImage}
                         alt={`Image ${currentIndex! + 1}`}
-                        onClick={toggleZoom}
-                        className={`fullscreen-image ${isZoomed
-                            ? `hover:scale-125 duration-500 transition-all scroll-smooth cursor-move `
-                            : "scale-100 duration-500 transition-all"
-                            }`}
+                        style={{
+                            transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
+                        }}
+                        className={`fullscreen-image cursor-move}`}
                     />
                     <span
                         className="close-button p-2 hover:bg-gray-600 rounded-full"

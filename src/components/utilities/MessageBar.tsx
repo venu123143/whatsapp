@@ -2,7 +2,7 @@
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -19,7 +19,7 @@ import { FaMicrophone } from "react-icons/fa6";
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
-  const { socket } = useSelector((store: RootState) => store.features);
+  // const { socket } = useSelector((store: RootState) => store.features);
 
   // const { io } = useSelector((state: RootState) => state.socket);
   // const { activeChat } = useSelector((state: RootState) => state.feature);
@@ -28,9 +28,9 @@ const MessageBar = () => {
   const [tagReply, setTagReply] = useState<boolean>(false);
   // const [showAttachFiles, setShowAttachFiles] = useState<boolean>(true);
 
-  socket.on("connect", () => {
-    dispatch(handleSendMessage({ message: `Your Connection id: ${socket.id}`, date: new Date().toISOString(), right: false }));
-  });
+  // socket.on("connect", () => {
+  //   dispatch(handleSendMessage({ message: `Your Connection id: ${socket.id}`, date: new Date().toISOString(), right: false }));
+  // });
   // const handleEmojiModal = () => {
   //   setShowEmojiPicker(!showEmojiPicker);
   // };
@@ -49,21 +49,21 @@ const MessageBar = () => {
           date: values.date.toISOString(),
           right: true
         };
-        await socket.emit("send_message", serializedValues)
+        // await socket.emit("send_message", serializedValues)
         dispatch(handleSendMessage(serializedValues));
         formik.resetForm()
       }
     }
   })
 
-  useEffect(() => {
-    socket.on("recieve_message", (data: any) => {
-      dispatch(handleSendMessage({ ...data, right: false }));
-    })
-    return () => {
-      socket.disconnect();
-    };
-  }, [socket])
+  // useEffect(() => {
+  //   socket.on("recieve_message", (data: any) => {
+  //     dispatch(handleSendMessage({ ...data, right: false }));
+  //   })
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, [socket])
 
   return (
     <>

@@ -14,14 +14,18 @@ interface InitialState {
   editmsg: boolean;
   users: Array<any>;
   activeChat: ActiveChat;
-  socket: any;
+  // socket: any;
   createContact: boolean;
   userName: string;
   about: string;
   nameEditClick: boolean;
   aboutEditClick: boolean;
+  isFullscreen: boolean;
+  currentImage: any;
+  zoomLevel: number;
+  currentIndex: number | null;
 }
-const socket = io("http://localhost:8000")
+// const socket = io("http://localhost:8000")
 
 const initialState: InitialState = {
   contacts: false,
@@ -33,12 +37,16 @@ const initialState: InitialState = {
     status: "",
     profile: "",
   },
-  socket: socket,
+  // socket: socket,
   createContact: false,
   userName: "",
   about: "",
   nameEditClick: false,
   aboutEditClick: false,
+  currentImage: null,
+  isFullscreen: false,
+  currentIndex: null,
+  zoomLevel: 1
 };
 export const getAllUsers = createAsyncThunk("features/getAllUsers", async (_, thunkAPI) => {
   try {
@@ -83,6 +91,24 @@ export const FeatureSlice = createSlice({
     handleAboutChange: (state, action) => {
       state.about = action.payload;
     },
+    setIsFullscreen: (state, action) => {
+      state.isFullscreen = action.payload;
+    },
+    setCurrentImage: (state, action) => {
+      state.currentImage = action.payload;
+    },
+    setZoomLevel: (state, action) => {
+      state.zoomLevel = action.payload;
+    },
+    openfullScreen: (state, action) => {
+      state.currentImage = action.payload.currentImage;
+      state.isFullscreen = action.payload.isFullscreen;
+      state.zoomLevel = action.payload.zoomLevel;
+      state.currentIndex = action.payload.currentIndex;
+    },
+    setCurrentIndex: (state, action) => {
+      state.currentIndex = action.payload
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getAllUsers.fulfilled, (state, action) => {
@@ -91,10 +117,20 @@ export const FeatureSlice = createSlice({
   },
 });
 
-export const { toggleContacts, toggleEditMessage, handleActiveChat, toggleCreateContact, handleNameChange,
+export const {
+  toggleContacts,
+  toggleEditMessage,
+  handleActiveChat,
+  toggleCreateContact,
+  handleNameChange,
   handleAboutChange,
   handleNameEditClick,
-  handleAboutEditClick, } =
-  FeatureSlice.actions;
+  handleAboutEditClick,
+  setIsFullscreen,
+  setCurrentImage,
+  openfullScreen,
+  setZoomLevel,
+  setCurrentIndex
+} = FeatureSlice.actions;
 
 export default FeatureSlice.reducer;

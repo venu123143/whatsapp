@@ -3,12 +3,13 @@ import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"
 import { handleProfileOpen, } from "../../Redux/reducers/utils/utilReducer"
 import { upateUser } from "../../Redux/reducers/Auth/AuthReducer"
-import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange } from "../../Redux/reducers/utils/Features"
+import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange, openfullScreen } from "../../Redux/reducers/utils/Features"
 import { AiOutlineEdit, AiOutlineCheck } from "react-icons/ai"
 // import img from "../../assets/profile.jpg"
 import { FaRegUserCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners"
-
+import ShowFullImg from "./ShowFullImg"
+import { powerStarImgs } from "../../static/Static"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
   const { user, isLoading } = useSelector((state: RootState) => state.auth)
@@ -30,7 +31,9 @@ const Profile = () => {
     dispatch(handleNameEditClick({ nameEditClick: !nameEditClick }))
   }
 
- 
+  const showFullImage = () => {
+    dispatch(openfullScreen({ currentImage: powerStarImgs[0], isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
+  }
   return (
     <>
       <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
@@ -52,7 +55,7 @@ const Profile = () => {
                       </div>
                     </div>
                   ) :
-                    <img src={user?.profile} className="group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] mt-10" alt="Profile" />
+                    <img onClick={showFullImage} src={user?.profile} className="group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] mt-10" alt="Profile" />
                 }
               </div>
             </div>
@@ -116,6 +119,9 @@ const Profile = () => {
             )
             }
           </div>
+        </div>
+        <div>
+          <ShowFullImg images={powerStarImgs} />
         </div>
       </div>
     </>
