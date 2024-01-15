@@ -19,6 +19,10 @@ const ProfileHeader = () => {
         dispatch(logout())
         setDropdown(false)
     }
+    const openProfile = () => {
+        dispatch(handleProfileOpen(!profileOpen))
+        setDropdown(false)
+    }
     // when click outside close the dropdown.
     useEffect(() => {
         const closeDropdown = (event: MouseEvent) => {
@@ -68,7 +72,7 @@ const ProfileHeader = () => {
                     dropdown && (
                         <div className="dropdown top-16 right-10 ">
                             <div className="z-10" >
-                                <button onClick={() => setDropdown(false)} className="options " role="menuitem" id="menu-item-0">Profile</button>
+                                <button onClick={openProfile} className="options " role="menuitem" id="menu-item-0">Profile</button>
                                 <button className="options" role="menuitem" id="menu-item-1">
                                     <span>Theme</span>
                                     <FaCircleChevronDown className="inline font-Rubik" />

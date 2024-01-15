@@ -1,9 +1,7 @@
 export const base_url = "http://localhost:5000/api"
 import p2 from "../assets/venuprofile.jpg"
 
-export interface Users {
-    profile?: string;
-    name: string;
+export interface Users{
     message: string;
     time: string;
     unreadCount?: number;
@@ -21,13 +19,11 @@ export const backgroundImages = ["https://bsmedia.business-standard.com/_media/b
 
 export const powerStarImgs = [
     "https://e0.pxfuel.com/wallpapers/232/433/desktop-wallpaper-power-star-pawan-kalyan-pawankalyan.jpg",
-    "https://mobcup.net/images/wt/1e85d42ccf24bbd13cf29ad12464fe30.jpeg",
     "https://funmauj.b-cdn.net/test/413011.jpg",
     "https://i.pinimg.com/564x/4f/ae/b3/4faeb3a538b79b16c699406e5ef7922f.jpg",
     "https://funmauj.b-cdn.net/test/351267.jpg",
     "https://i.pinimg.com/564x/e6/5e/cb/e65ecb12b33ae2cb57c3c819ccabd0e7.jpg",
     "https://i.pinimg.com/564x/c5/6c/92/c56c92f6dd761932196c74fd09891d9b.jpg"
-
 ]
 export const users = [
     {

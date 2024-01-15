@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 interface ShowFullImgProps {
     images: any[];
-    index?: number;
 }
 import { setCurrentImage, setIsFullscreen, setZoomLevel, setCurrentIndex } from '../../Redux/reducers/utils/Features';
 const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
@@ -35,17 +34,13 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (e.buttons === 1) {
-            const panDistance = 30;
+            const panDistance = 25;
             // Get the window dimensions
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
             // Calculate the maximum allowed x and y positions
             const maxX = windowWidth / 2 - (windowWidth / 2) / zoomLevel;
             const maxY = windowHeight / 2 - (windowHeight / 2) / zoomLevel;
-            // setPosition((prevPosition) => ({
-            //     x: prevPosition.x + e.movementX * panDistance / zoomLevel,
-            //     y: prevPosition.y + e.movementY * panDistance / zoomLevel,
-            // }));
             setPosition((prevPosition) => ({
                 x: Math.max(-maxX, Math.min(maxX, prevPosition.x + e.movementX * panDistance / zoomLevel)),
                 y: Math.max(-maxY, Math.min(maxY, prevPosition.y + e.movementY * panDistance / zoomLevel)),
@@ -69,7 +64,6 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
             dispatch(setCurrentIndex(currentIndex + 1))
             dispatch(setCurrentImage(images[currentIndex + 1]))
 
-            // setIsZoomed(false);
         } else if (currentIndex! >= images.length - 1) {
             setPosition({ x: 0, y: 0 })
             dispatch(setIsFullscreen(false))
@@ -93,21 +87,20 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
 
     return (
         <div>
-            <div className={`transition-all  fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
+            <div className={` fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
                 <div
                     className={`fullscreen-modal overflow-hidden relative`}>
+
                     <img onMouseMove={handleMouseMove}
                         src={currentImage}
                         alt={`Image ${currentIndex! + 1}`}
                         style={{
                             transform: `scale(${zoomLevel}) translate(${position.x}px, ${position.y}px)`,
                         }}
-                        className={`fullscreen-image cursor-move}`}
-                    />
+                        className={`fullscreen-image transition-all ease-in-out cursor-move	}`} />
                     <span
                         className="close-button p-2 hover:bg-gray-600 rounded-full"
-                        onClick={closeFullscreen}
-                    >
+                        onClick={closeFullscreen}>
                         <RxCross2 size={25} />
                     </span>
                     <span

@@ -7,9 +7,54 @@ import { UserState } from "../Auth/AuthReducer";
 
 // const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
 
+export interface AppState {
+    screen: boolean;
+    users: UserState[];
+    groups: IGroup[];
+    singleGroup: IGroup | null;
+    isError: boolean;
+    isLoading: boolean;
+    isSuccess: boolean;
+    message: string;
+    address: boolean;
+    userName: string;
+    createGrp: boolean;
+}
+export interface CommonProperties {
+    _id?: string | null;
+    name?: string;
+    about: string;
+    profile: string;
+    email: string | null;
+    mobile?: string | null;
+}
 
+export interface IGroup extends CommonProperties {
+    room_id: string;
+    status: string;
+    description: string;
+    users: UserState[]
+    admins: UserState[]
+    maxUsers: number;
+    createdBy: UserState
+    chat: Array<any>;
+}
 
-export const allUsers = createAsyncThunk('authSlice/allUsers', async (_, thunkAPI) => {
+const initialState: AppState = {
+    screen: false,
+    users: [],
+    groups: [],
+    singleGroup: null,
+    isError: false,
+    isLoading: false,
+    isSuccess: false,
+    message: "",
+    address: false,
+    createGrp: false,
+    userName: "",
+};
+
+export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
     try {
         const res = await msgService.allUsers()
         return res
@@ -19,7 +64,7 @@ export const allUsers = createAsyncThunk('authSlice/allUsers', async (_, thunkAP
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
-export const allGroups = createAsyncThunk('authSlice/allGroups', async (_, thunkAPI) => {
+export const getAllGroups = createAsyncThunk('authSlice/getAllGroups', async (_, thunkAPI) => {
     try {
         const res = await msgService.allGroups()
         return res
@@ -57,80 +102,39 @@ export const updateGroup = createAsyncThunk('authSlice/updateGroup', async (data
 //     }
 // })
 
-export interface AppState {
-    screen: boolean;
-    users: UserState[] | null;
-    groups: IGroup[] | null;
-    singleGroup: IGroup | null;
-    isError: boolean;
-    isLoading: boolean;
-    isSuccess: boolean;
-    message: string;
-    address: boolean;
-    userName: string;
-}
 
-export interface IGroup {
-    group_name: string;
-    room_id: string;
-    status: string;
-    description: string;
-    users: UserState[]
-    admins: UserState[]
-    maxUsers: number;
-    profile: string;
-    createdBy: UserState
-    chat: Array<any>;
-}
-
-const initialState: AppState = {
-    screen: false,
-    users: null,
-    groups: [],
-    singleGroup: null,
-    isError: false,
-    isLoading: false,
-    isSuccess: false,
-    message: "",
-    address: false,
-    userName: "",
-};
 const msgSlice = createSlice({
     name: 'msgSlice',
     initialState,
-    reducers: {},
+    reducers: {
+        toggleCreateGroup: (state, action) => {
+            state.createGrp = action.payload
+        }
+    },
     extraReducers: (builder) => {
-        builder.addCase(allUsers.pending, (state) => {
+        builder.addCase(getAllUsers.pending, (state) => {
             state.isLoading = true
-        }).addCase(allUsers.fulfilled, (state, action: PayloadAction<any>) => {
+        }).addCase(getAllUsers.fulfilled, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.isSuccess = true
             state.users = action.payload
-            toast.success("user registered sucessfully", {
-                position: 'top-right'
-            })
-        }).addCase(allUsers.rejected, (state, action: PayloadAction<any>) => {
+        }).addCase(getAllUsers.rejected, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.message = action.payload?.message
             toast.error(state.message, {
                 position: 'top-right'
             })
         })
-        builder.addCase(allGroups.pending, (state) => {
+        builder.addCase(getAllGroups.pending, (state) => {
             state.isLoading = true
-        }).addCase(allGroups.fulfilled, (state, action: PayloadAction<any>) => {
+        }).addCase(getAllGroups.fulfilled, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.isSuccess = true
             state.groups = action.payload.groups
-            state.message = action.payload?.message
-            toast.success(state.message, {
-                position: 'top-right'
-            })
-        }).addCase(allGroups.rejected, (state, action: PayloadAction<any>) => {
+        }).addCase(getAllGroups.rejected, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.isError = true
             state.isSuccess = false
-            state.groups = null
             state.message = action.payload?.message
             toast.error(state.message, {
                 position: 'top-right'
@@ -199,5 +203,5 @@ const msgSlice = createSlice({
 
 })
 
-export const { } = msgSlice.actions
+export const { toggleCreateGroup } = msgSlice.actions
 export default msgSlice.reducer

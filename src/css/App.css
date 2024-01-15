@@ -19,7 +19,7 @@ header color- 233138
 }
 
 .singleuser {
-    @apply bg-[#111b21] hover:bg-[#111b21] hover:bg-opacity-90 text-white cursor-pointer border-b border-gray-800
+    @apply bg-[#111b21] hover:bg-[#202c33] hover:bg-opacity-80 text-white cursor-pointer border-b border-gray-800
 }
 
 .username {

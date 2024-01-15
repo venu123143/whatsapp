@@ -5,11 +5,9 @@ import { handleProfileOpen, } from "../../Redux/reducers/utils/utilReducer"
 import { upateUser } from "../../Redux/reducers/Auth/AuthReducer"
 import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange, openfullScreen } from "../../Redux/reducers/utils/Features"
 import { AiOutlineEdit, AiOutlineCheck } from "react-icons/ai"
-// import img from "../../assets/profile.jpg"
-import { FaRegUserCircle } from "react-icons/fa";
 import { ClipLoader } from "react-spinners"
 import ShowFullImg from "./ShowFullImg"
-import { powerStarImgs } from "../../static/Static"
+import { PiUserLight } from "react-icons/pi"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
   const { user, isLoading } = useSelector((state: RootState) => state.auth)
@@ -32,7 +30,7 @@ const Profile = () => {
   }
 
   const showFullImage = () => {
-    dispatch(openfullScreen({ currentImage: powerStarImgs[0], isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
+    dispatch(openfullScreen({ currentImage: user?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
   }
   return (
     <>
@@ -48,10 +46,10 @@ const Profile = () => {
                 {
                   user?.profile === "" || !user?.profile ? (
                     <div className=" rounded-full group">
-                      <FaRegUserCircle size={200} className="  bg-slate-300 rounded-full cursor-pointer hover:opacity-90 hover:bg-gray-700 mt-10" />
+                      <PiUserLight size={200} className=" bg-gray-700 rounded-full cursor-pointer hover:opacity-90 hover:shadow-orange-500 shadow-lg hover:bg-gray-700 mt-10" />
                       <div className="hidden cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center">
                         <AiOutlineCamera className="text-white " size={40} />
-                        {/* <span>change profile photo</span> */}
+                        {/* <span>change profile photo</span> */} 
                       </div>
                     </div>
                   ) :
@@ -121,7 +119,7 @@ const Profile = () => {
           </div>
         </div>
         <div>
-          <ShowFullImg images={powerStarImgs} />
+          <ShowFullImg images={[user?.profile]} />
         </div>
       </div>
     </>

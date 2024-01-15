@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getAllData } from "./utilService";
 import { users } from "../../../static/Static";
-import io from "socket.io-client"
+// import io from "socket.io-client"
 
 interface ActiveChat {
   name: string;

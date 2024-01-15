@@ -1,51 +1,61 @@
-// import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { BsSearch } from "react-icons/bs";
-import { AiOutlineArrowLeft  } from "react-icons/ai";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 // AiOutlineArrowRight
 import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
 import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
+import { getAllUsers } from "../Redux/reducers/msg/MsgReducer";
 const ContactsList = () => {
     const dispatch: AppDispatch = useDispatch();
     // const { chatArray } = useSelector((store: RootState) => store.auth);
     const { contacts, createContact } = useSelector((state: RootState) => state.features);
     const { users } = useSelector((state: RootState) => state.msg);
+    const [searchInput, setSearchInput] = useState("");
 
+    useEffect(() => {
+        dispatch(getAllUsers())
+    }, [])
     let groupedByInitial: Record<string, any[]> = {};
 
     users?.forEach((obj: any) => {
-        const initial = obj?.name?.charAt(0);
+        const initial = obj?.name?.charAt(0).toLowerCase();
         if (!groupedByInitial[initial]) {
             groupedByInitial[initial] = [];
         }
         groupedByInitial[initial].push(obj);
     });
 
-    //     useEffect(() = {
-    //         dispatch(allUsers())
-    // }, [])
+
     const handleAddUser = () => {
         dispatch(toggleCreateContact(!createContact))
     }
+    const handleSearch = (user: any) => {
+        const searchQuery = searchInput.toLowerCase();
+        return (
+            user.name.toLowerCase().includes(searchQuery) ||
+            (user.mobile && user.mobile.toLowerCase().includes(searchQuery))
+        );
+    };
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="icons flex items-center gap-4  "
                 onClick={() => dispatch(toggleContacts(false))}>
-                {/* <AiOutlineArrowRight className="text-white cursor-pointer w-9" /> */}
                 <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
                 <h1 className="text-white font-[400] ">New Chat</h1>
             </div>
             <section className="">
                 <div className=" header-bg flex py-3 px-5 items-center gap-3">
-                    <div className="singleuser flex gap-5 py-2 m-auto w-full  rounded-lg ">
+                    <div className="border border-gray-500 flex gap-5 py-2 m-auto w-full  rounded-lg ">
                         <div className="ml-4 flex items-center justify-center">
                             <BsSearch className="text-panel-header-icon cursor-pointer text-xl" />
                         </div>
                         <div className="w-full pr-4">
-                            <input
+                            <input value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
                                 type="text"
                                 placeholder="Search name or number"
                                 className="bg-transparent text-md focus:outline-none text-white w-full "
@@ -55,7 +65,7 @@ const ContactsList = () => {
                 </div>
             </section>
             {/* h-[calc(100vh-100px)] */}
-            <section className=" overflow-y-scroll custom-scrollbar">
+            <section className="bg-[#111b21] overflow-y-scroll custom-scrollbar">
                 <section onClick={handleAddUser} className="singleuser  hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
                     <div className="col-span-1 flex justify-center ">
                         <FaCircleUser size={50} className="text-[#00a884]" />
@@ -64,20 +74,27 @@ const ContactsList = () => {
                         <p className="text-[20px] font-bold">Create Group</p>
                     </div>
                 </section>
-                {Object.entries(groupedByInitial).sort(([initialA], [initialB]) => initialA.localeCompare(initialB)).map(
-                    ([initialLetter, users], index) => (
-                        <div key={index}>
-                            <div className="text-teal-light ml-6 py-3 pb-6">
-                                {initialLetter}
-                            </div>
-                            {users.map((user: any, idx: number) => (
-                                <SingleChat value={user}
-                                    key={idx}
-                                />
-                            ))}
-                        </div>
-                    )
-                )}
+
+                {Object.entries(groupedByInitial)
+                    .sort(([initialA], [initialB]) => initialA.localeCompare(initialB))
+                    .map(([initialLetter, users], index) => {
+                        const filteredUsers = users.filter(handleSearch);
+
+                        if (filteredUsers.length > 0) {
+                            return (
+                                <div key={index}>
+                                    <div className="singleuser p-3  border-b border-gray-800 text-teal-light">
+                                        {initialLetter}
+                                    </div>
+                                    {filteredUsers.map((user: any, idx: number) => (
+                                        <SingleChat key={idx} value={user} contacts={true} />
+                                    ))}
+                                </div>
+                            );
+                        }
+
+                        return null; // Don't render the section if there are no matching users
+                    })}
             </section>
         </div>
     );

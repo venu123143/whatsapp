@@ -2,18 +2,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import userService from "./AuthService";
 import { toast } from "react-toastify";
+import { CommonProperties } from "../msg/MsgReducer";
 
 
 
 const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
 
-export interface UserState {
-    _id?: string | null;
-    name?: string;
-    about: string;
-    profile: string;
-    email: string | null;
-    mobile?: string | null;
+export interface UserState extends CommonProperties {
     password?: string | null;
     refreshToken?: string | null;
     role?: string | null;

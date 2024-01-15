@@ -4,7 +4,7 @@ import { base_url } from "../../../static/Static";
 
 
 const allUsers = async (): Promise<any> => {
-    const res = await axios.post(`${base_url}/users/`, { withCredentials: true })
+    const res = await axios.get(`${base_url}/users/`, { withCredentials: true })    
     return res.data
 }
 
