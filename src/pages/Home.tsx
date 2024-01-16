@@ -1,16 +1,22 @@
 // import React from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../Redux/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 
 const Home = () => {
   const navigate = useNavigate()
+  const dispatch: AppDispatch = useDispatch()
   const { profileOpen } = useSelector((state: RootState) => state.utils)
+  const { createGrp } = useSelector((state: RootState) => state.msg)
   const { user, isLoading, isError, isSuccess } = useSelector((state: RootState) => state.auth)
 
+  useEffect(() => {
+    dispatch(getAllGroups())
+  }, [createGrp])
   useEffect(() => {
     if (user === null) {
       navigate('/login')
@@ -25,7 +31,7 @@ const Home = () => {
         <section className='col-span-7'>
           <Chat />
         </section>
-      
+
       </main>
 
     </>

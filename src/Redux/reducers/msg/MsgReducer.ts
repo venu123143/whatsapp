@@ -19,6 +19,7 @@ export interface AppState {
     address: boolean;
     userName: string;
     createGrp: boolean;
+    selectedUsersToGroup: any;
 }
 export interface CommonProperties {
     _id?: string | null;
@@ -52,6 +53,7 @@ const initialState: AppState = {
     address: false,
     createGrp: false,
     userName: "",
+    selectedUsersToGroup: []
 };
 
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
@@ -60,7 +62,6 @@ export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, t
         return res
 
     } catch (error: any) {
-        // console.log("error ", error);
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -70,7 +71,6 @@ export const getAllGroups = createAsyncThunk('authSlice/getAllGroups', async (_,
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -91,16 +91,15 @@ export const updateGroup = createAsyncThunk('authSlice/updateGroup', async (data
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
-// export const VerifyOtp = createAsyncThunk('authSlice/Verifyotp', async (data: { mobile: string, otp: string[] }, thunkAPI) => {
-//     try {
-//         const res = await userService.verifyOtp(data.mobile, data.otp)
-//         return res
+export const createGroup = createAsyncThunk('authSlice/createGroup', async (data: { name: string, users: string[], profile?: string }, thunkAPI) => {
+    try {
+        const res = await msgService.createGroup(data)
+        return res
 
-//     } catch (error: any) {
-//         localStorage.removeItem("token")
-//         return thunkAPI.rejectWithValue(error?.response?.data)
-//     }
-// })
+    } catch (error: any) {
+        return thunkAPI.rejectWithValue(error?.response?.data)
+    }
+})
 
 
 const msgSlice = createSlice({
@@ -109,6 +108,9 @@ const msgSlice = createSlice({
     reducers: {
         toggleCreateGroup: (state, action) => {
             state.createGrp = action.payload
+        },
+        storeSelectedUsers: (state, action) => {
+            state.selectedUsersToGroup = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -130,7 +132,7 @@ const msgSlice = createSlice({
         }).addCase(getAllGroups.fulfilled, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.isSuccess = true
-            state.groups = action.payload.groups
+            state.groups = action.payload
         }).addCase(getAllGroups.rejected, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.isError = true
@@ -179,29 +181,28 @@ const msgSlice = createSlice({
                 position: 'top-left'
             })
         })
-        // builder.addCase(VerifyOtp.pending, (state) => {
-        //     state.isLoading = true
-        // }).addCase(VerifyOtp.fulfilled, (state, action: PayloadAction<any>) => {
-        //     state.isLoading = false
-        //     state.isSuccess = true
-        //     state.message = action.payload?.message
-        //     state.user = action.payload.user
-        //     toast.success(state.message, {
-        //         position: 'top-left'
-        //     })
-        // }).addCase(VerifyOtp.rejected, (state, action: PayloadAction<any>) => {
-        //     state.isLoading = false
-        //     state.isError = true
-        //     state.isSuccess = false
-        //     state.user = null
-        //     state.message = action.payload?.message
-        //     toast.error(state.message, {
-        //         position: 'top-left'
-        //     })
-        // })
+        builder.addCase(createGroup.pending, (state) => {
+            state.isLoading = true
+        }).addCase(createGroup.fulfilled, (state) => {
+            state.isLoading = false
+            state.isSuccess = true
+            state.createGrp = false
+            toast.success("Your group is created sucessfully.", {
+                position: 'top-left'
+            })
+        }).addCase(createGroup.rejected, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isError = true
+            state.isSuccess = false
+            // state.user = null
+            state.message = action.payload?.message
+            toast.error(state.message, {
+                position: 'top-left'
+            })
+        })
     }
 
 })
 
-export const { toggleCreateGroup } = msgSlice.actions
+export const { toggleCreateGroup, storeSelectedUsers } = msgSlice.actions
 export default msgSlice.reducer

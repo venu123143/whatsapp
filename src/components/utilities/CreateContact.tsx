@@ -7,7 +7,7 @@ import SingleChat from "../../components/cards/UserCard";
 import { RxCross2 } from "react-icons/rx"
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import { FaCircleUser } from "react-icons/fa6";
-import { toggleCreateGroup } from "../../Redux/reducers/msg/MsgReducer";
+import { storeSelectedUsers, toggleCreateGroup } from "../../Redux/reducers/msg/MsgReducer";
 
 
 
@@ -70,6 +70,9 @@ const CreateContact = () => {
     const createGroup = () => {
         if (selectedUsers.length > 0) {
             dispatch(toggleCreateGroup(true))
+            const users = selectedUsers.map((user) => user._id)
+            dispatch(storeSelectedUsers(users))
+            setSelectedUsers([])
         } else {
             window.alert("Please select at least one user to create a group.");
         }
@@ -145,8 +148,5 @@ const CreateContact = () => {
         </div>
     )
 }
-
-
-
 
 export default React.memo(CreateContact)
