@@ -1,18 +1,13 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { dummyMessages } from "../../../static/Static"
+import { createSlice } from "@reduxjs/toolkit"
 
 type InitialState = {
-    chatSearchValue: string;
     messageValue: string;
-    messageArray: any;
     chatArray: any;
     singleChat: any;
     emptyOrChatToggle: boolean;
     activeClass: any;
     showAttachFiles: boolean;
     profileOpen: boolean;
-    
-
     selectedImage: any;
     toggleSendImages: boolean;
     dummySelectedImage: any[];
@@ -22,9 +17,7 @@ type InitialState = {
 
 // const msgArr = ["hii"]
 const initialState: InitialState = {
-    chatSearchValue: "",
     messageValue: "",
-    messageArray: dummyMessages,
     chatArray: [],
     singleChat: {},
     emptyOrChatToggle: false,
@@ -40,19 +33,11 @@ const utilSlice = createSlice({
     name: 'authSlice',
     initialState,
     reducers: {
-        handleChatSearchValue: (state, action: PayloadAction<string>) => {
-            state.chatSearchValue = action.payload;
-        },
         handleSendMessageInput: (state, action) => {
             state.messageValue = action.payload;
         },
         handleEmojiClick: (state, action) => {
             state.messageValue += action.payload.emoji;
-        },
-        handleSendMessage: (state, action) => {
-            state.messageArray.push(action.payload);
-            state.messageValue = "";
-
         },
         handleChatClick: (state, action) => {
             state.singleChat = action.payload;
@@ -67,7 +52,6 @@ const utilSlice = createSlice({
         handleProfileOpen: (state, action) => {
             state.profileOpen = action.payload;
         },
-       
         handleFileChange: (state, action) => {
             state.selectedImage = [...action.payload];
         },
@@ -85,7 +69,6 @@ const utilSlice = createSlice({
 })
 
 export const {
-    handleChatSearchValue,
     handleProfileOpen,
     handleFileChange,
     handleToggleImagesAndMessage,
@@ -94,7 +77,6 @@ export const {
     handleSendMessageInput,
     setShowAttachFiles,
     handleEmojiClick,
-    handleSendMessage,
     handleChatClick,
     handleEmptyOrChatToggle,
 } = utilSlice.actions;

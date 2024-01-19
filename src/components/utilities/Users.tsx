@@ -5,13 +5,25 @@ import ProfileHeader from './ProfileHeader'
 import SearchBar from './SearchBar'
 import ContactsList from '../../pages/Contacts'
 import CreateContact from './CreateContact'
-import { RootState } from '../../Redux/store'
-import { useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../../Redux/store'
+import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
+import { setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
 const Users = () => {
-  const { groups, users } = useSelector((state: RootState) => state.msg)
-
-  const charts = [...groups, ...users]
+  const dispatch:AppDispatch = useDispatch()
+  const { groups, chatSearchValue, users } = useSelector((state: RootState) => state.msg)
+  const chats = [...groups, ...users]
+  const handleOnClick = (each: any) => {
+    dispatch(setCurrentGrpOrUser(each))
+    
+  }
+  const handleSearch = (user: any) => {
+    const searchQuery = chatSearchValue.toLowerCase();
+    return (
+      user.name.toLowerCase().includes(searchQuery) ||
+      (user.mobile && user.mobile.toLowerCase().includes(searchQuery))
+    );
+  };
   return (
     <>
       <header className='relative w-full h-screen flex flex-col bg-[#111b21]'>
@@ -34,8 +46,8 @@ const Users = () => {
           <SearchBar />
         </div>
         <div className='overflow-y-auto custom-scrollbar'>
-          {charts.map((each, index) => (
-            <UserCard key={index} value={each} />
+          {chats.filter(handleSearch).map((each, index) => (
+            <UserCard key={index} value={each} handleOnClick={() => handleOnClick(each)} />
           ))}
         </div>
       </header>

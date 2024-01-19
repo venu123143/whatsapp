@@ -3,11 +3,14 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { toast } from "react-toastify";
 import msgService from "./MsgService";
 import { UserState } from "../Auth/AuthReducer";
+import { dummyMessages } from "../../../static/Static"
 
 
 // const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
 
 export interface AppState {
+    currentUserorGroup: any;
+    chatSearchValue: string;
     screen: boolean;
     users: UserState[];
     groups: IGroup[];
@@ -22,6 +25,7 @@ export interface AppState {
     selectedUsersToGroup: any;
 }
 export interface CommonProperties {
+    socket_id: string;
     _id?: string | null;
     name?: string;
     about: string;
@@ -31,7 +35,6 @@ export interface CommonProperties {
 }
 
 export interface IGroup extends CommonProperties {
-    room_id: string;
     status: string;
     description: string;
     users: UserState[]
@@ -42,6 +45,7 @@ export interface IGroup extends CommonProperties {
 }
 
 const initialState: AppState = {
+    chatSearchValue: "",
     screen: false,
     users: [],
     groups: [],
@@ -53,7 +57,8 @@ const initialState: AppState = {
     address: false,
     createGrp: false,
     userName: "",
-    selectedUsersToGroup: []
+    selectedUsersToGroup: [],
+    currentUserorGroup: null,
 };
 
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
@@ -111,7 +116,17 @@ const msgSlice = createSlice({
         },
         storeSelectedUsers: (state, action) => {
             state.selectedUsersToGroup = action.payload
-        }
+        },
+        handleChatSearchValue: (state, action: PayloadAction<string>) => {
+            state.chatSearchValue = action.payload;
+        },
+        setCurrentGrpOrUser: (state, action) => {
+            state.currentUserorGroup = action.payload;
+            state.chatSearchValue = ""
+        },
+        handleSendMessage: (state, action) => {
+            state.currentUserorGroup.chat.push(action.payload)
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getAllUsers.pending, (state) => {
@@ -183,10 +198,11 @@ const msgSlice = createSlice({
         })
         builder.addCase(createGroup.pending, (state) => {
             state.isLoading = true
-        }).addCase(createGroup.fulfilled, (state) => {
+        }).addCase(createGroup.fulfilled, (state, action) => {
             state.isLoading = false
             state.isSuccess = true
             state.createGrp = false
+            state.singleGroup = action.payload
             toast.success("Your group is created sucessfully.", {
                 position: 'top-left'
             })
@@ -194,7 +210,6 @@ const msgSlice = createSlice({
             state.isLoading = false
             state.isError = true
             state.isSuccess = false
-            // state.user = null
             state.message = action.payload?.message
             toast.error(state.message, {
                 position: 'top-left'
@@ -204,5 +219,5 @@ const msgSlice = createSlice({
 
 })
 
-export const { toggleCreateGroup, storeSelectedUsers } = msgSlice.actions
+export const { handleSendMessage, toggleCreateGroup, storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer

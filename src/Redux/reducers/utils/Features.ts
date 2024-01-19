@@ -25,7 +25,6 @@ interface InitialState {
   zoomLevel: number;
   currentIndex: number | null;
 }
-// const socket = io("http://localhost:8000")
 
 const initialState: InitialState = {
   contacts: false,

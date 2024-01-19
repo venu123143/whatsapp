@@ -15,8 +15,11 @@ import {
 
 const ChatPage = () => {
   const dispatch = useDispatch();
-  const {
-    messageArray, showAttachFiles, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
+  const { showAttachFiles, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
+  const { currentUserorGroup } = useSelector((state: RootState) => state.msg)
+
+  const chats = currentUserorGroup?.chat
+
   //   const setRef = useCallback((node) => {
   //     if (node) {
   //       node.scrollIntoView({ smooth: true });
@@ -64,10 +67,10 @@ const ChatPage = () => {
     <div className="relative h-full ">
       <div className=" px-16 py-5 ">
 
-        {messageArray.map((message: any, index: number) =>
+        {chats && chats.map((message: any, index: number) =>
           typeof message.message === "string" ? (
             <div key={index}>
-              {isFirstMessageOfDay(message, index > 0 ? messageArray[index - 1] : null) ? (
+              {isFirstMessageOfDay(message, index > 0 ? chats[index - 1] : null) ? (
                 <div className="flex justify-center items-center">
                   <div className="text-center text-[.81rem] mb-3 bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
                     {formatDate(message.date)}

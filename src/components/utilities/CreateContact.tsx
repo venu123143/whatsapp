@@ -87,8 +87,8 @@ const CreateContact = () => {
                 <div className=" m-auto w-full flex flex-col gap-4">
                     <div className="flex-wrap flex max-h-[200px] overflow-y-scroll custom-scrollbar">
                         {
-                            selectedUsers.map((user) => (
-                                <MiniUserCard name={user.name} profile={user.profile} onClick={() => handleRemoveUser(user._id)} />
+                            selectedUsers.map((user, idx) => (
+                                <MiniUserCard key={idx} name={user.name} profile={user.profile} onClick={() => handleRemoveUser(user._id)} />
                             ))
                         }
                     </div>

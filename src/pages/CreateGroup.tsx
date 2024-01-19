@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCamera } from "react-icons/ai";
@@ -10,23 +10,27 @@ import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
+import { SocketContext } from "../Redux/reducers/socket/SocketContext"
 
 const CreateGroup = () => {
+    const { socket } = useContext(SocketContext)
+
     const dispatch: AppDispatch = useDispatch();
     const { createGrp, selectedUsersToGroup, isLoading } = useSelector((state: RootState) => state.msg);
     const [groupName, setGroupName] = useState("")
     // const [profile, setProfile] = useState("")
+
     const handleCreateGroup = () => {
         if (groupName === "") {
             window.alert("group name is required.")
         } else if (selectedUsersToGroup.length <= 0) {
             window.alert("select atleast one user to create group.")
         } else {
+            setGroupName("")
             dispatch(createGroup({ name: groupName, users: selectedUsersToGroup }))
             dispatch(toggleCreateContact(false))
             dispatch(handleProfileOpen(true))
             dispatch(toggleContacts(false))
-            setGroupName("")
         }
     }
     return (
@@ -47,7 +51,7 @@ const CreateGroup = () => {
                 </div>
                 <div className="mt-10 m-auto w-full flex flex-col gap-4">
                     <div className="relative h-11 w-full min-w-[200px]">
-                        <input placeholder=" Group Name ( * ) " onChange={(e) => setGroupName(e.target.value)}
+                        <input placeholder=" Group Name ( * ) " onChange={(e) => setGroupName(e.target.value)} value={groupName}
                             className="peer h-full w-full border-b-2 border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-lg font-normal text-blue-gray-700 
                             outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-[#00a884] focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50" />
                         {/* <label

@@ -2,10 +2,10 @@
 import { RootState } from "../../Redux/store";
 import { BsSearch, BsFilter } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
-import { handleChatSearchValue } from "../../Redux/reducers/utils/utilReducer"
+import { handleChatSearchValue } from "../../Redux/reducers/msg/MsgReducer"
 const SearchBar = () => {
     const dispatch = useDispatch();
-    const { chatSearchValue } = useSelector((store: RootState) => store.utils);
+    const { chatSearchValue } = useSelector((store: RootState) => store.msg);
 
     return (
         // fixed w-3/12 top-16

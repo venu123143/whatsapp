@@ -1,28 +1,29 @@
+import { useContext } from 'react'
+import { SocketContext } from "../../Redux/reducers/socket/SocketContext"
 
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import {  useState } from "react";
+import { useEffect, useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
 import {
   handleEmojiClick,
   setShowAttachFiles,
-  handleSendMessage,
 } from "../../Redux/reducers/utils/utilReducer"
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
+import { handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
 
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
-  // const { socket } = useSelector((store: RootState) => store.features);
-
-  // const { io } = useSelector((state: RootState) => state.socket);
-  // const { activeChat } = useSelector((state: RootState) => state.feature);
+  const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
+  const { socket } = useContext(SocketContext)
+  const chats = currentUserorGroup?.chat
 
   const [showEmojiPicker] = useState<boolean>(false);
   const [tagReply, setTagReply] = useState<boolean>(false);
@@ -40,30 +41,31 @@ const MessageBar = () => {
   const formik = useFormik({
     initialValues: {
       message: '',
-      date: new Date(),
     },
-    onSubmit: async (values) => {
-      if (values.message !== '') {
+    onSubmit: async (values, { resetForm }) => {
+      if (values.message !== '' && currentUserorGroup !== null) {
         const serializedValues = {
           message: values.message,
-          date: values.date.toISOString(),
-          right: true
+          date: new Date().toISOString(),
+          right: true,
+          msgType: 'text',
+          room: currentUserorGroup.socket_id
         };
-        // await socket.emit("send_message", serializedValues)
+        await socket?.emit("send_message", serializedValues)
         dispatch(handleSendMessage(serializedValues));
-        formik.resetForm()
+        resetForm()
       }
     }
   })
 
-  // useEffect(() => {
-  //   socket.on("recieve_message", (data: any) => {
-  //     dispatch(handleSendMessage({ ...data, right: false }));
-  //   })
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, [socket])
+  useEffect(() => {
+    socket?.on("recieve_message", (data: any) => {
+      dispatch(handleSendMessage({ ...data, right: false }));
+    })
+    return () => {
+      socket?.disconnect();
+    };
+  }, [socket])
 
   return (
     <>

@@ -2,21 +2,43 @@ import img from "../../assets/profile.jpg"
 import { MdCall } from "react-icons/md"
 import { IoMdVideocam } from "react-icons/io"
 import { BsSearch, BsThreeDotsVertical } from "react-icons/bs"
+import { useSelector } from "react-redux"
+import { RootState } from "../../Redux/store"
+import { FaCircleUser } from "react-icons/fa6"
+import { useEffect, useState } from "react"
 // import { useSelector } from "react-redux"
 // import { RootState } from "../../Redux/store"
 const ChatHeader = () => {
-  // const { activeChat } = useSelector((store: RootState) => store.features)
+  const [grpUsers, setGrpUsers] = useState("")
+  // const { activeChat } = useSelector((store: RootState) => store.features) 
+  const { currentUserorGroup } = useSelector((state: RootState) => state.msg)
 
+  function getUsersString(usersArray: any) {
+    return usersArray.map((user: any) => user.name || user.mobile).join(', ');
+  }
+  useEffect(() => {
+    // Check if 'users' array exists in currentUserorGroup
+    if (currentUserorGroup?.users) {
+      const usersString = getUsersString(currentUserorGroup.users);
+      setGrpUsers(usersString);
+    } else {
+      setGrpUsers("");
+    }
+  }, [currentUserorGroup]);
   return (
-    <div className="h-16 px-4 py-3 flex justify-between items-center bg-[#202c33] ">
+    <div className="h-16 gap-5 px-4 py-3 flex justify-between items-center bg-[#202c33] ">
       <div className="flex items-center justify-center gap-6 chatList">
-        <img src={img} alt="" className="w-[40px] h-[40px] rounded-full object-cover" />
-        <div className="flex flex-col">
-          <span className="username font-bold">Srinivas</span>
-          <span className="time text-sm">online</span>
-        </div>
+        {currentUserorGroup?.profile ? (
+          <img src={currentUserorGroup.profile} alt="profile image" className="w-[40px] h-[40px] rounded-full object-cover" />
+        ) : (
+          <FaCircleUser size={40} className="text-slate-400" />
+        )}
       </div>
-      <div className="flex gap-2 time">
+      <div className="mr-auto">
+        <span className="username font-bold">{currentUserorGroup?.name}</span>
+        <span className="time text-sm  line-clamp-1">{grpUsers === "" ? "offline" : grpUsers} </span>
+      </div>
+      <div className="flex gap-2 ">
         <div className="icons">
           <MdCall className=" cursor-pointer text-xl" />
         </div>
@@ -26,7 +48,7 @@ const ChatHeader = () => {
         <div className="icons">
           <BsSearch className="" />
         </div>
-        <div className="icons m-0"> 
+        <div className="icons m-0">
           <BsThreeDotsVertical className="" />
         </div>
       </div>
