@@ -14,6 +14,7 @@ import { SocketContext } from "../Redux/reducers/socket/SocketContext"
 
 const CreateGroup = () => {
     const { socket } = useContext(SocketContext)
+    console.log(socket);
 
     const dispatch: AppDispatch = useDispatch();
     const { createGrp, selectedUsersToGroup, isLoading } = useSelector((state: RootState) => state.msg);

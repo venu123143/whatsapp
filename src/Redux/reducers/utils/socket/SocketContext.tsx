@@ -7,6 +7,7 @@ const Context = createContext({ socket: socketConn });
 
 function ContextProvider(props: any) {
     const [socket, setSocket] = useState(socketConn);
+    console.log(setSocket);
 
     return (
         <Context.Provider value={{ socket }}>

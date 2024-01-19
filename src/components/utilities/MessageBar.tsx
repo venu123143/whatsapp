@@ -23,7 +23,7 @@ const MessageBar = () => {
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
   const { socket } = useContext(SocketContext)
-  const chats = currentUserorGroup?.chat
+  // const chats = currentUserorGroup?.chat
 
   const [showEmojiPicker] = useState<boolean>(false);
   const [tagReply, setTagReply] = useState<boolean>(false);

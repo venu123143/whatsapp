@@ -16,7 +16,7 @@
 
 // export { ContextProvider, Context };
 
-import { useState, createContext, useEffect } from "react";
+import { useState, createContext } from "react";
 import { io, Socket } from "socket.io-client";
 
 // Create a new context for the socket and user information
@@ -28,6 +28,7 @@ const SocketContext = createContext<{ socket: Socket | null; user?: any }>({
 // Create a component that will provide the context
 function SocketContextProvider(props: any) {
     const { user, children } = props;
+    console.log(user);
 
     const socketConn: Socket = io("http://localhost:8000", {
         withCredentials: true,

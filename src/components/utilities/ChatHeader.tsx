@@ -1,4 +1,3 @@
-import img from "../../assets/profile.jpg"
 import { MdCall } from "react-icons/md"
 import { IoMdVideocam } from "react-icons/io"
 import { BsSearch, BsThreeDotsVertical } from "react-icons/bs"

@@ -5,7 +5,7 @@ import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAllGroups, getAllUsers } from '../Redux/reducers/msg/MsgReducer'
+import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../Redux/reducers/socket/SocketContext"
 
 const Home = () => {

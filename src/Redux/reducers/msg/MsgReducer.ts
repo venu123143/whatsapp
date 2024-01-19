@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
 import { toast } from "react-toastify";
 import msgService from "./MsgService";
 import { UserState } from "../Auth/AuthReducer";
-import { dummyMessages } from "../../../static/Static"
+// import { dummyMessages } from "../../../static/Static"
 
 
 // const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
