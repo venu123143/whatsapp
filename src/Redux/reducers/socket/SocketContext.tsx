@@ -1,53 +1,28 @@
-// import { useState, createContext } from "react";
-// import { io, Socket } from "socket.io-client";
+import { useEffect } from "react";
+import createSocket from "../utils/socket/SocketConnection"
+import { AppDispatch } from "../../store";
+import { useDispatch } from "react-redux";
+import { UserState, handleUser } from "../Auth/AuthReducer";
 
-// const socketConn: Socket = io("http://localhost:8000", { withCredentials: true, autoConnect: false, auth: });
+const useSocket = (user: UserState) => {
 
-// const Context = createContext({ socket: socketConn });
-// function ContextProvider(props: any) {
-//     const [socket, _] = useState(socketConn);
+    const dispatch: AppDispatch = useDispatch();
 
-//     return (
-//         <Context.Provider value={{ socket }}>
-//             {props.children}
-//         </Context.Provider>
-//     );
-// }
+    useEffect(() => {
+        const socket = createSocket(user);
+        socket.connect()
+        socket.on("connect_error", () => {
+            console.log("on conn error");
+            dispatch(handleUser(null));
+        });
 
-// export { ContextProvider, Context };
+        return () => {
+            console.log("off conn");
+            socket.off("connect_error");
+        };
+    }, [dispatch, user]);
+};
 
-import { useState, createContext } from "react";
-import { io, Socket } from "socket.io-client";
+export default useSocket
 
-// Create a new context for the socket and user information
-const SocketContext = createContext<{ socket: Socket | null; user?: any }>({
-    socket: null,
-    user: null,
-});
-
-// Create a component that will provide the context
-function SocketContextProvider(props: any) {
-    const { user, children } = props;
-    console.log(user);
-
-    const socketConn: Socket = io("http://localhost:8000", {
-        withCredentials: true,
-        autoConnect: false,
-    });
-
-    // State to store the socket and user information
-    const [socket, setSocket] = useState<Socket | null>(socketConn);
-    // useEffect(() => {
-    //     setSocket()
-    // }, [user])
-    console.log(setSocket);
-
-    return (
-        <SocketContext.Provider value={{ socket }}>
-            {children}
-        </SocketContext.Provider>
-    );
-}
-
-export { SocketContextProvider, SocketContext };
 

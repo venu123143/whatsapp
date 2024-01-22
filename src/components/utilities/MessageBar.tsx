@@ -1,5 +1,4 @@
-import { useContext } from 'react'
-import { SocketContext } from "../../Redux/reducers/socket/SocketContext"
+
 
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
@@ -22,7 +21,7 @@ const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
-  const { socket } = useContext(SocketContext)
+  // const { socket } = useContext(SocketContext)
   // const chats = currentUserorGroup?.chat
 
   const [showEmojiPicker] = useState<boolean>(false);
@@ -51,21 +50,21 @@ const MessageBar = () => {
           msgType: 'text',
           room: currentUserorGroup.socket_id
         };
-        await socket?.emit("send_message", serializedValues)
+        // await socket?.emit("send_message", serializedValues)
         dispatch(handleSendMessage(serializedValues));
         resetForm()
       }
     }
   })
 
-  useEffect(() => {
-    socket?.on("recieve_message", (data: any) => {
-      dispatch(handleSendMessage({ ...data, right: false }));
-    })
-    return () => {
-      socket?.disconnect();
-    };
-  }, [socket])
+  // useEffect(() => {
+  //   socket?.on("recieve_message", (data: any) => {
+  //     dispatch(handleSendMessage({ ...data, right: false }));
+  //   })
+  //   return () => {
+  //     socket?.disconnect();
+  //   };
+  // }, [socket])
 
   return (
     <>

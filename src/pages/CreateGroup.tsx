@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCamera } from "react-icons/ai";
@@ -10,11 +10,10 @@ import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
-import { SocketContext } from "../Redux/reducers/socket/SocketContext"
 
 const CreateGroup = () => {
-    const { socket } = useContext(SocketContext)
-    console.log(socket);
+    // const { socket } = useContext(SocketContext)
+    // console.log(socket);
 
     const dispatch: AppDispatch = useDispatch();
     const { createGrp, selectedUsersToGroup, isLoading } = useSelector((state: RootState) => state.msg);

@@ -3,35 +3,39 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
-import { SocketContext } from "../Redux/reducers/socket/SocketContext"
+import { getAllGroups, getAllUsers } from '../Redux/reducers/msg/MsgReducer'
+import useSocket from '../Redux/reducers/socket/SocketContext'
 
 const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
   const { profileOpen } = useSelector((state: RootState) => state.utils)
-  const { user, isLoading, isError, isSuccess } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
   const { createGrp, selectedUsersToGroup, singleGroup } = useSelector((state: RootState) => state.msg);
-  const { socket } = useContext(SocketContext)
-  // console.log(createGrp, selectedUsersToGroup, singleGroup?.socket_id);
-  socket?.on('connect', () => {
-    console.log(`${socket.id} is connected`);
-  })
+
+  useSocket(user);
+
+
+  // const { socket } = useContext(SocketContext)
+  console.log(createGrp, selectedUsersToGroup, singleGroup?.socket_id);
+  // socket?.on('connect', () => {
+  //   console.log(`${socket.id} is connected`);
+  // })
   useEffect(() => {
     dispatch(getAllGroups())
-    // dispatch(getAllUsers())
-    if (singleGroup != null && singleGroup.socket_id !== undefined && selectedUsersToGroup.length > 0) {
-      socket?.emit("create_group", singleGroup.socket_id, selectedUsersToGroup)
-    }
+    dispatch(getAllUsers())
+    // if (singleGroup != null && singleGroup.socket_id !== undefined && selectedUsersToGroup.length > 0) {
+    //   socket?.emit("create_group", singleGroup.socket_id, selectedUsersToGroup)
+    // }
   }, [createGrp])
   useEffect(() => {
     if (user === null) {
-      socket?.emit("user_login", user)
       navigate('/login')
     }
-  }, [user, isLoading, isError, isSuccess])
+  })
+  // }, [user, isLoading, isError, isSuccess])
   return (
     <>
       <main className='w-full grid grid-cols-10 '>
