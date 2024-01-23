@@ -3,7 +3,7 @@
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -16,21 +16,21 @@ import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
 import { handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
-
+import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
-  // const { socket } = useContext(SocketContext)
+  const { socket } = useContext(SocketContext);
   // const chats = currentUserorGroup?.chat
 
   const [showEmojiPicker] = useState<boolean>(false);
   const [tagReply, setTagReply] = useState<boolean>(false);
   // const [showAttachFiles, setShowAttachFiles] = useState<boolean>(true);
 
-  // socket.on("connect", () => {
-  //   dispatch(handleSendMessage({ message: `Your Connection id: ${socket.id}`, date: new Date().toISOString(), right: false }));
-  // });
+  // Check if socket is available before using it
+
+
   // const handleEmojiModal = () => {
   //   setShowEmojiPicker(!showEmojiPicker);
   // };
@@ -48,9 +48,10 @@ const MessageBar = () => {
           date: new Date().toISOString(),
           right: true,
           msgType: 'text',
-          room: currentUserorGroup.socket_id
+          room: currentUserorGroup.socket_id,
+          user: currentUserorGroup
         };
-        // await socket?.emit("send_message", serializedValues)
+        socket.emit("send_message", serializedValues)
         dispatch(handleSendMessage(serializedValues));
         resetForm()
       }
@@ -58,7 +59,7 @@ const MessageBar = () => {
   })
 
   // useEffect(() => {
-  //   socket?.on("recieve_message", (data: any) => {
+  //   socket.on("recieve_message", (data: any) => {
   //     dispatch(handleSendMessage({ ...data, right: false }));
   //   })
   //   return () => {

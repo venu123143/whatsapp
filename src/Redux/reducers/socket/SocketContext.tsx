@@ -3,16 +3,16 @@ import createSocket from "../utils/socket/SocketConnection"
 import { AppDispatch } from "../../store";
 import { useDispatch } from "react-redux";
 import { UserState, handleUser } from "../Auth/AuthReducer";
+import { toast } from "react-toastify";
 
-const useSocket = (user: UserState) => {
-
+const useSocket = (user: UserState | null) => {
     const dispatch: AppDispatch = useDispatch();
-
+    const socket = createSocket(user);
     useEffect(() => {
-        const socket = createSocket(user);
         socket.connect()
-        socket.on("connect_error", () => {
-            console.log("on conn error");
+        socket.on("connect_error", (error: any) => {
+            console.log("on conn error", error);
+            toast.error("socket connect error", { position: 'top-right' })
             dispatch(handleUser(null));
         });
 
@@ -21,6 +21,8 @@ const useSocket = (user: UserState) => {
             socket.off("connect_error");
         };
     }, [dispatch, user]);
+
+    return socket
 };
 
 export default useSocket
