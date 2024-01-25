@@ -9,13 +9,16 @@ import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
 import { setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
+// import { SocketContext } from "../../pages/Home"
+
 const Users = () => {
-  const dispatch:AppDispatch = useDispatch()
+  const dispatch: AppDispatch = useDispatch()
   const { groups, chatSearchValue, users } = useSelector((state: RootState) => state.msg)
   const chats = [...groups, ...users]
-  const handleOnClick = (each: any) => {
+  // const socket = useContext(SocketContext);
+
+  const handleOnClick = async (each: any) => {
     dispatch(setCurrentGrpOrUser(each))
-    
   }
   const handleSearch = (user: any) => {
     const searchQuery = chatSearchValue.toLowerCase();

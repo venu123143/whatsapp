@@ -3,7 +3,7 @@
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import EmojiPicker, { Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -21,14 +21,11 @@ const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
-  const { socket } = useContext(SocketContext);
-  // const chats = currentUserorGroup?.chat
+  const socket = useContext(SocketContext);
 
   const [showEmojiPicker] = useState<boolean>(false);
   const [tagReply, setTagReply] = useState<boolean>(false);
   // const [showAttachFiles, setShowAttachFiles] = useState<boolean>(true);
-
-  // Check if socket is available before using it
 
 
   // const handleEmojiModal = () => {
@@ -49,23 +46,25 @@ const MessageBar = () => {
           right: true,
           msgType: 'text',
           room: currentUserorGroup.socket_id,
-          user: currentUserorGroup
         };
-        socket.emit("send_message", serializedValues)
+
+        // Emit "send_message" event when the form is submitted
+        socket.emit("send_message", serializedValues);
+
         dispatch(handleSendMessage(serializedValues));
-        resetForm()
+        resetForm();
       }
     }
   })
 
-  // useEffect(() => {
-  //   socket.on("recieve_message", (data: any) => {
-  //     dispatch(handleSendMessage({ ...data, right: false }));
-  //   })
-  //   return () => {
-  //     socket?.disconnect();
-  //   };
-  // }, [socket])
+  useEffect(() => {
+    socket?.on("recieve_message", (data: any) => {      
+      dispatch(handleSendMessage({ ...data, right: false }));
+    })
+    // return () => {
+    //   socket?.disconnect();
+    // };
+  }, [socket])
 
   return (
     <>

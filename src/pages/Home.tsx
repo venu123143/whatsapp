@@ -1,13 +1,15 @@
-import { useEffect, createContext } from 'react'
+import { useEffect, createContext, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
 import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
-import useSocket from '../Redux/reducers/socket/SocketContext'
 
-export const SocketContext = createContext<any>(null);
+import { Socket } from 'socket.io-client'
+import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
+
+export const SocketContext = createContext<Socket>({} as Socket);
 
 const Home = () => {
   const navigate = useNavigate()
@@ -15,18 +17,18 @@ const Home = () => {
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
   const { createGrp } = useSelector((state: RootState) => state.msg);
-
-  const socket = useSocket(user);
-  socket.on('connect', () => {
-    console.log(`${socket.id} is connected `);
-  })
+  const [socket, setSocket] = useState({} as Socket)
+  useEffect(() => {
+    const initializeSocket = async () => {
+      const socket = await createSocket(user);
+      setSocket(socket)
+    };
+    initializeSocket();
+  }, [user]);
   useEffect(() => {
     dispatch(getAllGroups())
-    // dispatch(getAllUsers())
-    // if (singleGroup != null && singleGroup.socket_id !== undefined && selectedUsersToGroup.length > 0) {
-    //   socket?.emit("create_group", singleGroup.socket_id, selectedUsersToGroup)
-    // }
   }, [createGrp])
+
   useEffect(() => {
     if (user === null) {
       navigate('/login')
@@ -34,7 +36,7 @@ const Home = () => {
   })
   return (
     <>
-      <SocketContext.Provider value={{ socket }}  >
+      <SocketContext.Provider value={socket} >
         <main className='w-full grid grid-cols-10 '>
           <section className={`col-span-3 min-w-[300px] ${profileOpen === false ? "overflow-hidden" : ""}`}>
             <Users />

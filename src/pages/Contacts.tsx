@@ -1,4 +1,4 @@
-import React,{ useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { BsSearch } from "react-icons/bs";
@@ -9,11 +9,15 @@ import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
 import { getAllUsers } from "../Redux/reducers/msg/MsgReducer";
+import { UserState } from "../Redux/reducers/Auth/AuthReducer";
+import { SocketContext } from "./Home";
 const ContactsList = () => {
     const dispatch: AppDispatch = useDispatch();
     // const { chatArray } = useSelector((store: RootState) => store.auth);
     const { contacts, createContact } = useSelector((state: RootState) => state.features);
     const { users } = useSelector((state: RootState) => state.msg);
+    const socket = useContext(SocketContext);
+
     const [searchInput, setSearchInput] = useState("");
 
     useEffect(() => {
@@ -40,6 +44,17 @@ const ContactsList = () => {
             (user.mobile && user.mobile.toLowerCase().includes(searchQuery))
         );
     };
+    const addFriend = (user: UserState) => {
+        console.log(socket.connected);
+        
+        if (socket.connected) {
+            console.log("going inside");
+            
+            socket.emit("add_friend", user);
+        }
+        // socket.emit("add_friend", user)
+        dispatch(toggleContacts(false))
+    }
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="icons flex items-center gap-4  "
@@ -87,7 +102,7 @@ const ContactsList = () => {
                                         {initialLetter}
                                     </div>
                                     {filteredUsers.map((user: any, idx: number) => (
-                                        <SingleChat key={idx} value={user} contacts={true} />
+                                        <SingleChat key={idx} value={user} contacts={true} handleOnClick={() => addFriend(user)} />
                                     ))}
                                 </div>
                             );
