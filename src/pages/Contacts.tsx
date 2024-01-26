@@ -8,7 +8,7 @@ import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Fea
 import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
-import { getAllUsers } from "../Redux/reducers/msg/MsgReducer";
+import { getAllUsers, handleChatSearchValue } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "./Home";
 const ContactsList = () => {
@@ -45,15 +45,11 @@ const ContactsList = () => {
         );
     };
     const addFriend = (user: UserState) => {
-        console.log(socket.connected);
-        
         if (socket.connected) {
-            console.log("going inside");
-            
             socket.emit("add_friend", user);
         }
-        // socket.emit("add_friend", user)
         dispatch(toggleContacts(false))
+        setSearchInput("")
     }
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>

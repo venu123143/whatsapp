@@ -15,12 +15,13 @@ import {
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, ChatMessage, handleRecieveMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
-  const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
+  const { user } = useSelector((store: RootState) => store.auth);
+  const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const socket = useContext(SocketContext);
 
   const [showEmojiPicker] = useState<boolean>(false);
@@ -39,13 +40,14 @@ const MessageBar = () => {
       message: '',
     },
     onSubmit: async (values, { resetForm }) => {
-      if (values.message !== '' && currentUserorGroup !== null) {
-        const serializedValues = {
+      if (values.message !== '' && currentUserIndex !== null) {
+        const serializedValues: ChatMessage = {
           message: values.message,
           date: new Date().toISOString(),
           right: true,
           msgType: 'text',
-          room: currentUserorGroup.socket_id,
+          senderId: user?.socket_id as string,
+          recieverId: friends[currentUserIndex].socket_id,
         };
 
         // Emit "send_message" event when the form is submitted
@@ -58,12 +60,11 @@ const MessageBar = () => {
   })
 
   useEffect(() => {
-    socket?.on("recieve_message", (data: any) => {      
-      dispatch(handleSendMessage({ ...data, right: false }));
-    })
-    // return () => {
-    //   socket?.disconnect();
-    // };
+    if (socket.connected) {
+      socket.on("recieve_message", (data: ChatMessage) => {
+        dispatch(handleRecieveMessage({ ...data, right: false }));
+      });
+    }
   }, [socket])
 
   return (

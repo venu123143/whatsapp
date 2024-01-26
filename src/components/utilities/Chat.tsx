@@ -1,4 +1,4 @@
-import {  useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import ChatHeader from './ChatHeader'
 import MessageBar from './MessageBar'
 import ChatPage from './ChatPage'
@@ -8,14 +8,13 @@ import { RootState } from '../../Redux/store';
 
 const Chat = () => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
-  const { currentUserorGroup } = useSelector((state: RootState) => state.msg);
-  const chats = currentUserorGroup?.chat
+  const { friends } = useSelector((state: RootState) => state.msg);
 
   useEffect(() => {
     if (chatPageRef.current) {
       chatPageRef.current.scrollTop = chatPageRef.current.scrollHeight;
     }
-  }, [chats]);
+  }, [friends]);
   return (
     <>
       <div className='h-screen flex flex-col backImg bg-black'>

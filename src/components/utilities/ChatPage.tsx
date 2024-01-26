@@ -16,9 +16,9 @@ import {
 const ChatPage = () => {
   const dispatch = useDispatch();
   const { showAttachFiles, toggleImagesAndMessage, } = useSelector((state: RootState) => state.utils);
-  const { currentUserorGroup } = useSelector((state: RootState) => state.msg)
+  const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
 
-  const chats = currentUserorGroup?.chat
+  const chats = friends[currentUserIndex]?.chat
 
   //   const setRef = useCallback((node) => {
   //     if (node) {

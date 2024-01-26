@@ -13,12 +13,13 @@ import { setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { groups, chatSearchValue, users } = useSelector((state: RootState) => state.msg)
+  const { groups, chatSearchValue, users, friends } = useSelector((state: RootState) => state.msg)
   const chats = [...groups, ...users]
-  // const socket = useContext(SocketContext);
+  console.log(friends);
 
-  const handleOnClick = async (each: any) => {
-    dispatch(setCurrentGrpOrUser(each))
+  // const socket = useContext(SocketContext);
+  const handleOnClick = async (index: number) => {
+    dispatch(setCurrentGrpOrUser(index))
   }
   const handleSearch = (user: any) => {
     const searchQuery = chatSearchValue.toLowerCase();
@@ -49,8 +50,8 @@ const Users = () => {
           <SearchBar />
         </div>
         <div className='overflow-y-auto custom-scrollbar'>
-          {chats.filter(handleSearch).map((each, index) => (
-            <UserCard key={index} value={each} handleOnClick={() => handleOnClick(each)} />
+          {friends.filter(handleSearch).map((each, index) => (
+            <UserCard key={index} value={each} handleOnClick={() => handleOnClick(index)} />
           ))}
         </div>
       </header>

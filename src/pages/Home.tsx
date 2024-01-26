@@ -1,10 +1,10 @@
-import { useEffect, createContext, useState } from 'react'
+import { useEffect, createContext, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
+import { getAllGroups, handleSetFriends } from '../Redux/reducers/msg/MsgReducer'
 
 import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
@@ -18,6 +18,7 @@ const Home = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const { createGrp } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
+
   useEffect(() => {
     const initializeSocket = async () => {
       const socket = await createSocket(user);
@@ -25,6 +26,19 @@ const Home = () => {
     };
     initializeSocket();
   }, [user]);
+
+  useEffect(() => {
+    if (socket.connected) {
+      socket.on("get_friends", (friends) => {
+        dispatch(handleSetFriends(friends))
+      })
+    }
+    return () => {
+      if (socket.connected) {
+        socket.off("get_friends");
+      }
+    };
+  }, [socket, user, dispatch])
   useEffect(() => {
     dispatch(getAllGroups())
   }, [createGrp])
@@ -33,7 +47,7 @@ const Home = () => {
     if (user === null) {
       navigate('/login')
     }
-  })
+  }, [user])
   return (
     <>
       <SocketContext.Provider value={socket} >

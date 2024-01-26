@@ -9,11 +9,12 @@ import { UserState } from "../Auth/AuthReducer";
 // const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
 
 export interface AppState {
-    currentUserorGroup: any;
+    currentUserIndex: any;
     chatSearchValue: string;
     screen: boolean;
-    users: UserState[];
+    users: CommonProperties[];
     groups: IGroup[];
+    friends: CommonProperties[];
     singleGroup: IGroup | null;
     isError: boolean;
     isLoading: boolean;
@@ -32,6 +33,7 @@ export interface CommonProperties {
     profile: string;
     email: string | null;
     mobile?: string | null;
+    chat: any;
 }
 
 export interface IGroup extends CommonProperties {
@@ -41,7 +43,6 @@ export interface IGroup extends CommonProperties {
     admins: UserState[]
     maxUsers: number;
     createdBy: UserState
-    chat: Array<any>;
 }
 
 const initialState: AppState = {
@@ -49,6 +50,7 @@ const initialState: AppState = {
     screen: false,
     users: [],
     groups: [],
+    friends: [],
     singleGroup: null,
     isError: false,
     isLoading: false,
@@ -58,9 +60,16 @@ const initialState: AppState = {
     createGrp: false,
     userName: "",
     selectedUsersToGroup: [],
-    currentUserorGroup: null,
+    currentUserIndex: null,
 };
-
+export interface ChatMessage {
+    message: string;
+    date: string;
+    right: boolean;
+    msgType: string;
+    senderId: string;
+    recieverId:string;
+}
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
     try {
         const res = await msgService.allUsers()
@@ -121,11 +130,18 @@ const msgSlice = createSlice({
             state.chatSearchValue = action.payload;
         },
         setCurrentGrpOrUser: (state, action) => {
-            state.currentUserorGroup = action.payload;
+            state.currentUserIndex = action.payload;
             state.chatSearchValue = ""
         },
-        handleSendMessage: (state, action) => {
-            state.currentUserorGroup.chat.push(action.payload)
+        handleSendMessage: (state, action: PayloadAction<ChatMessage>) => {
+            state.friends[state.currentUserIndex].chat.push(action.payload)
+        },
+        handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
+            const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.senderId)            
+            frnd[0].chat.push(action.payload)
+        },
+        handleSetFriends: (state, action) => {
+            state.friends = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -219,5 +235,5 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, toggleCreateGroup, storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
+export const { handleSendMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer
