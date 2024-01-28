@@ -40,13 +40,20 @@ const MessageBar = () => {
       message: '',
     },
     onSubmit: async (values, { resetForm }) => {
-      if (values.message !== '' && currentUserIndex !== null) {
+      let conn_type;
+      if (friends[currentUserIndex] && friends[currentUserIndex].users) {
+        conn_type = "group"
+      } else {
+        conn_type = "onetoone"
+      }
+      if (values.message !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
         const serializedValues: ChatMessage = {
           message: values.message,
           date: new Date().toISOString(),
           right: true,
           msgType: 'text',
           senderId: user?.socket_id as string,
+          conn_type: conn_type,
           recieverId: friends[currentUserIndex].socket_id,
         };
 
@@ -62,6 +69,8 @@ const MessageBar = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
+        console.log("data", data);
+
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
     }

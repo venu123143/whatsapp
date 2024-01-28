@@ -8,13 +8,14 @@ import { useEffect, useState } from "react"
 // import { useSelector } from "react-redux"
 // import { RootState } from "../../Redux/store"
 const ChatHeader = () => {
-  const [grpUsers, setGrpUsers] = useState("")
+  // const [grpUsers, setGrpUsers] = useState("")
   // const { activeChat } = useSelector((store: RootState) => store.features) 
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
 
-  function getUsersString(usersArray: any) {
-    return usersArray.map((user: any) => user.name || user.mobile).join(', ');
-  }
+  // function getUsersString(usersArray: any) {
+  //   return usersArray.map((user: any) => user.name || user.mobile).join(', ');
+  // }
+
   // useEffect(() => {
   //   // Check if 'users' array exists in currentUserorGroup
   //   if (friends[currentUserIndex]?.users!) {
@@ -35,7 +36,7 @@ const ChatHeader = () => {
       </div>
       <div className="mr-auto">
         <span className="username font-bold">{friends[currentUserIndex]?.name}</span>
-        <span className="time text-sm  line-clamp-1">{grpUsers === "" ? "offline" : grpUsers} </span>
+        <span className="time text-sm  line-clamp-1">{friends[currentUserIndex]?.online_status === 'true' ? "online" : "offline"} </span>
       </div>
       <div className="flex gap-2 ">
         <div className="icons">

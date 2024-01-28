@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCamera } from "react-icons/ai";
@@ -10,13 +10,16 @@ import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
+import { SocketContext } from "../pages/Home"
 
 const CreateGroup = () => {
     // const { socket } = useContext(SocketContext)
     // console.log(socket);
+    const { user } = useSelector((state: RootState) => state.auth)
+    const socket = useContext(SocketContext)
 
     const dispatch: AppDispatch = useDispatch();
-    const { createGrp, selectedUsersToGroup, isLoading } = useSelector((state: RootState) => state.msg);
+    const { createGrp, selectedUsersToGroup, isLoading, singleGroup } = useSelector((state: RootState) => state.msg);
     const [groupName, setGroupName] = useState("")
     // const [profile, setProfile] = useState("")
 
@@ -33,6 +36,11 @@ const CreateGroup = () => {
             dispatch(toggleContacts(false))
         }
     }
+    useEffect(() => {
+        if (singleGroup !== null) {
+            socket.emit("create_group", singleGroup)
+        }
+    }, [singleGroup, socket])
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${createGrp === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="hover:shadow-blue-500 hover:shadow-lg icons flex items-center gap-4  "

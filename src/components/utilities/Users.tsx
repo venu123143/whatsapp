@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import Profile from './Profile'
 import UserCard from '../cards/UserCard'
 import ProfileHeader from './ProfileHeader'
@@ -8,19 +8,31 @@ import CreateContact from './CreateContact'
 import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
-import { setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
-// import { SocketContext } from "../../pages/Home"
+import { handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
+import { SocketContext } from "../../pages/Home"
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
   const { groups, chatSearchValue, users, friends } = useSelector((state: RootState) => state.msg)
+  const { user } = useSelector((state: RootState) => state.auth)
   const chats = [...groups, ...users]
-  console.log(friends);
-
+  const socket = useContext(SocketContext)
   // const socket = useContext(SocketContext);
   const handleOnClick = async (index: number) => {
     dispatch(setCurrentGrpOrUser(index))
+    const data = {
+      senderId: user?.socket_id,
+      recieverId: friends[index].socket_id
+    }    
+    socket.emit('online_status', data)
   }
+  useEffect(() => {
+    if (socket.connected) {
+      socket.on('user_status', (status) => {
+        dispatch(handleSetStatus(status))
+      })
+    }
+  }, [socket])
   const handleSearch = (user: any) => {
     const searchQuery = chatSearchValue.toLowerCase();
     return (
