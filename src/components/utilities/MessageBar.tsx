@@ -70,7 +70,6 @@ const MessageBar = () => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
         console.log("data", data);
-
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
     }

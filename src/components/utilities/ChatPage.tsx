@@ -77,13 +77,16 @@ const ChatPage = () => {
                   </div>
                 </div>
               ) : null}
-              {/* {firstMessageDate(message.date)} */}
-              <Message
-                key={index}
-                message={message.message}
-                date={message.date}
-                right={message.right}
-              />
+              {message.msgType === "notification" ? <p className="notification">{message.message}</p> : null}
+              {message.msgType === "text" ?
+                <Message
+                  key={index}
+                  message={message.message}
+                  date={message.date}
+                  right={message.right}
+                />
+                : null
+              }
             </div>
           ) : (
             message.map((image: any, imageIndex: number) => (

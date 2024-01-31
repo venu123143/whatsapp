@@ -65,3 +65,7 @@ header color- 233138
 .options {
     @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:bg-gray-700 dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2 text-lg
 }
+
+.notification {
+    @apply text-[#8696a0] text-[14px] m-auto rounded-md shadow-lg px-2 py-1 bg-[#202c33] w-fit text-center
+}
