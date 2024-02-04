@@ -72,6 +72,7 @@ export interface ChatMessage {
     senderId: string;
     recieverId: string;
     conn_type: string;
+    image?: any
 }
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
     try {

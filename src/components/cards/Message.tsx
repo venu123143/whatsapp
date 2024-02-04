@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
-const Message = ({ right, message,date }: any) => {
+const Message = ({ right, message, date }: any) => {
     const dispatch = useDispatch();
     return (
         <div className={`flex ${right === true ? null : "flex-row-reverse"}`}>

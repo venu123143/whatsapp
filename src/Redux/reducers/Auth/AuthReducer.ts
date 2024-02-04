@@ -16,7 +16,7 @@ export interface UserState extends CommonProperties {
     otp?: any;
 }
 
-export const upateUser = createAsyncThunk('authSlice/upateUser', async (data: { id: string, value: { name?: string, about?: string } }, thunkAPI) => {
+export const upateUser = createAsyncThunk('authSlice/upateUser', async (data: { id: string, value: { name?: string, about?: string, profile?: string } }, thunkAPI) => {
     try {
         const res = await userService.upateUser(data.id, data.value)
         return res

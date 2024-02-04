@@ -59,7 +59,7 @@ header color- 233138
 }
 
 .dropdown {
-    @apply bg-[#202c33] absolute sm:block hidden mt-2 w-56 rounded-lg shadow-lg ring-1 ring-black focus:outline-none ring-opacity-5
+    @apply bg-[#202c33] absolute sm:block hidden w-56 rounded-lg shadow-lg ring-1 ring-black focus:outline-none ring-opacity-5
 }
 
 .options {
@@ -76,7 +76,10 @@ header color- 233138
 
 /* full screen image modal */
 .fullscreen-overlay {
-    @apply hidden fixed top-0 left-0 w-full h-full z-50 bg-black bg-opacity-90;
+    @apply transition-all duration-300 delay-75 scale-0 fixed top-0 left-0 w-full h-full z-40 bg-black bg-opacity-80;
+}
+.active{
+    @apply transition-all ease-out scale-100
 }
 .fullscreen-image {
     @apply max-w-[90%] max-h-[90%] object-contain

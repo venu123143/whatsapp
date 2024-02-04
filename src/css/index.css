@@ -18,7 +18,7 @@ h3 {
     background-image: url('../assets/chat-bg.png');
 }
 
-.whatsappBgImg{
+.whatsappBgImg {
     background-image: url('../assets/chat-bg.png');
 }
 
@@ -58,37 +58,27 @@ h3 {
 /* full screen images */
 
 /* Fullscreen overlay */
-/* .fullscreen-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 9999;
-  } */
-  
-  .fullscreen-overlay.active {
-    display: block;
-  }
-  
-  
 
 
-  /* emoji picker css */
-  
+
+
+
+/* emoji picker css */
+
 .emoji-picker-container {
-  position: absolute;
-  z-index: 10;
-  bottom: 70px;
-  opacity: 0;
-  transform: translateY(-70px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+    position: absolute;
+    z-index: 10;
+    bottom: 70px;
+    opacity: 0;
+    scale: 0;
+    transform: translateY(-70px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .show-emoji-picker {
-  opacity: 1;
-  transform: translateY(0);
+    opacity: 1;
+    scale: 1;
+    transform: translateY(0);
 }
+
 /* emoji picker css */

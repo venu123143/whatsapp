@@ -1,3 +1,4 @@
+import React from "react"
 import { AppDispatch, RootState } from "../../Redux/store"
 import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"
@@ -11,17 +12,18 @@ import Dropzone from 'react-dropzone'
 import { toast } from "react-toastify";
 
 import { PiUserLight } from "react-icons/pi"
+import { useState } from "react"
+import { FaCircleChevronDown } from "react-icons/fa6"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
   const { user, isLoading, isSuccess } = useSelector((state: RootState) => state.auth)
   const { profileOpen, } = useSelector((state: RootState) => state.utils)
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
-  // const [selectedImage, setSelectedImage] = useState<any>([]);
-
+  const [showOptions, setShowOptions] = useState<any>(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
   const editAbout = () => {
     dispatch(handleAboutEditClick({ aboutEditClick: !aboutEditClick, about: user?.about }))
-    // socket.emit("join_room", about)
   }
   const editNames = () => {
     dispatch(handleNameEditClick({ nameEditClick: !nameEditClick, name: user?.name }))
@@ -35,13 +37,33 @@ const Profile = () => {
     dispatch(handleNameEditClick({ nameEditClick: !nameEditClick }))
   }
 
-  const showFullImage = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.stopPropagation();
+  const showAllOptions = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    setShowOptions(!showOptions)
+    const { clientX, clientY } = event;
+    setDropdownPosition({ top: clientY, left: clientX });
+  }
+
+  // options functions.
+  const ShowFullImage = () => {
+    setShowOptions(false)
     dispatch(openfullScreen({ currentImage: user?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
+  }
+  const uploadProfileImage = (e: any) => {
+    setShowOptions(false);
+    const formData = new FormData();
+    formData.append('images', e.target.files[0]);
+    toast.info("Your profile is uploading...", {
+      position: 'top-right'
+    });
+    dispatch(uploadProfile({ images: formData, _id: user?._id }))
+  }
+  const removeProfile = () => {
+    setShowOptions(false);
+    dispatch(upateUser({ id: user?._id as string, value: { profile: "" } }))
   }
   return (
     <>
-      <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
+      <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-10" : ""}`}>
         <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={() => dispatch(handleProfileOpen(!profileOpen))}>
           <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
           <h1 className="text-white font-[400] ">Profile</h1>
@@ -87,10 +109,26 @@ const Profile = () => {
                         </label>
                       )}
                     </Dropzone>
-                  ) :
-                    <img onClick={showFullImage} src={user?.profile} className="group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] mt-10" alt="Profile" />
+                  ) : (
+                    <>
+                      <img onClick={showAllOptions} src={user?.profile} className={` ${isLoading === true ? "bg-black opacity-50" : ""} group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] object-cover mt-10`} alt="Profile" />
+                      <div className={`${isLoading === true ? "block" : "hidden"} cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+                        {
+                          isLoading &&
+                          <ClipLoader
+                            color="#36d7b7"
+                            loading={isLoading}
+                            aria-label="Loading Spinner"
+                            speedMultiplier={.71}
+                            data-testid="loader"
+                          />
+                        }
+                      </div>
+                    </>
+                  )
                 }
               </div>
+
             </div>
           </div>
           <div className={`transition-all ease-linear  duration-200 delay-500  ${profileOpen === true ? "translate-y-12" : null} mt-7 ml-5 px-5`}>
@@ -157,8 +195,26 @@ const Profile = () => {
           <ShowFullImg images={[user?.profile]} />
         </div>
       </div>
+      {
+        showOptions && (
+          <div className="dropdown" style={{ top: dropdownPosition.top, left: dropdownPosition.left }}>
+            <div className="" >
+              <button onClick={ShowFullImage} className="options " role="menuitem" id="menu-item-0">View Photo</button>
+              <button className="options" role="menuitem" id="menu-item-1">
+                <span>Take Photo</span>
+                <FaCircleChevronDown className="inline font-Rubik" />
+              </button>
+              <input id="uploadImage" multiple={false} type="file" accept=".jpg, .jpeg, .png" className="hidden"
+                onChange={uploadProfileImage} />
+              <label htmlFor="uploadImage" role="menuitem" className="options cursor-pointer">Upload Photo</label>
+              <button onClick={removeProfile} className="options" role="menuitem" id="menu-item-0">Remove Photo</button>
+            </div>
+
+          </div>
+        )
+      }
     </>
   )
 }
 
-export default Profile
+export default React.memo(Profile)

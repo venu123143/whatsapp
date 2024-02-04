@@ -7,10 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
-import {
-  handleEmojiClick,
-  setShowAttachFiles,
-} from "../../Redux/reducers/utils/utilReducer"
+import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
@@ -24,7 +21,7 @@ const MessageBar = () => {
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const socket = useContext(SocketContext);
   const [tagReply, setTagReply] = useState<boolean>(false);
-  const [showEmoji, setShowEmoji] = useState<boolean>(true);
+  const [showEmoji, setShowEmoji] = useState<boolean>(false);
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     setShowEmoji(!showEmoji)
@@ -108,7 +105,7 @@ const MessageBar = () => {
               <div className="icons" onClick={handleEmojiPicker}>
                 <BsEmojiSmile title="Emoji" id="emoji-open" />
               </div>
-              <div className={`emoji-picker-container ${showEmoji ? 'show-emoji-picker' : ''}`}>
+              <div className={`emoji-picker-container ${showEmoji ? 'show-emoji-picker w-auto h-auto' : ''}`}>
                 <EmojiPicker onEmojiClick={handleAddEmoji} theme={Theme.DARK} />
               </div>
 

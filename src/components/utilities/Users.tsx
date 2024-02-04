@@ -13,9 +13,9 @@ import { SocketContext } from "../../pages/Home"
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { groups, chatSearchValue, users, friends } = useSelector((state: RootState) => state.msg)
+  const { chatSearchValue, friends } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
-  const chats = [...groups, ...users]
+  // const chats = [...groups, ...users]
   const socket = useContext(SocketContext)
   // const socket = useContext(SocketContext);
   const handleOnClick = async (index: number) => {
@@ -42,7 +42,7 @@ const Users = () => {
   return (
     <>
       <header className='relative w-full h-screen flex flex-col bg-[#111b21]'>
-        <div className='relative z-10' >
+        <div className='relative ' >
           <Profile />
         </div>
         <div className='relative z-10'>

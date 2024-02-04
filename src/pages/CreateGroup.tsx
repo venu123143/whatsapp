@@ -13,9 +13,7 @@ import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
 import { SocketContext } from "../pages/Home"
 
 const CreateGroup = () => {
-    // const { socket } = useContext(SocketContext)
-    // console.log(socket);
-    const { user } = useSelector((state: RootState) => state.auth)
+    // const { user } = useSelector((state: RootState) => state.auth)
     const socket = useContext(SocketContext)
 
     const dispatch: AppDispatch = useDispatch();
@@ -62,12 +60,6 @@ const CreateGroup = () => {
                         <input placeholder=" Group Name ( * ) " onChange={(e) => setGroupName(e.target.value)} value={groupName}
                             className="peer h-full w-full border-b-2 border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-lg font-normal text-blue-gray-700 
                             outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-[#00a884] focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50" />
-                        {/* <label
-                            className="after:content[' '] text-lg pointer-events-none absolute left-0 -top-3 flex h-full w-full select-none !overflow-visible truncate  font-normal leading-tight
-                             text-[#00a884] transition-all after:absolute after:-bottom-2 after:block after:w-full after:scale-x-0 after:border-b-2.5 after:focus:border-[#00a884] 
-                             after:transition-transform after:duration-300 peer-placeholder-shown:leading-tight">
-                            
-                        </label> */}
                     </div>
                 </div>
             </section>
