@@ -23,7 +23,7 @@ const Users = () => {
     const data = {
       senderId: user?.socket_id,
       recieverId: friends[index].socket_id
-    }    
+    }
     socket.emit('online_status', data)
   }
   useEffect(() => {
@@ -35,10 +35,9 @@ const Users = () => {
   }, [socket])
   const handleSearch = (user: any) => {
     const searchQuery = chatSearchValue.toLowerCase();
-    return (
-      user.name.toLowerCase().includes(searchQuery) ||
-      (user.mobile && user.mobile.toLowerCase().includes(searchQuery))
-    );
+    const isNameMatched = user.name !== undefined ? user.name.toLowerCase().includes(searchQuery) : null
+    const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
+    return isNameMatched || isMobileMatched;
   };
   return (
     <>

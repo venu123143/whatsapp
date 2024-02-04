@@ -22,6 +22,7 @@ const updateGroup = async (data: any) => {
     const res = await axios.put(`${base_url}/groups/${data.groupId}`, data, { withCredentials: true })
     return res.data
 }
+
 const createGroup = async (data: any) => {
     const res = await axios.post(`${base_url}/groups/create`, data, { withCredentials: true })
     return res.data

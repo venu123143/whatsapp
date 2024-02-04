@@ -4,7 +4,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
 import { useContext, useEffect, useState } from "react";
-import EmojiPicker, { Theme } from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
 import {
@@ -23,18 +23,15 @@ const MessageBar = () => {
   const { user } = useSelector((store: RootState) => store.auth);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const socket = useContext(SocketContext);
-
-  const [showEmojiPicker] = useState<boolean>(false);
   const [tagReply, setTagReply] = useState<boolean>(false);
-  // const [showAttachFiles, setShowAttachFiles] = useState<boolean>(true);
-
-
-  // const handleEmojiModal = () => {
-  //   setShowEmojiPicker(!showEmojiPicker);
-  // };
-  // const addMessageToconversation = ({ message }: any) => {
-  //   dispatch(handleSendMessageInput(message));
-  // };
+  const [showEmoji, setShowEmoji] = useState<boolean>(true);
+  const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    setShowEmoji(!showEmoji)
+  }
+  const handleAddEmoji = (emoji: EmojiClickData) => {
+    formik.values.message = formik.values.message + emoji.emoji
+  }
   const formik = useFormik({
     initialValues: {
       message: '',
@@ -74,6 +71,24 @@ const MessageBar = () => {
       });
     }
   }, [socket])
+  useEffect(() => {
+    const closeDropdown = (event: MouseEvent) => {
+      const isEmojiPicker = showEmoji && (event.target as HTMLElement).closest('.emoji-picker-container');
+      // const AttachFiles = showAttachFiles && (event.target as HTMLElement).closest('.attachedFiles');
+
+      if (!isEmojiPicker) {
+        setShowEmoji(false);
+      }
+      // if (AttachFiles) {
+      //   dispatch(setShowAttachFiles(false))
+      // }
+    };
+    document.body.addEventListener('click', closeDropdown);
+
+    return () => {
+      document.body.removeEventListener('click', closeDropdown);
+    };
+  }, [showEmoji]);
 
   return (
     <>
@@ -90,17 +105,12 @@ const MessageBar = () => {
         <div className="bg-[#202c33] text-white h-14 px-4 flex items-center gap-6 ">
           <>
             <div className="flex">
-              <div className="icons" onClick={() => setTagReply(!tagReply)}>
+              <div className="icons" onClick={handleEmojiPicker}>
                 <BsEmojiSmile title="Emoji" id="emoji-open" />
               </div>
-              {showEmojiPicker ? (
-                <div className="absolute bottom-24 left-16 z-40">
-                  <EmojiPicker
-                    onEmojiClick={(emoji) => dispatch(handleEmojiClick(emoji))}
-                    theme={Theme.DARK}
-                  />
-                </div>
-              ) : null}
+              <div className={`emoji-picker-container ${showEmoji ? 'show-emoji-picker' : ''}`}>
+                <EmojiPicker onEmojiClick={handleAddEmoji} theme={Theme.DARK} />
+              </div>
 
               <div onClick={() => { dispatch(setShowAttachFiles(!showAttachFiles)) }}
                 className="icons">

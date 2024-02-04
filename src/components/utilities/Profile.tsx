@@ -2,17 +2,23 @@ import { AppDispatch, RootState } from "../../Redux/store"
 import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"
 import { handleProfileOpen, } from "../../Redux/reducers/utils/utilReducer"
-import { upateUser } from "../../Redux/reducers/Auth/AuthReducer"
+import { upateUser, uploadProfile } from "../../Redux/reducers/Auth/AuthReducer"
 import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange, openfullScreen } from "../../Redux/reducers/utils/Features"
 import { AiOutlineEdit, AiOutlineCheck } from "react-icons/ai"
 import { ClipLoader } from "react-spinners"
 import ShowFullImg from "./ShowFullImg"
+import Dropzone from 'react-dropzone'
+import { toast } from "react-toastify";
+
 import { PiUserLight } from "react-icons/pi"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { user, isLoading } = useSelector((state: RootState) => state.auth)
+  const { user, isLoading, isSuccess } = useSelector((state: RootState) => state.auth)
   const { profileOpen, } = useSelector((state: RootState) => state.utils)
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
+  // const [selectedImage, setSelectedImage] = useState<any>([]);
+
+
   const editAbout = () => {
     dispatch(handleAboutEditClick({ aboutEditClick: !aboutEditClick, about: user?.about }))
     // socket.emit("join_room", about)
@@ -29,7 +35,8 @@ const Profile = () => {
     dispatch(handleNameEditClick({ nameEditClick: !nameEditClick }))
   }
 
-  const showFullImage = () => {
+  const showFullImage = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
     dispatch(openfullScreen({ currentImage: user?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
   }
   return (
@@ -45,13 +52,41 @@ const Profile = () => {
               <div className="">
                 {
                   user?.profile === "" || !user?.profile ? (
-                    <div className=" rounded-full group">
-                      <PiUserLight size={200} className=" bg-gray-700 rounded-full cursor-pointer hover:opacity-90 hover:shadow-orange-500 shadow-lg hover:bg-gray-700 mt-10" />
-                      <div className="hidden cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center">
-                        <AiOutlineCamera className="text-white " size={40} />
-                        {/* <span>change profile photo</span> */} 
-                      </div>
-                    </div>
+                    <Dropzone multiple={false} onDrop={acceptedFiles => {
+                      const formData = new FormData();
+                      formData.append('images', acceptedFiles[0]);
+                      toast.info("Your profile is uploading...", {
+                        position: 'top-right'
+                      })
+                      dispatch(uploadProfile({ images: formData, _id: user?._id })).then(() => {
+                        if (isSuccess) {
+                          handleProfileOpen(false)
+                        }
+                      })
+                      // setSelectedImage(acceptedFiles)
+                    }}>
+                      {({ getRootProps, getInputProps }) => (
+                        <label htmlFor="dropzone-file" {...getRootProps()} className=" rounded-full group">
+                          <PiUserLight size={200} className=" bg-gray-700 rounded-full cursor-pointer hover:opacity-90 hover:shadow-orange-500 shadow-lg hover:bg-gray-700 mt-10" />
+                          <div className={`${isLoading === true ? "block" : "hidden"} cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+                            {
+                              isLoading === true ?
+                                <ClipLoader
+                                  color="#36d7b7"
+                                  loading={isLoading}
+                                  aria-label="Loading Spinner"
+                                  speedMultiplier={.71}
+                                  data-testid="loader"
+                                />
+                                :
+                                <AiOutlineCamera className="text-white " size={40} />
+                            }
+
+                          </div>
+                          <input {...getInputProps()} accept=".jpg, .jpeg, .png" />
+                        </label>
+                      )}
+                    </Dropzone>
                   ) :
                     <img onClick={showFullImage} src={user?.profile} className="group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] mt-10" alt="Profile" />
                 }

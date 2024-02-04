@@ -12,7 +12,7 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
     const dispatch: AppDispatch = useDispatch()
     // const [currentIndex, setCurrentIndex] = useState<number | null>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
-    // const [isZoomed, setIsZoomed] = useState(false); // Track zoom state
+
 
     const handleScroll = useCallback((e: any) => {
         const delta = e.deltaY || e.detail || e.wheelDelta;
@@ -31,6 +31,23 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
             window.removeEventListener('wheel', handleScroll);
         };
     }, [handleScroll]);
+    // useEffect(() => {
+    //     const closeDropdown = (event: MouseEvent) => {
+    //         const isOutsideModal = isFullscreen && !(event.target as HTMLElement).closest('.fullscreen-modal');
+
+    //         if (isOutsideModal) {
+    //             setPosition({ x: 0, y: 0 })
+    //             dispatch(setIsFullscreen(false))
+    //         }
+    //     };
+    //     document.body.addEventListener('click', closeDropdown);
+
+    //     return () => {
+    //         document.body.removeEventListener('click', closeDropdown);
+    //     };
+    // }, [isFullscreen]);
+
+
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (e.buttons === 1) {
@@ -84,13 +101,15 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
             dispatch(setIsFullscreen(false));
         }
     };
+    const closeFullScreen = () => {
+        setPosition({ x: 0, y: 0 })
+        dispatch(setIsFullscreen(false));
+    }
 
     return (
         <div>
-            <div className={` fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
-                <div
-                    className={`fullscreen-modal overflow-hidden relative`}>
-
+            <div onClick={closeFullScreen} className={` fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
+                <div className={`fullscreen-modal `}>
                     <img onMouseMove={handleMouseMove}
                         src={currentImage}
                         alt={`Image ${currentIndex! + 1}`}
@@ -117,8 +136,9 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
                     </span>
                 </div>
             </div>
-
         </div>
+
+
     )
 }
 

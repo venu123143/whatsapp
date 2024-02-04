@@ -108,6 +108,7 @@ export const updateGroup = createAsyncThunk('authSlice/updateGroup', async (data
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
+
 export const createGroup = createAsyncThunk('authSlice/createGroup', async (data: { name: string, users: string[], profile?: string }, thunkAPI) => {
     try {
         const res = await msgService.createGroup(data)
@@ -144,7 +145,7 @@ const msgSlice = createSlice({
                 const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
                 frnd[0].chat.push(action.payload)
             } else {
-                const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
+                const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.senderId)
                 frnd[0].chat.push(action.payload)
             }
         },

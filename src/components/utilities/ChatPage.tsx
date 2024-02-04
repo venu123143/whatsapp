@@ -103,8 +103,7 @@ const ChatPage = () => {
 
         {/* files  */}
         <div aria-orientation="vertical" aria-labelledby="menu-button"
-          className={`fixed transition-all ease-in-out duration-200 delay-100 ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"
-            } z-10 bottom-16  mt-2 origin-bottom-left rounded-lg bg-[#233138] text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}
+          className={`attachedFiles ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"} `}
           role="menu" >
           <div className="py-1 px-3 cursor-pointer" role="none">
             <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">

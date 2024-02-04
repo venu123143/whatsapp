@@ -26,24 +26,29 @@ const ContactsList = () => {
     let groupedByInitial: Record<string, any[]> = {};
 
     users?.forEach((obj: any) => {
-        const initial = obj?.name?.charAt(0).toLowerCase();
+        const initial = obj?.name?.charAt(0).toLowerCase() ? obj?.name?.charAt(0).toLowerCase() : obj.mobile.charAt(0)
         if (!groupedByInitial[initial]) {
             groupedByInitial[initial] = [];
         }
         groupedByInitial[initial].push(obj);
     });
 
+    console.log(users);
 
     const handleAddUser = () => {
         dispatch(toggleCreateContact(!createContact))
     }
+
     const handleSearch = (user: any) => {
         const searchQuery = searchInput.toLowerCase();
-        return (
-            user.name.toLowerCase().includes(searchQuery) ||
-            (user.mobile && user.mobile.toLowerCase().includes(searchQuery))
-        );
+
+        const isNameMatched = user.name !== undefined ? user.name.toLowerCase().includes(searchQuery) : null
+        const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
+
+        return isNameMatched || isMobileMatched;
     };
+
+
     const addFriend = (user: UserState) => {
         if (socket.connected) {
             socket.emit("add_friend", user);
@@ -51,10 +56,14 @@ const ContactsList = () => {
         dispatch(toggleContacts(false))
         setSearchInput("")
     }
+    const goBackToHome = () => {
+        dispatch(toggleContacts(false))
+        setSearchInput("")
+    }
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="icons flex items-center gap-4  "
-                onClick={() => dispatch(toggleContacts(false))}>
+                onClick={goBackToHome}>
                 <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
                 <h1 className="text-white font-[400] ">New Chat</h1>
             </div>

@@ -4,7 +4,7 @@ import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-import { getAllGroups, handleSetFriends } from '../Redux/reducers/msg/MsgReducer'
+import { getAllGroups, getAllUsers, handleSetFriends } from '../Redux/reducers/msg/MsgReducer'
 
 import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
@@ -41,6 +41,7 @@ const Home = () => {
   }, [socket, user, dispatch])
   useEffect(() => {
     dispatch(getAllGroups())
+    dispatch(getAllUsers())
   }, [createGrp])
 
   useEffect(() => {

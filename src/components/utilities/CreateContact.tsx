@@ -39,10 +39,11 @@ const CreateContact = () => {
     const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
     const handleSearch = (user: any) => {
         const searchQuery = searchInput.toLowerCase();
-        return (
-            user.name.toLowerCase().includes(searchQuery) ||
-            (user.mobile && user.mobile.toLowerCase().includes(searchQuery))
-        );
+
+        const isNameMatched = user.name !== undefined ? user.name.toLowerCase().includes(searchQuery) : null
+        const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
+
+        return isNameMatched || isMobileMatched;
     };
 
     const handleSelectUser = (user: any) => {

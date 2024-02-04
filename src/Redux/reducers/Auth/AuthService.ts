@@ -4,13 +4,19 @@ import { base_url } from "../../../static/Static";
 
 
 const upateUser = async (id: string, value: { name?: string, about?: string }) => {
-    const res = await axios.put(`${base_url}/users/updateuser/${id}`, value, { withCredentials: true })    
+    const res = await axios.put(`${base_url}/users/updateuser/${id}`, value, { withCredentials: true })
     if (res.data) {
         localStorage.setItem("token", JSON.stringify(res.data))
         return res.data
     }
 }
-
+const uploadProfilePicture = async (picture: any, userId: string) => {
+    const res = await axios.put(`${base_url}/users/updateprofile/${userId}`, picture, { withCredentials: true })
+    if (res.data) {
+        localStorage.setItem("token", JSON.stringify(res.data))
+        return res.data
+    }
+}
 const reset = async (token: string, password: string) => {
     const res = await axios.put(`${base_url}/users/resetpassword/${token}`, { password })
     return res.data
@@ -38,7 +44,8 @@ const userService = {
     reset,
     sendotp,
     verifyOtp,
-    logout
+    logout,
+    uploadProfilePicture
 }
 
 export default userService

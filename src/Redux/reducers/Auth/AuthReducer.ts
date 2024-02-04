@@ -26,6 +26,14 @@ export const upateUser = createAsyncThunk('authSlice/upateUser', async (data: { 
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
+export const uploadProfile = createAsyncThunk('authSlice/uploadProfile', async (data: any, thunkAPI) => {
+    try {
+        const res = await userService.uploadProfilePicture(data.images, data._id)
+        return res
+    } catch (error: any) {
+        return thunkAPI.rejectWithValue(error?.response?.data)
+    }
+})
 export const logout = createAsyncThunk('authSlice/logoutUser', async (_, thunkAPI) => {
     try {
         const res = await userService.logout()
@@ -158,6 +166,23 @@ const authSlice = createSlice({
             state.isError = true
             state.isSuccess = false
             toast.error("Unable to update the user", {
+                position: 'top-left'
+            })
+        })
+        builder.addCase(uploadProfile.pending, (state) => {
+            state.isLoading = true
+        }).addCase(uploadProfile.fulfilled, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.isSuccess = true
+            state.user = action.payload
+            toast.success("User profile picture is updated sucessfully", {
+                position: 'top-left'
+            })
+        }).addCase(uploadProfile.rejected, (state) => {
+            state.isLoading = false
+            state.isError = true
+            state.isSuccess = false
+            toast.error("Unable to upload the DP", {
                 position: 'top-left'
             })
         })
