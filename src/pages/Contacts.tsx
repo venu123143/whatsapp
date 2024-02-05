@@ -33,7 +33,6 @@ const ContactsList = () => {
         groupedByInitial[initial].push(obj);
     });
 
-    console.log(users);
 
     const handleAddUser = () => {
         dispatch(toggleCreateContact(!createContact))

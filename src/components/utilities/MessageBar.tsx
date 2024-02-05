@@ -16,10 +16,10 @@ import { handleSendMessage, ChatMessage, handleRecieveMessage } from "../../Redu
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
+  const socket = useContext(SocketContext);
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { user } = useSelector((store: RootState) => store.auth);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
-  const socket = useContext(SocketContext);
   const [tagReply, setTagReply] = useState<boolean>(false);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -63,7 +63,17 @@ const MessageBar = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
-        console.log("data", data);
+        console.log(data);
+        if (data.image) {
+          const blob = new Blob([data.image], { type: 'image/jpg' });
+          const imageUrl = URL.createObjectURL(blob);
+          const updatedData: ChatMessage = {
+            ...data,
+            right: false,
+            image: imageUrl,
+          };
+          dispatch(handleRecieveMessage(updatedData));
+        }
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
     }
@@ -71,14 +81,9 @@ const MessageBar = () => {
   useEffect(() => {
     const closeDropdown = (event: MouseEvent) => {
       const isEmojiPicker = showEmoji && (event.target as HTMLElement).closest('.emoji-picker-container');
-      // const AttachFiles = showAttachFiles && (event.target as HTMLElement).closest('.attachedFiles');
-
       if (!isEmojiPicker) {
         setShowEmoji(false);
       }
-      // if (AttachFiles) {
-      //   dispatch(setShowAttachFiles(false))
-      // }
     };
     document.body.addEventListener('click', closeDropdown);
 

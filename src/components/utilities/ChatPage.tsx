@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -15,9 +15,12 @@ import ImageComp from "./ImageComp";
 import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import ShowFullImg from "./ShowFullImg";
+import { SocketContext } from "../../pages/Home"
 
 const ChatPage = () => {
   const dispatch: AppDispatch = useDispatch()
+  const socket = useContext(SocketContext);
+
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -79,12 +82,12 @@ const ChatPage = () => {
         image: image
       };
       dispatch(handleSendMessage(serializedValues));
+      // socket.emit("send_message", serializedValues);
     });
   }
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
     dispatch(openfullScreen({ currentImage: message.image, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
-
   }
   // src={URL.createObjectURL(image)}
   return (
