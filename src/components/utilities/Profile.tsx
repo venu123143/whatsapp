@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext, useEffect } from "react"
 import { AppDispatch, RootState } from "../../Redux/store"
 import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"
@@ -10,12 +10,15 @@ import { ClipLoader } from "react-spinners"
 import ShowFullImg from "./ShowFullImg"
 import Dropzone from 'react-dropzone'
 import { toast } from "react-toastify";
+import { SocketContext } from "../../pages/Home";
 
 import { PiUserLight } from "react-icons/pi"
 import { useState } from "react"
 import { FaCircleChevronDown } from "react-icons/fa6"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
+  const socket = useContext(SocketContext);
+
   const { user, isLoading, isSuccess } = useSelector((state: RootState) => state.auth)
   const { profileOpen, } = useSelector((state: RootState) => state.utils)
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
@@ -57,6 +60,11 @@ const Profile = () => {
     });
     dispatch(uploadProfile({ images: formData, _id: user?._id }))
   }
+  // useEffect(() => {
+  //   if (socket.connected) {
+  //     socket.emit("add_friend", user);
+  //   }
+  // }, [user])
   const removeProfile = () => {
     setShowOptions(false);
     dispatch(upateUser({ id: user?._id as string, value: { profile: "" } }))

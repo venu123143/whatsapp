@@ -29,6 +29,7 @@ const Home = () => {
 
   useEffect(() => {
     if (socket.connected) {
+      socket.emit("get_frnds_on_reload", user)
       socket.on("get_friends", (friends) => {
         dispatch(handleSetFriends(friends))
       })
@@ -57,7 +58,7 @@ const Home = () => {
             <Users />
           </section>
           <section className='col-span-7'>
-            { currentUserIndex === null ? <DefaultComp /> : <Chat /> }
+            {currentUserIndex === null ? <DefaultComp /> : <Chat />}
           </section>
         </main>
       </SocketContext.Provider >

@@ -16,7 +16,7 @@ import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgRedu
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import ShowFullImg from "./ShowFullImg";
 import { SocketContext } from "../../pages/Home"
-
+import { formatDate } from "../cards/ReUseFunc"
 const ChatPage = () => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
@@ -25,35 +25,8 @@ const ChatPage = () => {
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
   const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
-
   const chats = friends[currentUserIndex]?.chat
 
-  const formatDate = (inputDate: string) => {
-    const today = new Date();
-    const messageDate = new Date(inputDate);
-
-    // Check if the date is today
-    if (
-      today.getFullYear() === messageDate.getFullYear() &&
-      today.getMonth() === messageDate.getMonth() &&
-      today.getDate() === messageDate.getDate()
-    ) {
-      return 'Today';
-    }
-
-    // Check if the date is this week
-    const daysSinceMessage = Math.floor(
-      (today.getTime() - messageDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    if (daysSinceMessage < 7) {
-      return messageDate.toLocaleDateString('en-US', { weekday: 'long' });
-    }
-    return messageDate.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   const isFirstMessageOfDay = (currentMessage: any, previousMessage: any) => {
     if (!previousMessage) {
@@ -79,7 +52,8 @@ const ChatPage = () => {
         senderId: user?.socket_id as string,
         conn_type: "onetoone",
         recieverId: friends[currentUserIndex].socket_id,
-        image: image
+        image: image,
+        seen: false
       };
       dispatch(handleSendMessage(serializedValues));
       // socket.emit("send_message", serializedValues);
@@ -109,6 +83,7 @@ const ChatPage = () => {
                 message={message.message}
                 date={message.date}
                 right={message.right}
+                seen={message.seen}
               />
               : <ImageComp key={index} onClick={() => handleShowBigImg(message)} date={message.date} right={message.right} image={message.image} />
             }

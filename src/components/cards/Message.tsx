@@ -1,10 +1,11 @@
-import { BiCheckDouble } from "react-icons/bi";
+import { BiCheckDouble, BiCheck } from "react-icons/bi";
 import { AiOutlineDown } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
+import { Emoji } from "emoji-picker-react";
 
-const Message = ({ right, message, date }: any) => {
+const Message = ({ right, message, date, seen }: any) => {
     const dispatch = useDispatch();
     return (
         <div className={`flex ${right === true ? null : "flex-row-reverse"}`}>
@@ -14,7 +15,9 @@ const Message = ({ right, message, date }: any) => {
                     : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
                     } group   text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `}
             >
-                <span className="break-words">{message} </span>
+                <span className="break-words">
+                    {message}
+                </span>
                 <span className=" flex h-fit w-fit ml-auto items-end justify-end">
                     <span className="text-[10px] text-[#ffffff99]">
                         {new Date(date).toLocaleTimeString("en-US", {
@@ -22,11 +25,19 @@ const Message = ({ right, message, date }: any) => {
                             hour12: true,
                             minute: "numeric",
                         })}
-                        <BiCheckDouble
-                            className={`${right === true ? "inline text-[#4FB6EC]" : "hidden"
-                                }`}
-                            size={20}
-                        />
+                        {seen === true ?
+                            <BiCheckDouble
+                                className={`${right === true ? "inline text-[#4FB6EC]" : "hidden"
+                                    }`}
+                                size={20}
+                            /> :
+                            <BiCheck
+                                className={`${right === true ? "inline text-[#f0f2f5]" : "hidden"
+                                    }`}
+                                size={20}
+                            />
+
+                        }
                     </span>
                     <span
                         className={`group-hover:block hidden cursor-pointer`}

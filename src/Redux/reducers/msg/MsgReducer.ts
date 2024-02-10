@@ -36,6 +36,7 @@ export interface CommonProperties {
     chat: any;
     online_status?: boolean | string;
     users?: UserState[],
+    lastMessage: any;
 }
 
 export interface IGroup extends CommonProperties {
@@ -72,6 +73,7 @@ export interface ChatMessage {
     senderId: string;
     recieverId: string;
     conn_type: string;
+    seen: boolean;
     image?: any
 }
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
@@ -148,7 +150,16 @@ const msgSlice = createSlice({
             } else {
                 const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.senderId)
                 frnd[0].chat.push(action.payload)
+                frnd[0].lastMessage = action.payload
             }
+        },
+        handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
+            const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
+            frnd[0].chat.map((msg: ChatMessage, index: number) => {
+                if (msg.message === action.payload.message) {
+                    return frnd[0].chat[index] = action.payload
+                }
+            })
         },
         handleSetFriends: (state, action) => {
             state.friends = action.payload
@@ -156,6 +167,10 @@ const msgSlice = createSlice({
         handleSetStatus: (state, action) => {
             const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
             frnd[0].online_status = action.payload?.status
+        },
+        updateLastMessage: (state, action) => {
+            const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
+            frnd[0].lastMessage = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -249,5 +264,5 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleSetStatus, handleRecieveMessage, handleSetFriends, toggleCreateGroup, storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
+export const { handleSendMessage, handleUpdateSeen, handleSetStatus, updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer

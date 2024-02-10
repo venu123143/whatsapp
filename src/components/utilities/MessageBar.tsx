@@ -1,10 +1,10 @@
-
+import React from "react"
 
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
 import { useContext, useEffect, useState } from "react";
-import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData, Theme, Emoji } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
 import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
@@ -12,7 +12,7 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage, ChatMessage, handleRecieveMessage } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, ChatMessage, updateLastMessage, handleRecieveMessage, handleUpdateSeen } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -22,12 +22,14 @@ const MessageBar = () => {
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const [tagReply, setTagReply] = useState<boolean>(false);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
+  const [currEmoji, setCurrEmoji] = useState<any>(null);
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     setShowEmoji(!showEmoji)
   }
   const handleAddEmoji = (emoji: EmojiClickData) => {
-    formik.values.message = formik.values.message + emoji.emoji
+    setCurrEmoji(emoji)
+    formik.setFieldValue('message', `${formik.values.message} ${emoji.emoji}`);
   }
   const formik = useFormik({
     initialValues: {
@@ -49,21 +51,21 @@ const MessageBar = () => {
           senderId: user?.socket_id as string,
           conn_type: conn_type,
           recieverId: friends[currentUserIndex].socket_id,
+          seen: false
         };
 
         // Emit "send_message" event when the form is submitted
         socket.emit("send_message", serializedValues);
-
+        dispatch(updateLastMessage(serializedValues))
         dispatch(handleSendMessage(serializedValues));
         resetForm();
+        formik.setFieldValue('message', "");
       }
     }
   })
-
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
-        console.log(data);
         if (data.image) {
           const blob = new Blob([data.image], { type: 'image/jpg' });
           const imageUrl = URL.createObjectURL(blob);
@@ -74,8 +76,18 @@ const MessageBar = () => {
           };
           dispatch(handleRecieveMessage(updatedData));
         }
+
+        if (friends[currentUserIndex].socket_id === data.senderId) {
+          socket.emit("update_seen", data)
+        }
         dispatch(handleRecieveMessage({ ...data, right: false }));
+        // dispatch(updateLastMessage({ ...data, right: false }))
+
       });
+      socket.on("update_view", (data: ChatMessage) => {
+
+        dispatch(handleUpdateSeen(data))
+      })
     }
   }, [socket])
   useEffect(() => {
@@ -147,4 +159,4 @@ const MessageBar = () => {
   );
 };
 
-export default MessageBar;
+export default React.memo(MessageBar);
