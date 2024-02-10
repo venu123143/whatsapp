@@ -4,7 +4,7 @@ import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
 import { useContext, useEffect, useState } from "react";
-import EmojiPicker, { EmojiClickData, Theme, Emoji } from "emoji-picker-react";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
 import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
@@ -22,13 +22,11 @@ const MessageBar = () => {
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const [tagReply, setTagReply] = useState<boolean>(false);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
-  const [currEmoji, setCurrEmoji] = useState<any>(null);
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     setShowEmoji(!showEmoji)
   }
   const handleAddEmoji = (emoji: EmojiClickData) => {
-    setCurrEmoji(emoji)
     formik.setFieldValue('message', `${formik.values.message} ${emoji.emoji}`);
   }
   const formik = useFormik({

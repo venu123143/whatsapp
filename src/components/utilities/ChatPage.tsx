@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -15,11 +15,9 @@ import ImageComp from "./ImageComp";
 import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import ShowFullImg from "./ShowFullImg";
-import { SocketContext } from "../../pages/Home"
 import { formatDate } from "../cards/ReUseFunc"
 const ChatPage = () => {
   const dispatch: AppDispatch = useDispatch()
-  const socket = useContext(SocketContext);
 
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)

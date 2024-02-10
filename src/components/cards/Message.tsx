@@ -3,7 +3,6 @@ import { AiOutlineDown } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
-import { Emoji } from "emoji-picker-react";
 
 const Message = ({ right, message, date, seen }: any) => {
     const dispatch = useDispatch();
