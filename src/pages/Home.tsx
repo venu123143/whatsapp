@@ -22,13 +22,11 @@ const Home = () => {
   useEffect(() => {
     const initializeSocket = async () => {
       const socket = await createSocket(user);
-      console.log(socket);
       
       setSocket(socket)
     };
     initializeSocket();
   }, [user]);
-  console.log(socket);
 
   useEffect(() => {
     if (socket.connected) {
