@@ -142,6 +142,16 @@ const msgSlice = createSlice({
         },
         handleSendMessage: (state, action: PayloadAction<ChatMessage>) => {
             state.friends[state.currentUserIndex].chat.push(action.payload)
+            state.friends[state.currentUserIndex].lastMessage = action.payload
+            // const { currentUserIndex } = state;
+            // const updatedFriends = [...state.friends];
+            // const updatedChat = [...updatedFriends[currentUserIndex].chat, action.payload];
+            // updatedFriends[currentUserIndex] = {
+            //     ...updatedFriends[currentUserIndex],
+            //     chat: updatedChat,
+            //     lastMessage: action.payload // Update lastMessage as well
+            // };
+            // state.friends = updatedFriends;
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
             if (action.payload.conn_type === "group") {
@@ -152,6 +162,17 @@ const msgSlice = createSlice({
                 frnd[0].chat.push(action.payload)
                 frnd[0].lastMessage = action.payload
             }
+            state.friends.sort((a: any, b: any) => {
+                if (!a.lastMessage && !b.lastMessage) {
+                    return 0;
+                } else if (!a.lastMessage) {
+                    return 1;
+                } else if (!b.lastMessage) {
+                    return -1;
+                } else {
+                    return new Date(b.lastMessage.date as string).getTime() - new Date(a.lastMessage.date as string).getTime();
+                }
+            });
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
             const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
@@ -163,6 +184,20 @@ const msgSlice = createSlice({
         },
         handleSetFriends: (state, action) => {
             state.friends = action.payload
+        },
+        handleSortBylastMsg: (state) => {
+            state.friends.sort((a: any, b: any) => {
+                if (!a.lastMessage && !b.lastMessage) {
+                    return 0;
+                } else if (!a.lastMessage) {
+                    return 1;
+                } else if (!b.lastMessage) {
+                    return -1;
+                } else {
+                    return new Date(b.lastMessage.date as string).getTime() - new Date(a.lastMessage.date as string).getTime();
+                }
+            });
+            state.currentUserIndex = 0
         },
         handleSetStatus: (state, action) => {
             const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
@@ -264,5 +299,7 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleUpdateSeen, handleSetStatus, updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
+export const { handleSendMessage, handleSortBylastMsg, handleUpdateSeen, handleSetStatus,
+    updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup,
+    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer

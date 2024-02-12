@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -16,8 +16,11 @@ import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgRedu
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import ShowFullImg from "./ShowFullImg";
 import { formatDate } from "../cards/ReUseFunc"
+import { SocketContext } from "../../pages/Home"
+
 const ChatPage = () => {
   const dispatch: AppDispatch = useDispatch()
+  const socket = useContext(SocketContext);
 
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
@@ -34,29 +37,46 @@ const ChatPage = () => {
     const previousDate = new Date(previousMessage.date);
     return currentDate.toDateString() !== previousDate.toDateString();
   };
-  const handleUploadImages = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) {
+
+  const handleUploadImages = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
       return;
     }
-    dispatch(setShowAttachFiles(false))
-    const imagesArray = Array.from(files);
-    imagesArray.forEach((image: any) => {
-      const serializedValues: ChatMessage = {
-        message: 'this is image message',
-        date: new Date().toISOString(),
-        right: true,
-        msgType: 'image',
-        senderId: user?.socket_id as string,
-        conn_type: "onetoone",
-        recieverId: friends[currentUserIndex].socket_id,
-        image: image,
-        seen: false
+    dispatch(setShowAttachFiles(false));
+
+    const imagesArray = Array.from(e.target.files);
+    const handleImageUpload = (image: File) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+
+      reader.onloadend = () => {
+        const base64data = reader.result?.toString();
+        const serializedValues: ChatMessage = {
+          message: 'image',
+          date: new Date().toISOString(),
+          right: true,
+          msgType: 'image',
+          senderId: user?.socket_id as string,
+          conn_type: "onetoone",
+          recieverId: friends[currentUserIndex].socket_id,
+          image: base64data,
+          seen: false
+        };
+
+        dispatch(handleSendMessage(serializedValues));
+        socket.emit("send_message", serializedValues);
+        console.log("start");
+
       };
-      dispatch(handleSendMessage(serializedValues));
-      // socket.emit("send_message", serializedValues);
+    };
+
+    imagesArray.forEach((image) => {
+      handleImageUpload(image);
     });
-  }
+
+  }, [ handleSendMessage, socket, friends, currentUserIndex]);
+
+
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
     dispatch(openfullScreen({ currentImage: message.image, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))

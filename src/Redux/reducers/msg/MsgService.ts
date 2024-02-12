@@ -1,30 +1,30 @@
 
 import axios from "axios";
-import { base_url } from "../../../static/Static";
+// import { base_url } from "../../../static/Static";
 
 
 const allUsers = async (): Promise<any> => {
-    const res = await axios.get(`${base_url}/users/`, { withCredentials: true })
+    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/users/`, { withCredentials: true })
     return res.data
 }
 
 const allGroups = async (): Promise<any> => {
-    const res = await axios.get(`${base_url}/groups/getall`, { withCredentials: true })
+    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/groups/getall`, { withCredentials: true })
     return res.data
 }
 
 const getGroup = async (data: any) => {
-    const res = await axios.get(`${base_url}/groups/${data.groupId}`)
+    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/groups/${data.groupId}`)
     return res.data
 }
 
 const updateGroup = async (data: any) => {
-    const res = await axios.put(`${base_url}/groups/${data.groupId}`, data, { withCredentials: true })
+    const res = await axios.put(`${import.meta.env.VITE_API_CLIENT_URL}/groups/${data.groupId}`, data, { withCredentials: true })
     return res.data
 }
 
 const createGroup = async (data: any) => {
-    const res = await axios.post(`${base_url}/groups/create`, data, { withCredentials: true })
+    const res = await axios.post(`${import.meta.env.VITE_API_CLIENT_URL}/groups/create`, data, { withCredentials: true })
     return res.data
 }
 

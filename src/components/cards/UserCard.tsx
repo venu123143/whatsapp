@@ -1,9 +1,8 @@
 import React from "react"
 import { FaCircleUser } from "react-icons/fa6"
-import { Users } from "../../static/Static"
 import { CommonProperties } from "../../Redux/reducers/msg/MsgReducer"
 import { formatDate } from "./ReUseFunc"
-const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, data?: Users, handleOnClick?: any }> = ({ value, contacts, data, handleOnClick }) => {
+const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, unreadCount?: number, handleOnClick?: any }> = ({ value, contacts, unreadCount, handleOnClick }) => {
   return (
     <>
       <section onClick={handleOnClick} className="singleuser w-full grid grid-cols-5 p-3  gap-1">
@@ -20,7 +19,7 @@ const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, data?: 
         </div>
         <div className="col-span-1 flex flex-col justify-between">
           <div>
-            <span className={data?.unreadCount ? "time text-[#02a698] " : "time"}>
+            <span className={unreadCount ? "time text-[#02a698] " : "time"}>
               {value?.lastMessage?.date && formatDate(value?.lastMessage?.date) === 'Today' ?
                 new Date(value?.lastMessage?.date).toLocaleTimeString("en-US", {
                   hour: "numeric",
@@ -31,9 +30,9 @@ const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, data?: 
               }
             </span>
           </div>
-          {data?.unreadCount ? (
+          {unreadCount ? (
             <div className="unreadmessage">
-              {data?.unreadCount}
+              {unreadCount}
             </div>
           ) : null}
         </div>

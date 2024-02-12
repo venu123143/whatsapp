@@ -5,7 +5,7 @@ import { UserState } from "../../Auth/AuthReducer";
 const createSocket = (user: UserState | null): Promise<Socket> => {
 
     return new Promise<Socket>((resolve) => {
-        const socket = io("http://localhost:5000", {
+        const socket = io(import.meta.env.VITE_API_CLIENT_URL, {
             autoConnect: false,
             withCredentials: true,
             auth: { token: user?.refreshToken },

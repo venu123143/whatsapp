@@ -1,4 +1,4 @@
-export const base_url = "http://localhost:5000/api"
+// export const base_url = process.env.REACT_APP_CLIENT_URL
 import p2 from "../assets/venuprofile.jpg"
 
 export interface Users{

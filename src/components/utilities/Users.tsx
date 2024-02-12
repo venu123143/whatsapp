@@ -15,9 +15,7 @@ const Users = () => {
   const dispatch: AppDispatch = useDispatch()
   const { chatSearchValue, friends } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
-  // const chats = [...groups, ...users]
   const socket = useContext(SocketContext)
-  // const socket = useContext(SocketContext);
   const handleOnClick = async (index: number) => {
     dispatch(setCurrentGrpOrUser(index))
     const data = {
@@ -25,12 +23,18 @@ const Users = () => {
       recieverId: friends[index].socket_id
     }
     socket.emit('online_status', data)
+    
   }
   useEffect(() => {
     if (socket.connected) {
       socket.on('user_status', (status) => {
         dispatch(handleSetStatus(status))
       })
+      return () => {
+        if (socket.connected) {
+          socket.off("user_status");
+        }
+      };
     }
   }, [socket])
   const handleSearch = (user: any) => {
@@ -61,9 +65,12 @@ const Users = () => {
           <SearchBar />
         </div>
         <div className='overflow-y-auto custom-scrollbar'>
-          {friends.filter(handleSearch).map((each, index) => (
-            <UserCard key={index} value={each} handleOnClick={() => handleOnClick(index)} />
-          ))}
+          {friends.filter(handleSearch).map((each, index) => {
+            const unreadCount = each.chat.filter((msg: any) => msg.seen === false).length            
+            return (
+              <UserCard key={index} value={each} unreadCount={unreadCount} handleOnClick={() => handleOnClick(index)} />
+            )
+          })}
         </div>
       </header>
 

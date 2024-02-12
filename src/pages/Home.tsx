@@ -1,4 +1,4 @@
-import { useEffect, createContext, useState } from 'react'
+import React, { useEffect, createContext, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -22,10 +22,13 @@ const Home = () => {
   useEffect(() => {
     const initializeSocket = async () => {
       const socket = await createSocket(user);
+      console.log(socket);
+      
       setSocket(socket)
     };
     initializeSocket();
   }, [user]);
+  console.log(socket);
 
   useEffect(() => {
     if (socket.connected) {
@@ -66,4 +69,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default React.memo(Home)

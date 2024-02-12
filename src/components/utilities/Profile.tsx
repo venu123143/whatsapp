@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { AppDispatch, RootState } from "../../Redux/store"
 import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"
@@ -39,6 +39,7 @@ const Profile = () => {
   }
 
   const showAllOptions = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
     setShowOptions(!showOptions)
     const { clientX, clientY } = event;
     setDropdownPosition({ top: clientY, left: clientX });
@@ -58,11 +59,22 @@ const Profile = () => {
     });
     dispatch(uploadProfile({ images: formData, _id: user?._id }))
   }
-  // useEffect(() => {
-  //   if (socket.connected) {
-  //     socket.emit("add_friend", user);
-  //   }
-  // }, [user])
+  useEffect(() => {
+    const closeDropdown = (event: MouseEvent) => {
+      // Check if the clicked element is outside the dropdown
+      if (showOptions && !event.target || !(event.target as HTMLElement).closest('.dropdown')) {
+        setShowOptions(false)
+      }
+    };
+
+    // Attach the event listener to the document body
+    document.body.addEventListener('click', closeDropdown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.body.removeEventListener('click', closeDropdown);
+    };
+  }, [showOptions])
   const removeProfile = () => {
     setShowOptions(false);
     dispatch(upateUser({ id: user?._id as string, value: { profile: "" } }))

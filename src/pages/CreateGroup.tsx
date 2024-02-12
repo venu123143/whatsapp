@@ -35,7 +35,7 @@ const CreateGroup = () => {
         }
     }
     useEffect(() => {
-        if (singleGroup !== null) {
+        if (singleGroup !== null && socket.connected) {
             socket.emit("create_group", singleGroup)
         }
     }, [singleGroup, socket])

@@ -12,13 +12,14 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage, ChatMessage, updateLastMessage, handleRecieveMessage, handleUpdateSeen } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, ChatMessage, updateLastMessage, handleSortBylastMsg, handleRecieveMessage, handleUpdateSeen } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const socket = useContext(SocketContext);
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { user } = useSelector((store: RootState) => store.auth);
+  const { users } = useSelector((state: RootState) => state.msg);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const [tagReply, setTagReply] = useState<boolean>(false);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
@@ -54,9 +55,10 @@ const MessageBar = () => {
 
         // Emit "send_message" event when the form is submitted
         socket.emit("send_message", serializedValues);
-        dispatch(updateLastMessage(serializedValues))
-        dispatch(handleSendMessage(serializedValues));
         resetForm();
+        dispatch(updateLastMessage(serializedValues))
+        dispatch(handleSendMessage({ ...serializedValues, seen: true }));
+        dispatch(handleSortBylastMsg())
         formik.setFieldValue('message', "");
       }
     }
@@ -64,22 +66,17 @@ const MessageBar = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
-        if (data.image) {
-          const blob = new Blob([data.image], { type: 'image/jpg' });
-          const imageUrl = URL.createObjectURL(blob);
-          const updatedData: ChatMessage = {
-            ...data,
-            right: false,
-            image: imageUrl,
-          };
-          dispatch(handleRecieveMessage(updatedData));
-        }
-
         if (friends[currentUserIndex].socket_id === data.senderId) {
           socket.emit("update_seen", data)
         }
+        const findUserIndex = friends.findIndex((friend) => friend.socket_id === data.senderId)
+        if (findUserIndex == -1) {
+          const user = users.find((user) => user.socket_id === data.senderId);
+          if (user) {
+            socket.emit("add_friend", user);
+          }
+        }
         dispatch(handleRecieveMessage({ ...data, right: false }));
-        // dispatch(updateLastMessage({ ...data, right: false }))
 
       });
       socket.on("update_view", (data: ChatMessage) => {
