@@ -148,47 +148,63 @@ const msgSlice = createSlice({
             state.isCurrentLoading = action.payload;
         },
         handleSendMessage: (state, action: PayloadAction<ChatMessage>) => {
-            state.friends[state.currentUserIndex].chat.push(action.payload)
-            state.friends[state.currentUserIndex].lastMessage = action.payload
-            // const { currentUserIndex } = state;
-            // const updatedFriends = [...state.friends];
-            // const updatedChat = [...updatedFriends[currentUserIndex].chat, action.payload];
-            // updatedFriends[currentUserIndex] = {
-            //     ...updatedFriends[currentUserIndex],
-            //     chat: updatedChat,
-            //     lastMessage: action.payload // Update lastMessage as well
-            // };
-            // state.friends = updatedFriends;
+            // state.friends[state.currentUserIndex].chat.push(action.payload)
+            // state.friends[state.currentUserIndex].lastMessage = action.payload
+            const { currentUserIndex } = state;
+            const updatedFriends = [...state.friends];
+            const updatedChat = [...updatedFriends[currentUserIndex].chat, action.payload];
+            updatedFriends[currentUserIndex] = {
+                ...updatedFriends[currentUserIndex],
+                chat: updatedChat,
+                lastMessage: action.payload
+            };
+            state.friends = updatedFriends;
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
-            if (action.payload.conn_type === "group") {
-                const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
-                frnd[0].chat.push(action.payload)
-            } else {
-                const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.senderId)
-                frnd[0].chat.push(action.payload)
-                frnd[0].lastMessage = action.payload
+            const updatedFriends = [...state.friends];
+            const payload = action.payload;
+
+            const friend = payload.conn_type === "group" ?
+                updatedFriends.find(frnd => frnd.socket_id === payload.recieverId) :
+                updatedFriends.find(frnd => frnd.socket_id === payload.senderId);
+
+            if (friend) {
+                friend.chat.push(payload);
+                friend.lastMessage = payload;
             }
-            state.friends.sort((a: any, b: any) => {
-                if (!a.lastMessage && !b.lastMessage) {
+            updatedFriends.sort((a, b) => {
+                const lastMessageA = a.lastMessage;
+                const lastMessageB = b.lastMessage;
+                if (!lastMessageA && !lastMessageB) {
                     return 0;
-                } else if (!a.lastMessage) {
+                } else if (!lastMessageA) {
                     return 1;
-                } else if (!b.lastMessage) {
+                } else if (!lastMessageB) {
                     return -1;
                 } else {
-                    return new Date(b.lastMessage.date as string).getTime() - new Date(a.lastMessage.date as string).getTime();
+                    return new Date(lastMessageB.date).getTime() - new Date(lastMessageA.date).getTime();
                 }
             });
+
+            state.friends = updatedFriends;
+
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
-            const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
-            frnd[0].chat.map((msg: ChatMessage, index: number) => {
-                if (msg.message === action.payload.message) {
-                    return frnd[0].chat[index] = action.payload
-                }
-            })
+            const { recieverId, message } = action.payload;
+
+            // Find the friend whose chat contains the message
+            const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
+
+            if (friend) {
+                // Update the seen status of the message in the friend's chat
+                friend.chat.forEach((msg: any, index: number) => {
+                    if (msg.message === message) {
+                        friend.chat[index] = { ...msg, seen: true }; // Update seen status
+                    }
+                });
+            }
         },
+
         handleSetFriends: (state, action) => {
             state.friends = action.payload
             state.isLoading = false
