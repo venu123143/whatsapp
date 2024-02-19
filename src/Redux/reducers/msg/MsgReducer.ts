@@ -161,6 +161,7 @@ const msgSlice = createSlice({
             state.friends = updatedFriends;
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
+            
             const updatedFriends = [...state.friends];
             const payload = action.payload;
 
@@ -191,9 +192,11 @@ const msgSlice = createSlice({
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
             const { recieverId, message } = action.payload;
+            console.log("before");
 
             // Find the friend whose chat contains the message
             const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
+            console.log(friend, "friend");
 
             if (friend) {
                 // Update the seen status of the message in the friend's chat
@@ -202,6 +205,8 @@ const msgSlice = createSlice({
                         friend.chat[index] = { ...msg, seen: true }; // Update seen status
                     }
                 });
+                console.log("after friend");
+
             }
         },
 

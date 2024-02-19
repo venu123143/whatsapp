@@ -35,11 +35,14 @@ const Home = () => {
     if (socket.connected && user !== null) {
       socket.emit("get_frnds_on_reload", user)
       socket.emit("get_all_messages", "friends")
-
+      console.log("calling the on reload");
+      
       socket.on("get_friends", (friends) => {
+        console.log("calling the on get_friends");
         dispatch(handleSetFriends(friends))
       })
       socket.on("get_all_messages_on_reload", (friends) => {
+        console.log("calling the on get_all_msgs");
         dispatch(handleSetAllUsersChat(friends))
       })
     }
@@ -64,11 +67,15 @@ const Home = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
+
+        console.log("starting");
         if (friends[currentUserIndex]?.socket_id === data.senderId) {
+
           socket.emit("update_seen", data)
         }
         const findUserIndex = friends.findIndex((friend) => friend.socket_id === data.senderId)
-        if (findUserIndex == -1) {
+        if (findUserIndex === -1) {
+
           const user = users.find((user) => user.socket_id === data.senderId);
           if (user) {
             socket.emit("add_friend", user);
@@ -76,10 +83,12 @@ const Home = () => {
               dispatch(handleSetFriends(friends))
             })
           }
+
           dispatch(handleRecieveMessage({ ...data, right: false }));
         } else {
+
           dispatch(handleRecieveMessage({ ...data, right: false }));
-        }  
+        }
       });
       socket.on("update_view", (data: ChatMessage) => {
         dispatch(handleUpdateSeen(data))

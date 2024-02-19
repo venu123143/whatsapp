@@ -23,7 +23,9 @@ const Users = () => {
       senderId: user?.socket_id,
       recieverId: friends[index].socket_id
     }
-    socket.emit('online_status', data)
+    if (socket.connected) {
+      socket.emit('online_status', data)
+    }
     // if (friends[index]?.socket_id === data.senderId) {
     //   socket.emit("update_seen", data)
     // }
