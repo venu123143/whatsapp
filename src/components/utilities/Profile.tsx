@@ -17,7 +17,7 @@ import { FaCircleChevronDown } from "react-icons/fa6"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
 
-  const { user, isLoading, isSuccess } = useSelector((state: RootState) => state.auth)
+  const { user, isLoading, isSuccess, isProfileLoading } = useSelector((state: RootState) => state.auth)
   const { profileOpen, } = useSelector((state: RootState) => state.utils)
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
   const [showOptions, setShowOptions] = useState<any>(false);
@@ -130,12 +130,12 @@ const Profile = () => {
                   ) : (
                     <>
                       <img onClick={showAllOptions} src={user?.profile} className={` ${isLoading === true ? "bg-black opacity-50" : ""} group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] object-cover mt-10`} alt="Profile" />
-                      <div className={`${isLoading === true ? "block" : "hidden"} cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+                      <div className={`${isProfileLoading === true ? "block" : "hidden"} cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
                         {
-                          isLoading &&
+                          isProfileLoading &&
                           <ClipLoader
                             color="#36d7b7"
-                            loading={isLoading}
+                            loading={isProfileLoading}
                             aria-label="Loading Spinner"
                             speedMultiplier={.71}
                             data-testid="loader"

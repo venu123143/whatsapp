@@ -31,7 +31,7 @@ const verifyOtp = async (mobile: string, otp: string[]) => {
     }
 }
 const logout = async (): Promise<any> => {
-    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/users/logout`, { withCredentials: true, })
+    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/users/logout`, { withCredentials: true })
     if (res.data) {
         localStorage.removeItem("token");
     }

@@ -45,16 +45,16 @@ const ChatHeader = () => {
       </div>
       <div className="flex gap-2 ">
         <div className="icons">
-          <MdCall className=" cursor-pointer text-xl" />
+          <MdCall className=" cursor-pointer text-xl" title="audio call" />
         </div>
         <div className="icons">
-          <IoMdVideocam className="" />
+          <IoMdVideocam className="" title="video call" />
         </div>
         <div className="icons">
-          <BsSearch className="" />
+          <BsSearch className="" title="search in chat" />
         </div>
         <div className="icons m-0">
-          <BsThreeDotsVertical className="" />
+          <BsThreeDotsVertical className="" title="settings" />
         </div>
       </div>
     </div>

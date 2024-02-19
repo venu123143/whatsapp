@@ -4,7 +4,10 @@ import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-import { getAllGroups, getAllUsers, handleSetFriends } from '../Redux/reducers/msg/MsgReducer'
+import {
+  ChatMessage, getAllGroups, getAllUsers, handleSetAllUsersChat,
+  handleRecieveMessage, handleSetFriends, handleUpdateSeen
+} from '../Redux/reducers/msg/MsgReducer'
 import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
 import DefaultComp from '../components/utilities/DefaultComp'
@@ -16,28 +19,34 @@ const Home = () => {
   const dispatch: AppDispatch = useDispatch()
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
-  const { createGrp, currentUserIndex } = useSelector((state: RootState) => state.msg);
+  const { createGrp, currentUserIndex, friends, users } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
 
   useEffect(() => {
     const initializeSocket = async () => {
-      const socket = await createSocket(user);
-      
-      setSocket(socket)
+      if (user !== null) {
+        const socket = await createSocket(user);
+        setSocket(socket)
+      }
     };
     initializeSocket();
   }, [user]);
-
   useEffect(() => {
-    if (socket.connected) {
+    if (socket.connected && user !== null) {
       socket.emit("get_frnds_on_reload", user)
+      socket.emit("get_all_messages", "friends")
+
       socket.on("get_friends", (friends) => {
         dispatch(handleSetFriends(friends))
+      })
+      socket.on("get_all_messages_on_reload", (friends) => {
+        dispatch(handleSetAllUsersChat(friends))
       })
     }
     return () => {
       if (socket.connected) {
         socket.off("get_friends");
+        socket.off("get_all_messages_on_reload")
       }
     };
   }, [socket, user, dispatch])
@@ -51,6 +60,35 @@ const Home = () => {
       navigate('/login')
     }
   }, [user])
+
+  useEffect(() => {
+    if (socket.connected) {
+      socket.on("recieve_message", (data: ChatMessage) => {
+        if (friends[currentUserIndex]?.socket_id === data.senderId) {
+          socket.emit("update_seen", data)
+        }
+        const findUserIndex = friends.findIndex((friend) => friend.socket_id === data.senderId)
+        console.log(findUserIndex);
+
+        if (findUserIndex == -1) {
+          const user = users.find((user) => user.socket_id === data.senderId);
+          if (user) {
+            socket.emit("add_friend", user);
+          }
+        }
+        dispatch(handleRecieveMessage({ ...data, right: false }));
+      });
+      socket.on("update_view", (data: ChatMessage) => {
+        dispatch(handleUpdateSeen(data))
+      })
+    }
+    return () => {
+      if (socket.connected) {
+        socket.off("recieve_message");
+        socket.off("update_view")
+      }
+    };
+  }, [socket])
   return (
     <>
       <SocketContext.Provider value={socket} >
@@ -61,6 +99,21 @@ const Home = () => {
           <section className='col-span-7'>
             {currentUserIndex === null ? <DefaultComp /> : <Chat />}
           </section>
+          {/* <section className={`${isCurrentLoading === true ? "block shadow-lg bg-black bg-opacity-70 w-full h-full m-auto" : "hidden"} cursor-pointer group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+            {
+              isCurrentLoading &&
+              <RingLoader
+                color="#36d7b7"
+                loading={isCurrentLoading}
+                aria-label="Loading Spinner"
+                speedMultiplier={1}
+                data-testid="loader"
+                size={500}
+                className='m-auto'
+              />
+            }
+
+          </section> */}
         </main>
       </SocketContext.Provider >
     </>

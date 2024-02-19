@@ -10,10 +10,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
 import { handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../../pages/Home"
+import { ClipLoader } from 'react-spinners'
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { chatSearchValue, friends } = useSelector((state: RootState) => state.msg)
+  const { chatSearchValue, friends, isLoading } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
   const handleOnClick = async (index: number) => {
@@ -23,7 +24,9 @@ const Users = () => {
       recieverId: friends[index].socket_id
     }
     socket.emit('online_status', data)
-    
+    // if (friends[index]?.socket_id === data.senderId) {
+    //   socket.emit("update_seen", data)
+    // }
   }
   useEffect(() => {
     if (socket.connected) {
@@ -64,13 +67,25 @@ const Users = () => {
         <div className=''>
           <SearchBar />
         </div>
-        <div className='overflow-y-auto custom-scrollbar'>
-          {friends.filter(handleSearch).map((each, index) => {
-            const unreadCount = each.chat.filter((msg: any) => msg.seen === false).length            
-            return (
-              <UserCard key={index} value={each} unreadCount={unreadCount} handleOnClick={() => handleOnClick(index)} />
-            )
-          })}
+        <div className={`${isLoading === true ? "mx-auto overflow-hidden no-scrollbar" : ""} overflow-y-auto custom-scrollbar`}>
+
+          {
+            isLoading === true ?
+              <ClipLoader
+                color="#36d7b7"
+                loading={isLoading}
+                aria-label="Loading Spinner"
+                speedMultiplier={.71}
+                data-testid="loader"
+                className=''
+              />
+              :
+              friends.filter(handleSearch).map((each, index) => {
+                const unreadCount = each.chat.filter((msg: any) => msg.seen === false).length
+                return (
+                  <UserCard key={index} value={each} unreadCount={unreadCount} handleOnClick={() => handleOnClick(index)} />
+                )
+              })}
         </div>
       </header>
 

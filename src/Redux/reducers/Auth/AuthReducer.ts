@@ -69,6 +69,7 @@ interface AppState {
     user: UserState | null;
     isError: boolean;
     isLoading: boolean;
+    isProfileLoading: boolean;
     isSuccess: boolean;
     message: string;
     address: boolean;
@@ -79,6 +80,7 @@ const initialState: AppState = {
     user: getUserFromLocalStorage,
     isError: false,
     isLoading: false,
+    isProfileLoading: false,
     isSuccess: false,
     message: "",
     address: false,
@@ -170,16 +172,16 @@ const authSlice = createSlice({
             })
         })
         builder.addCase(uploadProfile.pending, (state) => {
-            state.isLoading = true
+            state.isProfileLoading = true
         }).addCase(uploadProfile.fulfilled, (state, action: PayloadAction<any>) => {
-            state.isLoading = false
+            state.isProfileLoading = false
             state.isSuccess = true
             state.user = action.payload
             toast.success("User profile picture is updated sucessfully", {
                 position: 'top-left'
             })
         }).addCase(uploadProfile.rejected, (state) => {
-            state.isLoading = false
+            state.isProfileLoading = false
             state.isError = true
             state.isSuccess = false
             toast.error("Unable to upload the DP", {

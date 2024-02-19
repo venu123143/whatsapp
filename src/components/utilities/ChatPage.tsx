@@ -21,7 +21,6 @@ import { SocketContext } from "../../pages/Home"
 const ChatPage = () => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
-
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
@@ -65,8 +64,6 @@ const ChatPage = () => {
 
         dispatch(handleSendMessage(serializedValues));
         socket.emit("send_message", serializedValues);
-        console.log("start");
-
       };
     };
 

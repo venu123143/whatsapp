@@ -8,18 +8,18 @@ import { RootState } from '../../Redux/store';
 
 const Chat = () => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
-  const { friends } = useSelector((state: RootState) => state.msg);
+  const { friends, currentUserIndex } = useSelector((state: RootState) => state.msg);
 
   useEffect(() => {
     if (chatPageRef.current) {
       chatPageRef.current.scrollTop = chatPageRef.current.scrollHeight;
     }
-  }, [friends]);
+  }, [friends, currentUserIndex]);
   return (
     <>
       <div className='h-screen flex flex-col backImg bg-black'>
         <ChatHeader />
-        <div className='h-full overflow-y-auto custom-scrollbar bg-black bg-opacity-80 scroll-smooth' ref={chatPageRef}>
+        <div className='h-full overflow-y-auto custom-scrollbar bg-black bg-opacity-80 scroll-smoothd' ref={chatPageRef}>
           <ChatPage />
         </div>
         <MessageBar />

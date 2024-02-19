@@ -10,6 +10,7 @@ import { UserState } from "../Auth/AuthReducer";
 
 export interface AppState {
     currentUserIndex: any;
+    isCurrentLoading: boolean;
     chatSearchValue: string;
     screen: boolean;
     users: CommonProperties[];
@@ -57,6 +58,7 @@ const initialState: AppState = {
     singleGroup: null,
     isError: false,
     isLoading: false,
+    isCurrentLoading: false,
     isSuccess: false,
     message: "",
     address: false,
@@ -138,7 +140,12 @@ const msgSlice = createSlice({
         },
         setCurrentGrpOrUser: (state, action) => {
             state.currentUserIndex = action.payload;
+            state.isCurrentLoading = false
             state.chatSearchValue = ""
+            // state.friends['currentUserIndex'].
+        },
+        setCurrentLoading: (state, action) => {
+            state.isCurrentLoading = action.payload;
         },
         handleSendMessage: (state, action: PayloadAction<ChatMessage>) => {
             state.friends[state.currentUserIndex].chat.push(action.payload)
@@ -184,6 +191,7 @@ const msgSlice = createSlice({
         },
         handleSetFriends: (state, action) => {
             state.friends = action.payload
+            state.isLoading = false
         },
         handleSortBylastMsg: (state) => {
             state.friends.sort((a: any, b: any) => {
@@ -206,6 +214,9 @@ const msgSlice = createSlice({
         updateLastMessage: (state, action) => {
             const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
             frnd[0].lastMessage = action.payload
+        },
+        handleSetAllUsersChat: (state, action) => {
+            state.friends = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -299,7 +310,7 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleSortBylastMsg, handleUpdateSeen, handleSetStatus,
-    updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup,
+export const { handleSendMessage, handleSortBylastMsg, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,
+    updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading,
     storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer
