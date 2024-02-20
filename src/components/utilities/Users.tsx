@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Profile from './Profile'
 import UserCard from '../cards/UserCard'
 import ProfileHeader from './ProfileHeader'
@@ -30,6 +30,7 @@ const Users = () => {
     //   socket.emit("update_seen", data)
     // }
   }
+  
   useEffect(() => {
     if (socket.connected) {
       socket.on('user_status', (status) => {
@@ -42,6 +43,7 @@ const Users = () => {
       };
     }
   }, [socket])
+
   const handleSearch = (user: any) => {
     const searchQuery = chatSearchValue.toLowerCase();
     const isNameMatched = user.name !== undefined ? user.name.toLowerCase().includes(searchQuery) : null
@@ -83,9 +85,9 @@ const Users = () => {
               />
               :
               friends.filter(handleSearch).map((each, index) => {
-                const unreadCount = each.chat.filter((msg: any) => msg.seen === false).length
+                const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length
                 return (
-                  <UserCard key={index} value={each} unreadCount={unreadCount} handleOnClick={() => handleOnClick(index)} />
+                  <UserCard key={index} value={each} unreadCount={unread} handleOnClick={() => handleOnClick(index)} />
                 )
               })}
         </div>

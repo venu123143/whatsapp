@@ -19,7 +19,7 @@ const Home = () => {
   const dispatch: AppDispatch = useDispatch()
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
-  const { createGrp, currentUserIndex, friends, users } = useSelector((state: RootState) => state.msg);
+  const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
 
   useEffect(() => {
@@ -35,14 +35,11 @@ const Home = () => {
     if (socket.connected && user !== null) {
       socket.emit("get_frnds_on_reload", user)
       socket.emit("get_all_messages", "friends")
-      console.log("calling the on reload");
-      
+
       socket.on("get_friends", (friends) => {
-        console.log("calling the on get_friends");
         dispatch(handleSetFriends(friends))
       })
       socket.on("get_all_messages_on_reload", (friends) => {
-        console.log("calling the on get_all_msgs");
         dispatch(handleSetAllUsersChat(friends))
       })
     }
@@ -68,14 +65,8 @@ const Home = () => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
 
-        console.log("starting");
-        if (friends[currentUserIndex]?.socket_id === data.senderId) {
-
-          socket.emit("update_seen", data)
-        }
-        const findUserIndex = friends.findIndex((friend) => friend.socket_id === data.senderId)
+        const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === data.senderId) : -1
         if (findUserIndex === -1) {
-
           const user = users.find((user) => user.socket_id === data.senderId);
           if (user) {
             socket.emit("add_friend", user);
@@ -83,12 +74,15 @@ const Home = () => {
               dispatch(handleSetFriends(friends))
             })
           }
-
-          dispatch(handleRecieveMessage({ ...data, right: false }));
-        } else {
-
-          dispatch(handleRecieveMessage({ ...data, right: false }));
         }
+        let msg: ChatMessage;
+
+        if (friends[0]?.socket_id === data.senderId) {
+          msg = { ...data, right: false, seen: true }
+        } else {
+          msg = { ...data, right: false }
+        }
+        dispatch(handleRecieveMessage(msg));
       });
       socket.on("update_view", (data: ChatMessage) => {
         dispatch(handleUpdateSeen(data))

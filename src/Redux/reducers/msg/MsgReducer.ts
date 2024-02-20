@@ -161,7 +161,7 @@ const msgSlice = createSlice({
             state.friends = updatedFriends;
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
-            
+
             const updatedFriends = [...state.friends];
             const payload = action.payload;
 
@@ -191,22 +191,15 @@ const msgSlice = createSlice({
 
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
-            const { recieverId, message } = action.payload;
-            console.log("before");
-
-            // Find the friend whose chat contains the message
+            const { recieverId, date } = action.payload;
             const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
-            console.log(friend, "friend");
-
             if (friend) {
                 // Update the seen status of the message in the friend's chat
                 friend.chat.forEach((msg: any, index: number) => {
-                    if (msg.message === message) {
-                        friend.chat[index] = { ...msg, seen: true }; // Update seen status
+                    if (msg.date === date) {
+                        friend.chat[index] = action.payload
                     }
                 });
-                console.log("after friend");
-
             }
         },
 
@@ -229,12 +222,16 @@ const msgSlice = createSlice({
             state.currentUserIndex = 0
         },
         handleSetStatus: (state, action) => {
-            const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
-            frnd[0].online_status = action.payload?.status
+            const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
+            if (friend) {
+                friend.online_status = action.payload?.status
+            }
         },
         updateLastMessage: (state, action) => {
-            const frnd = state.friends.filter(frnd => frnd.socket_id === action.payload.recieverId)
-            frnd[0].lastMessage = action.payload
+            const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
+            if (friend) {
+                friend.lastMessage = action.payload
+            }
         },
         handleSetAllUsersChat: (state, action) => {
             state.friends = action.payload

@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from "react";
+import React, { useContext, useCallback, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -36,6 +36,14 @@ const ChatPage = () => {
     const previousDate = new Date(previousMessage.date);
     return currentDate.toDateString() !== previousDate.toDateString();
   };
+  useEffect(() => {
+    if (socket.connected && currentUserIndex !== null) {
+      const unread = friends[currentUserIndex].chat.filter((msg: any) => msg.seen === false && msg.right === false)
+      // for (let i = 0; i < unread.length; i++) {
+      socket.emit("update_seen", unread)
+      // }
+    }
+  }, [currentUserIndex])
 
   const handleUploadImages = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
@@ -71,7 +79,7 @@ const ChatPage = () => {
       handleImageUpload(image);
     });
 
-  }, [ handleSendMessage, socket, friends, currentUserIndex]);
+  }, [handleSendMessage, socket, friends, currentUserIndex]);
 
 
   const handleShowBigImg = (message: any) => {

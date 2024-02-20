@@ -40,9 +40,9 @@ const MessageBar = () => {
       } else {
         conn_type = "onetoone"
       }
-      if (values.message !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
+      if (values.message.trim() !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
         const serializedValues: ChatMessage = {
-          message: values.message,
+          message: values.message.trim(),
           date: new Date().toISOString(),
           right: true,
           msgType: 'text',
