@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Profile from './Profile'
 import UserCard from '../cards/UserCard'
 import ProfileHeader from './ProfileHeader'
@@ -26,11 +26,9 @@ const Users = () => {
     if (socket.connected) {
       socket.emit('online_status', data)
     }
-    // if (friends[index]?.socket_id === data.senderId) {
-    //   socket.emit("update_seen", data)
-    // }
+
   }
-  
+
   useEffect(() => {
     if (socket.connected) {
       socket.on('user_status', (status) => {
@@ -85,7 +83,7 @@ const Users = () => {
               />
               :
               friends.filter(handleSearch).map((each, index) => {
-                const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length
+                const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length           
                 return (
                   <UserCard key={index} value={each} unreadCount={unread} handleOnClick={() => handleOnClick(index)} />
                 )

@@ -67,6 +67,8 @@ const Home = () => {
 
         const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === data.senderId) : -1
         if (findUserIndex === -1) {
+          console.log("if -1", friends);
+
           const user = users.find((user) => user.socket_id === data.senderId);
           if (user) {
             socket.emit("add_friend", user);
@@ -75,16 +77,22 @@ const Home = () => {
             })
           }
         }
-        let msg: ChatMessage;
+        console.log(findUserIndex, data);
+
+        // console.log(findUserIndex, 79);
+        // console.log(data.senderId, 80);
+        // console.log(friends[0]?.socket_id, 81);
 
         if (friends[0]?.socket_id === data.senderId) {
-          msg = { ...data, right: false, seen: true }
-        } else {
-          msg = { ...data, right: false }
+          console.log("sending seen From Home 80");
+
+          socket.emit("update_seen", { ...data, right: false })
         }
-        dispatch(handleRecieveMessage(msg));
+
+        dispatch(handleRecieveMessage({ ...data, right: false }));
       });
       socket.on("update_view", (data: ChatMessage) => {
+        console.log("when recive seen", data)
         dispatch(handleUpdateSeen(data))
       })
     }

@@ -12,7 +12,7 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 import { RxCross2 } from "react-icons/rx";
 import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage, ChatMessage, updateLastMessage, handleSortBylastMsg } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, ChatMessage, handleSortBylastMsg } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -27,7 +27,8 @@ const MessageBar = () => {
     setShowEmoji(!showEmoji)
   }
   const handleAddEmoji = (emoji: EmojiClickData) => {
-    formik.setFieldValue('message', `${formik.values.message} ${emoji.emoji}`);
+    let newMsg = formik.values.message + emoji.emoji
+    formik.setFieldValue('message', newMsg);
   }
   const formik = useFormik({
     initialValues: {
@@ -55,7 +56,7 @@ const MessageBar = () => {
         // Emit "send_message" event when the form is submitted
         socket.emit("send_message", serializedValues);
         resetForm();
-        dispatch(updateLastMessage(serializedValues))
+        // dispatch(updateLastMessage(serializedValues))
         dispatch(handleSendMessage(serializedValues));
         dispatch(handleSortBylastMsg())
         formik.setFieldValue('message', "");

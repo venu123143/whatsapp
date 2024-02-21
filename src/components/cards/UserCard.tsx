@@ -1,8 +1,10 @@
-import React, { useState } from "react"
+import React from "react"
 import { FaCircleUser } from "react-icons/fa6"
 import { CommonProperties } from "../../Redux/reducers/msg/MsgReducer"
 import { formatDate } from "./ReUseFunc"
-const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, unreadCount?: number, handleOnClick?: any}> = ({ value, contacts, unreadCount, handleOnClick }) => {
+const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, unreadCount?: number, handleOnClick?: any }> = ({ value, contacts, unreadCount, handleOnClick }) => {
+
+
   return (
     <>
       <section onClick={handleOnClick} className="singleuser w-full grid grid-cols-5 p-3  gap-1">

@@ -27,7 +27,6 @@ const ChatPage = () => {
   const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
   const chats = friends[currentUserIndex]?.chat
 
-
   const isFirstMessageOfDay = (currentMessage: any, previousMessage: any) => {
     if (!previousMessage) {
       return true;
@@ -39,9 +38,9 @@ const ChatPage = () => {
   useEffect(() => {
     if (socket.connected && currentUserIndex !== null) {
       const unread = friends[currentUserIndex].chat.filter((msg: any) => msg.seen === false && msg.right === false)
-      // for (let i = 0; i < unread.length; i++) {
+      console.log("unread from chatpage", unread);
+
       socket.emit("update_seen", unread)
-      // }
     }
   }, [currentUserIndex])
 
