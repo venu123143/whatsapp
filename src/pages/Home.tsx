@@ -5,7 +5,7 @@ import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
 import {
-  ChatMessage, getAllGroups, getAllUsers, handleSetAllUsersChat,
+  ChatMessage, getAllGroups, handleSetAllUsersChat,
   handleRecieveMessage, handleSetFriends, handleUpdateSeen
 } from '../Redux/reducers/msg/MsgReducer'
 import { Socket } from 'socket.io-client'
@@ -31,28 +31,32 @@ const Home = () => {
     };
     initializeSocket();
   }, [user]);
+  let onReload = true;
   useEffect(() => {
     if (socket.connected && user !== null) {
-      socket.emit("get_frnds_on_reload", user)
-      socket.emit("get_all_messages", "friends")
+      if (onReload) {
+        socket.emit("get_frnds_on_reload", user)
+        socket.emit("get_all_messages", "friends")
+        onReload = false
+      }
 
-      socket.on("get_friends", (friends) => {
-        dispatch(handleSetFriends(friends))
-      })
+      // socket.on("get_friends", (friends) => {
+      //   dispatch(handleSetFriends(friends))
+      // })
       socket.on("get_all_messages_on_reload", (friends) => {
         dispatch(handleSetAllUsersChat(friends))
       })
     }
     return () => {
       if (socket.connected) {
-        socket.off("get_friends");
+        // socket.off("get_friends");
         socket.off("get_all_messages_on_reload")
       }
     };
-  }, [socket, user, dispatch])
+  }, [socket])
+
   useEffect(() => {
     dispatch(getAllGroups())
-    dispatch(getAllUsers())
   }, [createGrp])
 
   useEffect(() => {
@@ -64,37 +68,32 @@ const Home = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
-
         const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === data.senderId) : -1
         if (findUserIndex === -1) {
-          console.log("if -1", friends);
-
           const user = users.find((user) => user.socket_id === data.senderId);
           if (user) {
             socket.emit("add_friend", user);
             socket.on("get_friends", (friends) => {
+
               dispatch(handleSetFriends(friends))
             })
           }
         }
-        console.log(findUserIndex, data);
-
         // console.log(findUserIndex, 79);
         // console.log(data.senderId, 80);
         // console.log(friends[0]?.socket_id, 81);
 
         if (friends[0]?.socket_id === data.senderId) {
-          console.log("sending seen From Home 80");
-
-          socket.emit("update_seen", { ...data, right: false })
+          socket.emit("update_seen", data)
         }
 
         dispatch(handleRecieveMessage({ ...data, right: false }));
+
       });
       socket.on("update_view", (data: ChatMessage) => {
-        console.log("when recive seen", data)
         dispatch(handleUpdateSeen(data))
       })
+
     }
   }, [socket])
   return (

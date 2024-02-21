@@ -38,8 +38,6 @@ const ChatPage = () => {
   useEffect(() => {
     if (socket.connected && currentUserIndex !== null) {
       const unread = friends[currentUserIndex].chat.filter((msg: any) => msg.seen === false && msg.right === false)
-      console.log("unread from chatpage", unread);
-
       socket.emit("update_seen", unread)
     }
   }, [currentUserIndex])

@@ -161,19 +161,11 @@ const msgSlice = createSlice({
             state.friends = updatedFriends;
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
+            const idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
+            state.friends[idx].chat.push(action.payload)
+            state.friends[idx].lastMessage = action.payload
 
-            const updatedFriends = [...state.friends];
-            const payload = action.payload;
-
-            const friend = payload.conn_type === "group" ?
-                updatedFriends.find(frnd => frnd.socket_id === payload.recieverId) :
-                updatedFriends.find(frnd => frnd.socket_id === payload.senderId);
-
-            if (friend) {
-                friend.chat.push(payload);
-                friend.lastMessage = payload;
-            }
-            updatedFriends.sort((a, b) => {
+            state.friends.sort((a, b) => {
                 const lastMessageA = a.lastMessage;
                 const lastMessageB = b.lastMessage;
                 if (!lastMessageA && !lastMessageB) {
@@ -186,9 +178,6 @@ const msgSlice = createSlice({
                     return new Date(lastMessageB.date).getTime() - new Date(lastMessageA.date).getTime();
                 }
             });
-
-            state.friends = updatedFriends;
-
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
             const { recieverId, date } = action.payload;
