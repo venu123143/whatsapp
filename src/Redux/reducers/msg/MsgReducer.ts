@@ -162,6 +162,8 @@ const msgSlice = createSlice({
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
             const idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
+            console.log(idx);
+
             state.friends[idx].chat.push(action.payload)
             state.friends[idx].lastMessage = action.payload
 
@@ -193,7 +195,10 @@ const msgSlice = createSlice({
         },
 
         handleSetFriends: (state, action) => {
-            state.friends = action.payload
+            const isUserAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
+            if (!isUserAlreadyExists) {
+                state.friends.unshift(action.payload)
+            }
             state.isLoading = false
         },
         handleSortBylastMsg: (state) => {

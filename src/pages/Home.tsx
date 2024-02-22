@@ -31,19 +31,28 @@ const Home = () => {
     };
     initializeSocket();
   }, [user]);
+  // console.log(34, friends);
+
   let onReload = true;
   useEffect(() => {
+    // console.log(friends, 36);
+    let count = 0
     if (socket.connected && user !== null) {
       if (onReload) {
-        socket.emit("get_frnds_on_reload", user)
+        console.log("calling", ++count);
+
+        // socket.emit("get_frnds_on_reload", user)
         socket.emit("get_all_messages", "friends")
         onReload = false
       }
+      // console.log(friends, 46);
 
-      // socket.on("get_friends", (friends) => {
-      //   dispatch(handleSetFriends(friends))
-      // })
+      socket.on("get_friends", (friends) => {
+        dispatch(handleSetFriends(friends))
+      })
       socket.on("get_all_messages_on_reload", (friends) => {
+        // console.log(friends, 47);
+
         dispatch(handleSetAllUsersChat(friends))
       })
     }
@@ -65,23 +74,27 @@ const Home = () => {
     }
   }, [user])
 
+  // // console.log(friends);
+
   useEffect(() => {
+    // console.log("inside useeffect friends", friends);
     if (socket.connected) {
+      // // console.log(friends);
       socket.on("recieve_message", (data: ChatMessage) => {
+        // console.log(friends.length);
+
         const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === data.senderId) : -1
         if (findUserIndex === -1) {
+          // console.log("onrecieve msg -1 ", findUserIndex);
+
           const user = users.find((user) => user.socket_id === data.senderId);
           if (user) {
             socket.emit("add_friend", user);
-            socket.on("get_friends", (friends) => {
-
-              dispatch(handleSetFriends(friends))
+            socket.on("get_friends", (friend) => {
+              dispatch(handleSetFriends(friend))
             })
           }
         }
-        // console.log(findUserIndex, 79);
-        // console.log(data.senderId, 80);
-        // console.log(friends[0]?.socket_id, 81);
 
         if (friends[0]?.socket_id === data.senderId) {
           socket.emit("update_seen", data)
@@ -127,4 +140,4 @@ const Home = () => {
   )
 }
 
-export default React.memo(Home)
+export default Home
