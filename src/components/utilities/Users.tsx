@@ -17,6 +17,7 @@ const Users = () => {
   const { chatSearchValue, friends, isLoading } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
+
   const handleOnClick = async (index: number) => {
     dispatch(setCurrentGrpOrUser(index))
     const data = {
@@ -83,9 +84,9 @@ const Users = () => {
               />
               :
               friends.filter(handleSearch).map((each, index) => {
-                const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length           
+                // const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length
                 return (
-                  <UserCard key={index} value={each} unreadCount={unread} handleOnClick={() => handleOnClick(index)} />
+                  <UserCard key={index} value={each} handleOnClick={() => handleOnClick(index)} />
                 )
               })}
         </div>

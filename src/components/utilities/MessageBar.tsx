@@ -10,7 +10,6 @@ import { AppDispatch, RootState } from "../../Redux/store"
 import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
-import { useFormik } from "formik";
 import { FaMicrophone } from "react-icons/fa6";
 import { handleSendMessage, ChatMessage, handleSortBylastMsg } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
@@ -22,47 +21,35 @@ const MessageBar = () => {
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
   const [tagReply, setTagReply] = useState<boolean>(false);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
     setShowEmoji(!showEmoji)
   }
-  const handleAddEmoji = (emoji: EmojiClickData) => {
-    let newMsg = formik.values.message + emoji.emoji
-    formik.setFieldValue('message', newMsg);
+  const handleAddEmoji = (emoji: EmojiClickData) => {    
+    setMessage(message + emoji.emoji)
   }
-  const formik = useFormik({
-    initialValues: {
-      message: '',
-    },
-    onSubmit: async (values, { resetForm }) => {
-      let conn_type;
-      if (friends[currentUserIndex] && friends[currentUserIndex].users) {
-        conn_type = "group"
-      } else {
-        conn_type = "onetoone"
-      }
-      if (values.message.trim() !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
-        const serializedValues: ChatMessage = {
-          message: values.message.trim(),
-          date: new Date().toISOString(),
-          right: true,
-          msgType: 'text',
-          senderId: user?.socket_id as string,
-          conn_type: conn_type,
-          recieverId: friends[currentUserIndex].socket_id,
-          seen: false
-        };
 
-        // Emit "send_message" event when the form is submitted
-        socket.emit("send_message", serializedValues);
-        resetForm();
-        // dispatch(updateLastMessage(serializedValues))
-        dispatch(handleSendMessage(serializedValues));
-        dispatch(handleSortBylastMsg())
-        formik.setFieldValue('message', "");
-      }
+  const handleSendMsg = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    let conn_type = friends[currentUserIndex] && friends[currentUserIndex].users ? "group" : "onetoone"
+    if (message.trim() !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
+      const serializedValues: ChatMessage = {
+        message: message.trim(),
+        date: new Date().toISOString(),
+        right: true,
+        msgType: 'text',
+        senderId: user?.socket_id as string,
+        conn_type: conn_type,
+        recieverId: friends[currentUserIndex].socket_id,
+        seen: false
+      };
+      socket.emit("send_message", serializedValues);
+      dispatch(handleSendMessage(serializedValues));
+      dispatch(handleSortBylastMsg())
+      setMessage('')
     }
-  })
+  }
   useEffect(() => {
     const closeDropdown = (event: MouseEvent) => {
       const isEmojiPicker = showEmoji && (event.target as HTMLElement).closest('.emoji-picker-container');
@@ -76,7 +63,9 @@ const MessageBar = () => {
       document.body.removeEventListener('click', closeDropdown);
     };
   }, [showEmoji]);
-
+  const handleSendMsgFunction = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value)
+  }
   return (
     <>
       <div className={` bg-[#202c33] transition-all ease-in-out duration-150 origin-bottom-right relative  w-full m-auto ${tagReply === true ? " scale-y-100  pt-2 " : "scale-y-0 h-0"}`}>
@@ -88,7 +77,7 @@ const MessageBar = () => {
           <RxCross2 size={25} className="text-white" title="cancel" />
         </div>
       </div>
-      <form className="h-14 w-full" onSubmit={formik.handleSubmit}>
+      <form className="h-14 w-full" onSubmit={handleSendMsg}>
         <div className="bg-[#202c33] text-white h-14 px-4 flex items-center gap-6 ">
           <>
             <div className="flex">
@@ -107,11 +96,11 @@ const MessageBar = () => {
             <div className=" w-full rounded-lg h-14 flex items-center">
               <input type="text" placeholder="Type a message"
                 className="bg-[#111b21] text-white w-full font-sans focus:outline-none h-10 px-5 py-4 rounded-lg"
-                onChange={formik.handleChange("message")} onBlur={formik.handleBlur("message")} value={formik.values.message} />
+                onChange={handleSendMsgFunction} value={message} />
             </div>
             <div className="flex w-10 items-center justify-center">
               {
-                formik.values.message !== '' ? (
+                message !== '' ? (
                   <button className="icons" type="submit" >
                     <MdSend title="send" />
                   </button>

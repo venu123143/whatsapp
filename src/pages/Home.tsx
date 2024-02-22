@@ -5,7 +5,7 @@ import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
 import {
-  ChatMessage, getAllGroups, handleSetAllUsersChat,
+  ChatMessage, getAllGroups, handleSetAllUsersChat, makeUnreadCountZero,
   handleRecieveMessage, handleSetFriends, handleUpdateSeen
 } from '../Redux/reducers/msg/MsgReducer'
 import { Socket } from 'socket.io-client'
@@ -21,6 +21,7 @@ const Home = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
+  const [lstMsg, setLstMsg] = useState<any>(null)
 
   useEffect(() => {
     const initializeSocket = async () => {
@@ -72,20 +73,21 @@ const Home = () => {
     }
   }, [user])
 
-  // // console.log(friends);
-
   useEffect(() => {
     // console.log("inside useeffect friends", friends);
     if (socket.connected) {
-      // // console.log(friends);
       socket.on("recieve_message", (data: ChatMessage) => {
-        // console.log(friends.length);
+        setLstMsg({ ...data, right: false })
+        dispatch(handleRecieveMessage({ ...data, right: false }));
+      });
+      socket.on("update_view", (data: ChatMessage) => {
+        dispatch(handleUpdateSeen(data))
+      })
 
-        const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === data.senderId) : -1
+      if (lstMsg !== null) {
+        const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.senderId) : -1
         if (findUserIndex === -1) {
-          // console.log("onrecieve msg -1 ", findUserIndex);
-
-          const user = users.find((user) => user.socket_id === data.senderId);
+          const user = users.find((user) => user.socket_id === lstMsg.senderId);
           if (user) {
             socket.emit("add_friend", user);
             socket.on("get_friends", (friend) => {
@@ -93,20 +95,13 @@ const Home = () => {
             })
           }
         }
-
-        if (friends[0]?.socket_id === data.senderId) {
-          socket.emit("update_seen", data)
+        if (friends[0]?.socket_id === lstMsg.senderId) {
+          dispatch(makeUnreadCountZero())
+          socket.emit("update_seen", [lstMsg])
         }
-
-        dispatch(handleRecieveMessage({ ...data, right: false }));
-
-      });
-      socket.on("update_view", (data: ChatMessage) => {
-        dispatch(handleUpdateSeen(data))
-      })
-
+      }
     }
-  }, [socket])
+  }, [socket, lstMsg])
   return (
     <>
       <SocketContext.Provider value={socket} >

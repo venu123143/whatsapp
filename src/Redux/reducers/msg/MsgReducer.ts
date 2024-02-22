@@ -38,6 +38,7 @@ export interface CommonProperties {
     online_status?: boolean | string;
     users?: UserState[],
     lastMessage: any;
+    unreadCount: number;
 }
 
 export interface IGroup extends CommonProperties {
@@ -142,7 +143,7 @@ const msgSlice = createSlice({
             state.currentUserIndex = action.payload;
             state.isCurrentLoading = false
             state.chatSearchValue = ""
-            // state.friends['currentUserIndex'].
+            state.friends[state.currentUserIndex].unreadCount = 0
         },
         setCurrentLoading: (state, action) => {
             state.isCurrentLoading = action.payload;
@@ -164,6 +165,7 @@ const msgSlice = createSlice({
             const idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
 
             state.friends[idx].chat.push(action.payload)
+            state.friends[idx].unreadCount += 1
             state.friends[idx].lastMessage = action.payload
 
             state.friends.sort((a, b) => {
@@ -180,6 +182,9 @@ const msgSlice = createSlice({
                 }
             });
         },
+        makeUnreadCountZero: (state) => {
+            state.friends[state.currentUserIndex].unreadCount = 0
+        },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
             const { recieverId, date } = action.payload;
             const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
@@ -190,9 +195,9 @@ const msgSlice = createSlice({
                         friend.chat[index] = action.payload
                     }
                 });
+                friend.unreadCount = 0
             }
         },
-
         handleSetFriends: (state, action) => {
             const isUserAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
             if (!isUserAlreadyExists) {
@@ -322,6 +327,6 @@ const msgSlice = createSlice({
 })
 
 export const { handleSendMessage, handleSortBylastMsg, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,
-    updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading,
+    updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
     storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer
