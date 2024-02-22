@@ -1,4 +1,4 @@
-import React, { useEffect, createContext, useState } from 'react'
+import { useEffect, createContext, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -36,10 +36,8 @@ const Home = () => {
   let onReload = true;
   useEffect(() => {
     // console.log(friends, 36);
-    let count = 0
     if (socket.connected && user !== null) {
       if (onReload) {
-        console.log("calling", ++count);
 
         // socket.emit("get_frnds_on_reload", user)
         socket.emit("get_all_messages", "friends")

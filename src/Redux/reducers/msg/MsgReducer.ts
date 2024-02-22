@@ -162,7 +162,6 @@ const msgSlice = createSlice({
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
             const idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
-            console.log(idx);
 
             state.friends[idx].chat.push(action.payload)
             state.friends[idx].lastMessage = action.payload
