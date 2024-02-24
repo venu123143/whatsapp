@@ -29,9 +29,19 @@ const ChatHeader = () => {
     <div className="h-16 gap-5 px-4 py-3 flex justify-between items-center bg-[#202c33] ">
       <div className="flex items-center justify-center gap-6 chatList">
         {friends[currentUserIndex]?.profile ? (
-          <img src={friends[currentUserIndex].profile} alt="profile image" className="w-[40px] h-[40px] rounded-full object-cover" />
+          <div className="relative p-1">
+            <img src={friends[currentUserIndex].profile} alt="profile image" className="w-[40px] h-[40px] rounded-full object-cover" />
+            {friends[currentUserIndex]?.online_status === "true" ? (
+              <span className="blink_me absolute bottom-1 right-0"></span>
+            ) : null}
+          </div>
         ) : (
-          <FaCircleUser size={40} className="text-slate-400" />
+          <div className="relative p-1">
+            <FaCircleUser size={40} className="text-slate-400" />
+            {friends[currentUserIndex]?.online_status === "true" ? (
+              <span className="blink_me absolute bottom-1 right-0"></span>
+            ) : null}
+          </div>
         )}
       </div>
       <div className="mr-auto">

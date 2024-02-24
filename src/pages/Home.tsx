@@ -6,7 +6,7 @@ import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
 import {
   ChatMessage, getAllGroups, handleSetAllUsersChat, makeUnreadCountZero,
-  handleRecieveMessage, handleSetFriends, handleUpdateSeen
+  handleRecieveMessage, handleSetFriends, handleUpdateSeen, CommonProperties
 } from '../Redux/reducers/msg/MsgReducer'
 import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
@@ -39,7 +39,6 @@ const Home = () => {
     // console.log(friends, 36);
     if (socket.connected && user !== null) {
       if (onReload) {
-
         // socket.emit("get_frnds_on_reload", user)
         socket.emit("get_all_messages", "friends")
         onReload = false
@@ -51,13 +50,12 @@ const Home = () => {
       })
       socket.on("get_all_messages_on_reload", (friends) => {
         // console.log(friends, 47);
-
         dispatch(handleSetAllUsersChat(friends))
       })
     }
     return () => {
       if (socket.connected) {
-        // socket.off("get_friends");
+        socket.off("get_friends");
         socket.off("get_all_messages_on_reload")
       }
     };
@@ -74,7 +72,6 @@ const Home = () => {
   }, [user])
 
   useEffect(() => {
-    // console.log("inside useeffect friends", friends);
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
         setLstMsg({ ...data, right: false })
@@ -82,17 +79,17 @@ const Home = () => {
       });
       socket.on("update_view", (data: ChatMessage) => {
         dispatch(handleUpdateSeen(data))
-      })
-
+      });
+  
       if (lstMsg !== null) {
         const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.senderId) : -1
         if (findUserIndex === -1) {
-          const user = users.find((user) => user.socket_id === lstMsg.senderId);
+          const user = users.find((user: CommonProperties) => user.socket_id === lstMsg.senderId);
           if (user) {
             socket.emit("add_friend", user);
             socket.on("get_friends", (friend) => {
               dispatch(handleSetFriends(friend))
-            })
+            });
           }
         }
         if (friends[0]?.socket_id === lstMsg.senderId) {
@@ -101,7 +98,17 @@ const Home = () => {
         }
       }
     }
-  }, [socket, lstMsg])
+    // Cleanup function to close the socket connection
+    return () => {
+      if (socket.connected) {        
+        // socket.disconnect();
+        socket.off("recieve_message");
+        socket.off("update_view");
+        socket.off("get_friends");
+      }
+    };
+  }, [socket, lstMsg]);
+  
   return (
     <>
       <SocketContext.Provider value={socket} >

@@ -8,7 +8,7 @@ import CreateContact from './CreateContact'
 import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
-import { handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
+import { CommonProperties, handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../../pages/Home"
 import { ClipLoader } from 'react-spinners'
 
@@ -83,7 +83,7 @@ const Users = () => {
                 className=''
               />
               :
-              friends.filter(handleSearch).map((each, index) => {
+              friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
                 // const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length
                 return (
                   <UserCard key={index} value={each} handleOnClick={() => handleOnClick(index)} />
