@@ -35,14 +35,17 @@ const ChatPage = () => {
     const previousDate = new Date(previousMessage.date);
     return currentDate.toDateString() !== previousDate.toDateString();
   };
+
   useEffect(() => {
     if (socket.connected && currentUserIndex !== null) {
       const unread = friends[currentUserIndex].chat.filter((msg: any) => msg.seen === false && msg.right === false)
-      socket.emit("update_seen", unread)
+      if (unread.length > 0 && friends[currentUserIndex].socket_id === unread[0].senderId) {
+        socket.emit("update_seen", unread)
+      }
     }
   }, [currentUserIndex])
 
-  const handleUploadImages = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUploadImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
       return;
     }
@@ -69,6 +72,7 @@ const ChatPage = () => {
 
         dispatch(handleSendMessage(serializedValues));
         socket.emit("send_message", serializedValues);
+
       };
     };
 
@@ -76,7 +80,7 @@ const ChatPage = () => {
       handleImageUpload(image);
     });
 
-  }, [handleSendMessage, socket, friends, currentUserIndex]);
+  }
 
 
   const handleShowBigImg = (message: any) => {

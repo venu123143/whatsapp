@@ -6,6 +6,16 @@ import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
 const Message = ({ right, message, date, seen }: any) => {
     const dispatch = useDispatch();
+    function renderMessageWithLinks(message: string) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return message.split(urlRegex).map((part, index) => {
+            if (part.match(urlRegex)) {
+                return <a key={index} href={part} target="_blank" className="text-[#53bded] hover:text-[#111b21] focus:text-[#0056b3] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
+            } else {
+                return <span key={index}>{part}</span>;
+            }
+        });
+    }
     return (
         <div className={`flex ${right === true ? null : "flex-row-reverse"}`}>
             <p
@@ -15,7 +25,7 @@ const Message = ({ right, message, date, seen }: any) => {
                     } group   text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `}
             >
                 <span className="break-words">
-                    {message}
+                    {renderMessageWithLinks(message)}
                 </span>
                 <span className=" flex h-fit w-fit ml-auto items-end justify-end">
                     <span className="text-[10px] text-[#ffffff99]">

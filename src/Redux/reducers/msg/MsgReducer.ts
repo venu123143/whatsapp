@@ -151,15 +151,29 @@ const msgSlice = createSlice({
         handleSendMessage: (state, action: PayloadAction<ChatMessage>) => {
             // state.friends[state.currentUserIndex].chat.push(action.payload)
             // state.friends[state.currentUserIndex].lastMessage = action.payload
-            const { currentUserIndex } = state;
             const updatedFriends = [...state.friends];
-            const updatedChat = [...updatedFriends[currentUserIndex].chat, action.payload];
-            updatedFriends[currentUserIndex] = {
-                ...updatedFriends[currentUserIndex],
+            const updatedChat = [...updatedFriends[state.currentUserIndex].chat, action.payload];
+            updatedFriends[state.currentUserIndex] = {
+                ...updatedFriends[state.currentUserIndex],
                 chat: updatedChat,
                 lastMessage: action.payload
             };
+            
             state.friends = updatedFriends;
+            state.currentUserIndex = 0
+            state.friends.sort((a, b) => {
+                const lastMessageA = a.lastMessage;
+                const lastMessageB = b.lastMessage;
+                if (!lastMessageA && !lastMessageB) {
+                    return 0;
+                } else if (!lastMessageA) {
+                    return 1;
+                } else if (!lastMessageB) {
+                    return -1;
+                } else {
+                    return new Date(lastMessageB.date).getTime() - new Date(lastMessageA.date).getTime();
+                }
+            });
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
             const idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
@@ -204,20 +218,6 @@ const msgSlice = createSlice({
                 state.friends.unshift(action.payload)
             }
             state.isLoading = false
-        },
-        handleSortBylastMsg: (state) => {
-            state.friends.sort((a: any, b: any) => {
-                if (!a.lastMessage && !b.lastMessage) {
-                    return 0;
-                } else if (!a.lastMessage) {
-                    return 1;
-                } else if (!b.lastMessage) {
-                    return -1;
-                } else {
-                    return new Date(b.lastMessage.date as string).getTime() - new Date(a.lastMessage.date as string).getTime();
-                }
-            });
-            state.currentUserIndex = 0
         },
         handleSetStatus: (state, action) => {
             const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
@@ -326,7 +326,7 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleSortBylastMsg, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,
+export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,
     updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
     storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer

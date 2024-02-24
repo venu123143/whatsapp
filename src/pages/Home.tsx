@@ -32,24 +32,20 @@ const Home = () => {
     };
     initializeSocket();
   }, [user]);
-  // console.log(34, friends);
 
   let onReload = true;
   useEffect(() => {
-    // console.log(friends, 36);
     if (socket.connected && user !== null) {
       if (onReload) {
         // socket.emit("get_frnds_on_reload", user)
         socket.emit("get_all_messages", "friends")
         onReload = false
       }
-      // console.log(friends, 46);
 
       socket.on("get_friends", (friends) => {
         dispatch(handleSetFriends(friends))
       })
       socket.on("get_all_messages_on_reload", (friends) => {
-        // console.log(friends, 47);
         dispatch(handleSetAllUsersChat(friends))
       })
     }
@@ -80,7 +76,7 @@ const Home = () => {
       socket.on("update_view", (data: ChatMessage) => {
         dispatch(handleUpdateSeen(data))
       });
-  
+
       if (lstMsg !== null) {
         const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.senderId) : -1
         if (findUserIndex === -1) {
@@ -92,7 +88,7 @@ const Home = () => {
             });
           }
         }
-        if (friends[0]?.socket_id === lstMsg.senderId) {
+        if (friends[0]?.socket_id === lstMsg.senderId && currentUserIndex === 0) {
           dispatch(makeUnreadCountZero())
           socket.emit("update_seen", [lstMsg])
         }
@@ -100,7 +96,7 @@ const Home = () => {
     }
     // Cleanup function to close the socket connection
     return () => {
-      if (socket.connected) {        
+      if (socket.connected) {
         // socket.disconnect();
         socket.off("recieve_message");
         socket.off("update_view");
@@ -108,7 +104,7 @@ const Home = () => {
       }
     };
   }, [socket, lstMsg]);
-  
+
   return (
     <>
       <SocketContext.Provider value={socket} >

@@ -11,7 +11,7 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage, ChatMessage, handleSortBylastMsg } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, ChatMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -27,7 +27,7 @@ const MessageBar = () => {
     setShowEmoji(!showEmoji)
   }
   const handleAddEmoji = (emoji: EmojiClickData) => {    
-    setMessage(message + emoji.emoji)
+    setMessage(message +' ' + emoji.unified)
   }
 
   const handleSendMsg = (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,7 +46,6 @@ const MessageBar = () => {
       };
       socket.emit("send_message", serializedValues);
       dispatch(handleSendMessage(serializedValues));
-      dispatch(handleSortBylastMsg())
       setMessage('')
     }
   }
