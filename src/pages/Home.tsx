@@ -108,28 +108,13 @@ const Home = () => {
   return (
     <>
       <SocketContext.Provider value={socket} >
-        <main className='w-full grid grid-cols-10 '>
-          <section className={`col-span-3 min-w-[300px] ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
+        <main className='w-full grid md:grid-cols-10'>
+          <section className={`sm:col-span-3 sm:min-w-[300px] ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
             <Users />
           </section>
-          <section className='col-span-7'>
+          <section className='md:col-span-7'>
             {currentUserIndex === null ? <DefaultComp /> : <Chat />}
           </section>
-          {/* <section className={`${isCurrentLoading === true ? "block shadow-lg bg-black bg-opacity-70 w-full h-full m-auto" : "hidden"} cursor-pointer group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
-            {
-              isCurrentLoading &&
-              <RingLoader
-                color="#36d7b7"
-                loading={isCurrentLoading}
-                aria-label="Loading Spinner"
-                speedMultiplier={1}
-                data-testid="loader"
-                size={500}
-                className='m-auto'
-              />
-            }
-
-          </section> */}
         </main>
       </SocketContext.Provider >
     </>

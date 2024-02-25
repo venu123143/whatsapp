@@ -89,7 +89,7 @@ const ChatPage = () => {
   }
   // src={URL.createObjectURL(image)}
   return (
-    <div className="relative h-full ">
+    <div className=" h-full ">
       <div className=" px-16 py-5 ">
         {chats && chats.map((message: any, index: number) =>
           <div key={index}>
@@ -109,7 +109,7 @@ const ChatPage = () => {
                 right={message.right}
                 seen={message.seen}
               />
-              : <ImageComp key={index} onClick={() => handleShowBigImg(message)} date={message.date} right={message.right} image={message.image} />
+              : <ImageComp key={index} onClick={() => handleShowBigImg(message)} date={message.date} right={message.right} image={message.image} seen={message.seen} />
             }
           </div>
         )}

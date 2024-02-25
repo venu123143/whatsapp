@@ -9,6 +9,7 @@ import { logout } from "../../Redux/reducers/Auth/AuthReducer"
 import { useEffect, useState } from "react";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { BiAnalyse } from "react-icons/bi";
 
 const ProfileHeader = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -61,6 +62,9 @@ const ProfileHeader = () => {
                     }
                 </div>
                 <div className=" flex items-center gap-2">
+                    <div className="icons p-3" onClick={() => dispatch(toggleContacts(true))}>
+                        <BiAnalyse className=" z-0" size={25} title="Status" />
+                    </div>
                     <div className="icons" onClick={() => dispatch(toggleContacts(true))}>
                         <BsFillChatLeftTextFill title="New Chat" />
                     </div>
@@ -81,8 +85,6 @@ const ProfileHeader = () => {
 
                                 <button onClick={handleLogout} className="options" role="menuitem" id="menu-item-0">Logout</button>
                             </div>
-                            {/* <div onClick={()=>setDropdown(false)} className="fixed top-0 left-0 right-0 bottom-0 z-0 bg-red-500"  >
-                            </div> */}
                         </div>
                     )
                 }

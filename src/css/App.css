@@ -19,7 +19,7 @@ header color- 233138
 }
 
 .singleuser {
-    @apply bg-[#111b21] hover:bg-[#202c33] hover:bg-opacity-80 text-white cursor-pointer border-b border-gray-800
+    @apply bg-[#111b21] hover:bg-[#202c33] hover:bg-opacity-80 text-white sm:cursor-pointer border-b border-gray-800
 }
 
 .username {
@@ -51,7 +51,7 @@ header color- 233138
 }
 
 .icons {
-    @apply text-[#e9deef] hover:bg-[#111b21] cursor-pointer text-xl p-4 rounded-full
+    @apply text-[#e9deef] hover:bg-[#111b21] sm:cursor-pointer text-xl p-3 sm:p-4 rounded-full
 }
 
 .unreadmessage {
@@ -59,7 +59,7 @@ header color- 233138
 }
 
 .dropdown {
-    @apply bg-[#202c33] absolute sm:block hidden w-56 rounded-lg shadow-lg ring-1 ring-black focus:outline-none ring-opacity-5
+    @apply bg-[#202c33] absolute sm:block hidden w-56 rounded-lg shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
 }
 
 .options {
@@ -90,13 +90,13 @@ header color- 233138
 
 /* Close button */
 .close-button {
-    @apply absolute top-[10px] right-[10px] cursor-pointer text-white text-2xl;
+    @apply absolute top-[10px] right-[10px] sm:cursor-pointer text-white text-2xl;
 }
 
 /* Previous and Next buttons */
 .prev-button,
 .next-button {
-    @apply absolute top-1/2 transform -translate-y-1/2 cursor-pointer text-white text-2xl;
+    @apply absolute top-1/2 transform -translate-y-1/2 sm:cursor-pointer text-white text-2xl;
 }
 
 .prev-button {

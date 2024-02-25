@@ -77,7 +77,7 @@ const MessageBar = () => {
         </div>
       </div>
       <form className="h-14 w-full" onSubmit={handleSendMsg}>
-        <div className="bg-[#202c33] text-white h-14 px-4 flex items-center gap-6 ">
+        <div className="bg-[#202c33] text-white h-14 px-4 flex items-center gap-2 sm:gap-6 ">
           <>
             <div className="flex">
               <div className="icons" onClick={handleEmojiPicker}>
@@ -97,7 +97,7 @@ const MessageBar = () => {
                 className="bg-[#111b21] text-white w-full font-sans focus:outline-none h-10 px-5 py-4 rounded-lg"
                 onChange={handleSendMsgFunction} value={message} />
             </div>
-            <div className="flex w-10 items-center justify-center">
+            <div className="flex sm:w-10 items-center justify-center">
               {
                 message !== '' ? (
                   <button className="icons" type="submit" >

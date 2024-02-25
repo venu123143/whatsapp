@@ -26,12 +26,12 @@ const Login = () => {
     setBackgroundImage(getRandomBackgroundImage());
   }, []);
   return (
-    <section className="w-full h-screen grid grid-cols-3 ">
-      <div className="col-span-2 shadow-lg">
+    <section className="w-full h-screen grid md:grid-cols-3 ">
+      <div className="hidden md:block md:col-span-2 shadow-lg">
         <div className="col-span-2 w-full h-full border-r-2 border-black shadowImg" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         </div>
       </div>
-      <div className="col-span-1 header-bg border-l-2 border-black shadow-2xl">
+      <div className="md:col-span-1 w-full header-bg border-l-2 border-black shadow-2xl">
         <LoginWithOtp />
       </div>
     </section>

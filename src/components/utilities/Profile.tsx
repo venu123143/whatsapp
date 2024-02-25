@@ -10,15 +10,15 @@ import { ClipLoader } from "react-spinners"
 import ShowFullImg from "./ShowFullImg"
 import Dropzone from 'react-dropzone'
 import { toast } from "react-toastify";
+import { HiOutlineCamera } from "react-icons/hi";
 
 import { PiUserLight } from "react-icons/pi"
 import { useState } from "react"
-import { FaCircleChevronDown } from "react-icons/fa6"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
 
   const { user, isLoading, isSuccess, isProfileLoading } = useSelector((state: RootState) => state.auth)
-  const { profileOpen, } = useSelector((state: RootState) => state.utils)
+  const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
   const [showOptions, setShowOptions] = useState<any>(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -220,7 +220,7 @@ const Profile = () => {
               <button onClick={ShowFullImage} className="options " role="menuitem" id="menu-item-0">View Photo</button>
               <button className="options" role="menuitem" id="menu-item-1">
                 <span>Take Photo</span>
-                <FaCircleChevronDown className="inline font-Rubik" />
+                <HiOutlineCamera size={25} className="inline font-Rubik" />
               </button>
               <input id="uploadImage" multiple={false} type="file" accept=".jpg, .jpeg, .png" className="hidden"
                 onChange={uploadProfileImage} />

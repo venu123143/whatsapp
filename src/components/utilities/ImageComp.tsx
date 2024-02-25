@@ -1,11 +1,15 @@
 import React from "react"
-import { BiCheckDouble } from "react-icons/bi"
+import { BiCheck, BiCheckDouble } from "react-icons/bi"
+import { RootState } from "../../Redux/store";
+import { useSelector } from "react-redux";
 
-const ImageComp: React.FC<{ right: boolean, image: any, date: Date, onClick: () => void }> = ({ right, image, date, onClick }) => {
+const ImageComp: React.FC<{ right: boolean, image: any, date: Date, onClick: () => void, seen: boolean }> = ({ right, image, date, onClick, seen }) => {
     // URL.createObjectURL(image)
+    const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
+
     return (
-        <section className={`${right === true ? "bg-[#02a698] ml-auto" : "bg-[#233138] mr-auto"} mb-[10px] rounded-lg p-1 w-fit`}>
-            <div className="relative">
+        <section className={`${right === true ? "bg-[#02a698] ml-auto" : "bg-[#233138] mr-auto"}  relative mb-[10px] rounded-lg p-1 w-fit`}>
+            <div className=" z-0">
                 <img onClick={onClick} src={image} alt="imagee" className="rounded-lg" height={300} width={300} />
                 <div className="absolute bottom-1 right-1 flex items-end gap-1">
                     <span className="text-[#8696a0] text-[11px] pt-1 min-w-fit">
@@ -16,10 +20,24 @@ const ImageComp: React.FC<{ right: boolean, image: any, date: Date, onClick: () 
                         })}
                     </span>
                     <span className={`${right === true ? "" : ""}text-[#8696a0] `}>
-                        <BiCheckDouble
-                            className={`${right === true ? "inline text-[#4FB6EC]" : "hidden"}`}
-                            size={20}
-                        />
+                        {seen === true ?
+                            <BiCheckDouble
+                                className={`${right === true ? "inline text-[#4FB6EC]" : "hidden"
+                                    }`}
+                                size={20}
+                            /> :
+                            friends[currentUserIndex]?.online_status === "true" ?
+                                <BiCheckDouble
+                                    className={`${right === true ? "inline text-[#ffffff99]" : "hidden"
+                                        }`}
+                                    size={20}
+                                /> :
+                                <BiCheck
+                                    className={`${right === true ? "inline text-[#f0f2f5]" : "hidden"
+                                        }`}
+                                    size={20}
+                                />
+                        }
                     </span>
                 </div>
             </div>

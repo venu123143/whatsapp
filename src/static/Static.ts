@@ -7,6 +7,21 @@ export interface Users{
     unreadCount?: number;
 }
 
+{/* <section className={`${isCurrentLoading === true ? "block shadow-lg bg-black bg-opacity-70 w-full h-full m-auto" : "hidden"} cursor-pointer group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+            {
+              isCurrentLoading &&
+              <RingLoader
+                color="#36d7b7"
+                loading={isCurrentLoading}
+                aria-label="Loading Spinner"
+                speedMultiplier={1}
+                data-testid="loader"
+                size={500}
+                className='m-auto'
+              />
+            }
+
+          </section> */}
 export const backgroundImages = ["https://bsmedia.business-standard.com/_media/bs/img/article/2023-04/01/full/1680325748-8096.jpg",
     "https://images.indianexpress.com/2023/10/whatsapp-logo-featured-express.jpg",
     "https://miro.medium.com/v2/resize:fit:720/format:webp/0*EnfvGEllIYzq6As9",

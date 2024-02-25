@@ -143,7 +143,9 @@ const msgSlice = createSlice({
             state.currentUserIndex = action.payload;
             state.isCurrentLoading = false
             state.chatSearchValue = ""
-            state.friends[state.currentUserIndex].unreadCount = 0
+            if (state.currentUserIndex !== null) {
+                state.friends[state.currentUserIndex].unreadCount = 0
+            }
         },
         setCurrentLoading: (state, action) => {
             state.isCurrentLoading = action.payload;
@@ -158,7 +160,7 @@ const msgSlice = createSlice({
                 chat: updatedChat,
                 lastMessage: action.payload
             };
-            
+
             state.friends = updatedFriends;
             state.currentUserIndex = 0
             state.friends.sort((a, b) => {

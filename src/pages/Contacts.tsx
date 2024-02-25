@@ -60,26 +60,24 @@ const ContactsList = () => {
         setSearchInput("")
     }
     return (
-        <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
-            <div className="icons flex items-center gap-4  "
+        <div className={`h-screen w-full flex flex-col text-white absolute top-0 left-0 header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
+            <div className="icons max-h-[40px] sm:max-h-40 flex items-center gap-4 "
                 onClick={goBackToHome}>
-                <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
-                <h1 className="text-white font-[400] ">New Chat</h1>
+                <AiOutlineArrowLeft className="text-white sm:cursor-pointer w-9" />
+                <h1 className="text-white font-[200] sm:font-[400] ">New Chat</h1>
             </div>
-            <section className="">
-                <div className=" header-bg flex py-3 px-5 items-center gap-3">
-                    <div className="border border-gray-500 flex gap-5 py-2 m-auto w-full  rounded-lg ">
+            <section className="m-auto w-full">
+                <div className=" header-bg flex w-full py-3 px-5 items-center gap-3">
+                    <div className="border border-gray-500 flex gap-5 py-2  w-full  rounded-lg ">
                         <div className="ml-4 flex items-center justify-center">
-                            <BsSearch className="text-panel-header-icon cursor-pointer text-xl" />
+                            <BsSearch className="text-panel-header-icon sm:cursor-pointer text-xl" />
                         </div>
-                        <div className="w-full pr-4">
-                            <input value={searchInput}
-                                onChange={(e) => setSearchInput(e.target.value)}
-                                type="text"
-                                placeholder="Search name or number"
-                                className="bg-transparent text-md focus:outline-none text-white w-full "
-                            />
-                        </div>
+                        <input value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            type="text"
+                            placeholder="Search name or number"
+                            className="bg-transparent text-md focus:outline-none text-white w-full "
+                        />
                     </div>
                 </div>
             </section>

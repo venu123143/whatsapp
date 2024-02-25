@@ -1,10 +1,12 @@
 import { BiCheckDouble, BiCheck } from "react-icons/bi";
 import { AiOutlineDown } from "react-icons/ai";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
+import { RootState } from "../../Redux/store";
 
 const Message = ({ right, message, date, seen }: any) => {
+    const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const dispatch = useDispatch();
     function renderMessageWithLinks(message: string) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -40,11 +42,17 @@ const Message = ({ right, message, date, seen }: any) => {
                                     }`}
                                 size={20}
                             /> :
-                            <BiCheck
-                                className={`${right === true ? "inline text-[#f0f2f5]" : "hidden"
-                                    }`}
-                                size={20}
-                            />
+                            friends[currentUserIndex]?.online_status === "true" ?
+                                <BiCheckDouble
+                                    className={`${right === true ? "inline text-[#ffffff99]" : "hidden"
+                                        }`}
+                                    size={20}
+                                /> :
+                                <BiCheck
+                                    className={`${right === true ? "inline text-[#f0f2f5]" : "hidden"
+                                        }`}
+                                    size={20}
+                                />
 
                         }
                     </span>
