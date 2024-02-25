@@ -90,7 +90,7 @@ const ChatPage = () => {
   // src={URL.createObjectURL(image)}
   return (
     <div className=" h-full ">
-      <div className=" px-16 py-5 ">
+      <div className=" sm:px-16 sm:py-5 px-5 py-5">
         {chats && chats.map((message: any, index: number) =>
           <div key={index}>
             {isFirstMessageOfDay(message, index > 0 ? chats[index - 1] : null) ? (
@@ -100,7 +100,7 @@ const ChatPage = () => {
                 </div>
               </div>
             ) : null}
-            {message.msgType === "notification" ? <p className="notification">{message.message}</p> : null}
+            {message.msgType === "notification" ? <p className="notification mb-5">{message.message}</p> : null}
             {message.msgType === "text" ?
               <Message
                 key={index}
@@ -109,8 +109,10 @@ const ChatPage = () => {
                 right={message.right}
                 seen={message.seen}
               />
-              : <ImageComp key={index} onClick={() => handleShowBigImg(message)} date={message.date} right={message.right} image={message.image} seen={message.seen} />
-            }
+              : null}
+            {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}
+              date={message.date} right={message.right} image={message.image} seen={message.seen} />
+              : null}
           </div>
         )}
 

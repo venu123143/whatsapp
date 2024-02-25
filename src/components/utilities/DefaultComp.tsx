@@ -3,7 +3,7 @@ import sample from "../../assets/default.png"
 
 const DefaultComp = () => {
     return (
-        <div className='flex gap-y-8 flex-col h-full m-auto items-center justify-center bg-[#202c33]'>
+        <div className='hidden sm:flex gap-y-8 flex-col h-full m-auto items-center justify-center bg-[#202c33]'>
             <div>
                 <img src={sample} alt="sample img" className='object-cover max-w-[330px]' />
             </div>

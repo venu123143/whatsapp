@@ -178,11 +178,16 @@ const msgSlice = createSlice({
             });
         },
         handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
-            const idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
+            let idx;
+            if (action.payload.conn_type === 'group') {
+                idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.recieverId.toString())
+            } else {
+                idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
+                state.friends[idx].unreadCount += 1
+                state.friends[idx].lastMessage = action.payload
+            }
 
             state.friends[idx].chat.push(action.payload)
-            state.friends[idx].unreadCount += 1
-            state.friends[idx].lastMessage = action.payload
 
             state.friends.sort((a, b) => {
                 const lastMessageA = a.lastMessage;
@@ -215,8 +220,13 @@ const msgSlice = createSlice({
             }
         },
         handleSetFriends: (state, action) => {
-            const isUserAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
-            if (!isUserAlreadyExists) {
+            let isUserOrGrpAlreadyExists;
+            if (action.payload.users && action.payload.users.length > 0) {
+                isUserOrGrpAlreadyExists = state.friends.some(user => user.socket_id?.toString() === action.payload.socket_id.toString());
+            } else {
+                isUserOrGrpAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
+            }
+            if (!isUserOrGrpAlreadyExists) {
                 state.friends.unshift(action.payload)
             }
             state.isLoading = false

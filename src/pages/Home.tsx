@@ -41,6 +41,7 @@ const Home = () => {
         socket.emit("get_all_messages", "friends")
         onReload = false
       }
+      console.log("calling 1");
 
       socket.on("get_friends", (friends) => {
         dispatch(handleSetFriends(friends))
@@ -69,7 +70,7 @@ const Home = () => {
 
   useEffect(() => {
     if (socket.connected) {
-      socket.on("recieve_message", (data: ChatMessage) => {
+      socket.on("recieve_message", (data: ChatMessage) => {        
         setLstMsg({ ...data, right: false })
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
@@ -78,10 +79,16 @@ const Home = () => {
       });
 
       if (lstMsg !== null) {
-        const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.senderId) : -1
+        let findUserIndex;
+        if (lstMsg.conn_type === "group") {
+          findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.recieverId) : -1
+        } else {
+          findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.senderId) : -1
+        }
         if (findUserIndex === -1) {
           const user = users.find((user: CommonProperties) => user.socket_id === lstMsg.senderId);
           if (user) {
+            console.log("calling 2");
             socket.emit("add_friend", user);
             socket.on("get_friends", (friend) => {
               dispatch(handleSetFriends(friend))
