@@ -17,7 +17,7 @@ const Chat = () => {
   }, [friends, currentUserIndex]);
   return (
     <>
-      <div className=' sm:static absolute top-0 left-0 right-0 bottom-0 h-full flex flex-col backImg bg-black'>
+      <div className=' sm:static absolute top-0 left-0 right-0 bottom-0 h-screen flex flex-col backImg bg-black'>
         <ChatHeader />
         <div className='h-full overflow-y-auto custom-scrollbar bg-black bg-opacity-80 scroll-smooth' ref={chatPageRef}>
           <ChatPage />
