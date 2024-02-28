@@ -41,8 +41,6 @@ const Home = () => {
         socket.emit("get_all_messages", "friends")
         onReload = false
       }
-      console.log("calling 1");
-
       socket.on("get_friends", (friends) => {
         dispatch(handleSetFriends(friends))
       })

@@ -1,13 +1,39 @@
 import { BiCheckDouble, BiCheck } from "react-icons/bi";
 import { AiOutlineDown } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // import { RootState } from "../../Redux/store";
-import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 import { RootState } from "../../Redux/store";
+import React, { useEffect, useRef, useState } from "react";
+import useCloseDropDown from "../reuse/CloseDropDown"
+import { Link } from "react-router-dom";
+import { FaCircleChevronDown } from "react-icons/fa6";
 
 const Message = ({ right, message, date, seen }: any) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
-    const dispatch = useDispatch();
+    const [options, setOptions] = useCloseDropDown(false, '.dropdown');
+    const [optionPosition, setOptionPosition] = useState('')
+    const messageRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (messageRef.current) {
+                const { top } = messageRef.current.getBoundingClientRect();
+                const screenHeight = window.innerHeight;
+                const isMessageAtTop = top <= screenHeight / 2;
+                if (isMessageAtTop) {
+                    setOptionPosition('bottom')
+                } else {
+                    setOptionPosition('top');
+                }
+            }
+        };
+        handleScroll();
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
     function renderMessageWithLinks(message: string) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return message.split(urlRegex).map((part, index) => {
@@ -18,14 +44,17 @@ const Message = ({ right, message, date, seen }: any) => {
             }
         });
     }
+    const handleToggleOptions = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.stopPropagation();
+        setOptions(!options)
+    }
+
     return (
-        <div className={`flex ${right === true ? null : "flex-row-reverse"}`}>
-            <p
-                className={`${right === true
-                    ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
-                    : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
-                    } group   text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `}
-            >
+        <div ref={messageRef} className={`flex ${right === true ? null : "flex-row-reverse"} `}>
+            <p className={`${right === true
+                ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
+                : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
+                } group  relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `} >
                 <span className="break-words">
                     {renderMessageWithLinks(message)}
                 </span>
@@ -56,14 +85,29 @@ const Message = ({ right, message, date, seen }: any) => {
 
                         }
                     </span>
-                    <span
-                        className={`group-hover:block hidden cursor-pointer`}
-                        onClick={() => dispatch(toggleEditMessage(true))}
-                    >
-                        <AiOutlineDown />
+                    <span className={`${right === true ? "bg-[#008069] " : "bg-[#233138] "} 
+                    absolute top-0 right-2 group-hover:translate-y-0 translate-y-5 group-hover:visible invisible transition-all shadow-sm
+                     shadow-black  p-1 rounded-b-full sm:cursor-pointer`}
+                        onClick={handleToggleOptions}>
+                        <AiOutlineDown size={15} />
                     </span>
                 </span>
+                <div
+                    className={`${optionPosition === 'bottom' ? right === true ? "top-12 right-0" : "-right-52 top-5" : right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
+                    ${options ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-10 w-0 opacity-0"} 
+                 transition-all ease-in-out origin-top-right dropdown z-10 `}>
+                    <div className="">
+                        <button className="options" role="menuitem" id="menu-item-0">Profile</button>
+                        <button className="options" role="menuitem" id="menu-item-1">
+                            <span>Theme</span>
+                            <FaCircleChevronDown className="inline font-Rubik" />
+                        </button>
+                        <Link to="#" className="options">Account settings</Link>
+                        <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>
+                    </div>
+                </div>
             </p>
+
             {right === true ? (
                 <span>
                     <svg

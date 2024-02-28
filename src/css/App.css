@@ -59,7 +59,7 @@ header color- 233138
 }
 
 .dropdown {
-    @apply bg-[#202c33] absolute sm:block hidden w-56 rounded-lg shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
+    @apply bg-[#202c33] absolute sm:block hidden w-56 rounded-md shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
 }
 
 .options {
