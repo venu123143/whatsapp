@@ -6,10 +6,10 @@ import { RootState } from "../../Redux/store";
 import React, { useEffect, useRef, useState } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
-import { FaCircleChevronDown, FaCircleUser } from "react-icons/fa6";
+import { FaCircleChevronDown } from "react-icons/fa6";
 import { ChatMessage } from "../../Redux/reducers/msg/MsgReducer";
 
-const Message = ({ message }: { message: ChatMessage }) => {
+const Message = ({ message, color }: { message: ChatMessage, color: string }) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
     const [optionPosition, setOptionPosition] = useState('')
@@ -49,7 +49,7 @@ const Message = ({ message }: { message: ChatMessage }) => {
                 : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
                 } group  relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `} >
 
-                <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? "block" : "hidden"} text-yellow-600 font-Rubik tracking-wide font-[450] text-[.91rem]`}>~ {message?.senderName}</h3>
+                <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
                 <span className="break-words">
                     {renderMessageWithLinks(message)}
                 </span>
@@ -92,12 +92,12 @@ const Message = ({ message }: { message: ChatMessage }) => {
                     ${options ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                  transition-all ease-in-out origin-top-right dropdown z-10 `}>
                     <div className="">
-                        <button className="options" role="menuitem" id="menu-item-0">Profile</button>
+                        <button className="options" role="menuitem" id="menu-item-0">Edit Message</button>
+                        <Link to="#" className="options">Delete Message</Link>
                         <button className="options" role="menuitem" id="menu-item-1">
-                            <span>Theme</span>
+                            <span>Reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>
-                        <Link to="#" className="options">Account settings</Link>
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>
                     </div>
                 </div>

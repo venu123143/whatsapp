@@ -17,6 +17,7 @@ import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import ShowFullImg from "./ShowFullImg";
 import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../pages/Home"
+import { recieveColors, ReceiveColors } from "../../static/Static";
 
 const ChatPage = () => {
   const dispatch: AppDispatch = useDispatch()
@@ -27,6 +28,12 @@ const ChatPage = () => {
   const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
   const chats = friends[currentUserIndex]?.chat
 
+
+  const getRandomColor = () => {
+    const colors = Object.keys(recieveColors);
+    const randomColorIndex = Math.floor(Math.random() * colors.length);
+    return recieveColors[colors[randomColorIndex]] as keyof ReceiveColors
+  };
   const isFirstMessageOfDay = (currentMessage: any, previousMessage: any) => {
     if (!previousMessage) {
       return true;
@@ -105,7 +112,7 @@ const ChatPage = () => {
               <Message
                 key={index}
                 message={message}
-               
+                color={getRandomColor() as string}
               />
               : null}
             {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}

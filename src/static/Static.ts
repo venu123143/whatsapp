@@ -1,12 +1,14 @@
 // export const base_url = process.env.REACT_APP_CLIENT_URL
-import p2 from "../assets/venuprofile.jpg"
+// import p2 from "../assets/venuprofile.jpg"
 
 export interface Users {
     message: string;
     time: string;
     unreadCount?: number;
 }
-
+export interface ReceiveColors {
+    [key: string]: string;
+};
 {/* <section className={`${isCurrentLoading === true ? "block shadow-lg bg-black bg-opacity-70 w-full h-full m-auto" : "hidden"} cursor-pointer group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
             {
               isCurrentLoading &&
@@ -41,7 +43,7 @@ export const powerStarImgs = [
     "https://i.pinimg.com/564x/c5/6c/92/c56c92f6dd761932196c74fd09891d9b.jpg"
 ]
 
-export const recieveColors = {
+export const recieveColors: ReceiveColors = {
     red: "text-red-500",
     green: "text-purple-500",
     yellow: "text-yellow-600",
