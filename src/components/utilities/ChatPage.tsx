@@ -104,10 +104,8 @@ const ChatPage = () => {
             {message.msgType === "text" ?
               <Message
                 key={index}
-                message={message.message}
-                date={message.date}
-                right={message.right}
-                seen={message.seen}
+                message={message}
+               
               />
               : null}
             {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}

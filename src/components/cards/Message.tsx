@@ -6,37 +6,30 @@ import { RootState } from "../../Redux/store";
 import React, { useEffect, useRef, useState } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
-import { FaCircleChevronDown } from "react-icons/fa6";
+import { FaCircleChevronDown, FaCircleUser } from "react-icons/fa6";
+import { ChatMessage } from "../../Redux/reducers/msg/MsgReducer";
 
-const Message = ({ right, message, date, seen }: any) => {
+const Message = ({ message }: { message: ChatMessage }) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
     const [optionPosition, setOptionPosition] = useState('')
     const messageRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleScroll = () => {
-            if (messageRef.current) {
-                const { top } = messageRef.current.getBoundingClientRect();
-                const screenHeight = window.innerHeight;
-                const isMessageAtTop = top <= screenHeight / 2;
-                if (isMessageAtTop) {
-                    setOptionPosition('bottom')
-                } else {
-                    setOptionPosition('top');
-                }
+        if (messageRef.current) {
+            const { top } = messageRef.current.getBoundingClientRect();
+            const screenHeight = window.innerHeight;
+            const isMessageAtTop = top <= screenHeight / 2;
+            if (isMessageAtTop) {
+                setOptionPosition('bottom')
+            } else {
+                setOptionPosition('top');
             }
-        };
-        handleScroll();
-        window.addEventListener('scroll', handleScroll);
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
+        }
     }, []);
-    function renderMessageWithLinks(message: string) {
+    function renderMessageWithLinks(message: ChatMessage) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return message.split(urlRegex).map((part, index) => {
+        return message.message.split(urlRegex).map((part, index) => {
             if (part.match(urlRegex)) {
                 return <a key={index} href={part} target="_blank" className="text-[#53bded] hover:text-[#111b21] focus:text-[#0056b3] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
             } else {
@@ -50,42 +43,44 @@ const Message = ({ right, message, date, seen }: any) => {
     }
 
     return (
-        <div ref={messageRef} className={`flex ${right === true ? null : "flex-row-reverse"} `}>
-            <p className={`${right === true
+        <div ref={messageRef} className={`flex ${message.right === true ? null : "flex-row-reverse"} `}>
+            <div className={`${message.right === true
                 ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
                 : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
                 } group  relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `} >
+
+                <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? "block" : "hidden"} text-yellow-600 font-Rubik tracking-wide font-[450] text-[.91rem]`}>~ {message?.senderName}</h3>
                 <span className="break-words">
                     {renderMessageWithLinks(message)}
                 </span>
                 <span className=" flex h-fit w-fit ml-auto items-end justify-end">
                     <span className="text-[10px] text-[#ffffff99]">
-                        {new Date(date).toLocaleTimeString("en-US", {
+                        {new Date(message.date).toLocaleTimeString("en-US", {
                             hour: "numeric",
                             hour12: true,
                             minute: "numeric",
                         })}
-                        {seen === true ?
+                        {message.seen === true ?
                             <BiCheckDouble
-                                className={`${right === true ? "inline text-[#4FB6EC]" : "hidden"
+                                className={`${message.right === true ? "inline text-[#4FB6EC]" : "hidden"
                                     }`}
                                 size={20}
                             /> :
                             friends[currentUserIndex]?.online_status === "true" ?
                                 <BiCheckDouble
-                                    className={`${right === true ? "inline text-[#ffffff99]" : "hidden"
+                                    className={`${message.right === true ? "inline text-[#ffffff99]" : "hidden"
                                         }`}
                                     size={20}
                                 /> :
                                 <BiCheck
-                                    className={`${right === true ? "inline text-[#f0f2f5]" : "hidden"
+                                    className={`${message.right === true ? "inline text-[#f0f2f5]" : "hidden"
                                         }`}
                                     size={20}
                                 />
 
                         }
                     </span>
-                    <span className={`${right === true ? "bg-[#008069] " : "bg-[#233138] "} 
+                    <span className={`${message.right === true ? "bg-[#008069] " : "bg-[#233138] "} 
                     absolute top-0 right-2 group-hover:translate-y-0 translate-y-5 group-hover:visible invisible transition-all shadow-sm
                      shadow-black  p-1 rounded-b-full sm:cursor-pointer`}
                         onClick={handleToggleOptions}>
@@ -93,7 +88,7 @@ const Message = ({ right, message, date, seen }: any) => {
                     </span>
                 </span>
                 <div
-                    className={`${optionPosition === 'bottom' ? right === true ? "top-12 right-0" : "-right-52 top-5" : right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
+                    className={`${optionPosition === 'bottom' ? message.right === true ? "top-12 right-0" : "-right-52 top-5" : message.right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
                     ${options ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                  transition-all ease-in-out origin-top-right dropdown z-10 `}>
                     <div className="">
@@ -106,9 +101,16 @@ const Message = ({ right, message, date, seen }: any) => {
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>
                     </div>
                 </div>
-            </p>
+            </div>
+            {/* <div className={`${right === false ? "block" : "hidden "}`}>
+                {value?.profile ? (
+                    <img src={value.profile} alt="profile image" className="rounded-full h-[50px] w-[50px] object-cover" />
+                ) : (
+                    <FaCircleUser size={50} className="text-slate-400" />
+                )}
+            </div> */}
 
-            {right === true ? (
+            {message.right === true ? (
                 <span>
                     <svg
                         className={`ml-auto text-[#008069]  block align-middle`}

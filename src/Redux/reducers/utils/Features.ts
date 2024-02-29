@@ -1,6 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getAllData } from "./utilService";
-import { users } from "../../../static/Static";
 // import io from "socket.io-client"
 
 interface ActiveChat {
@@ -12,7 +11,6 @@ interface ActiveChat {
 interface InitialState {
   contacts: boolean;
   editmsg: boolean;
-  users: Array<any>;
   activeChat: ActiveChat;
   // socket: any;
   createContact: boolean;
@@ -29,7 +27,6 @@ interface InitialState {
 const initialState: InitialState = {
   contacts: false,
   editmsg: false,
-  users: users,
   activeChat: {
     name: "",
     id: "",
@@ -108,11 +105,6 @@ export const FeatureSlice = createSlice({
     setCurrentIndex: (state, action) => {
       state.currentIndex = action.payload
     }
-  },
-  extraReducers: (builder) => {
-    builder.addCase(getAllUsers.fulfilled, (state, action) => {
-      state.users = action.payload;
-    });
   },
 });
 

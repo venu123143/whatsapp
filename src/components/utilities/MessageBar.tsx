@@ -26,13 +26,14 @@ const MessageBar = () => {
     event.stopPropagation();
     setShowEmoji(!showEmoji)
   }
-  const handleAddEmoji = (emoji: EmojiClickData) => {    
-    setMessage(message +' ' + emoji.unified)
+  const handleAddEmoji = (emoji: EmojiClickData) => {
+    setMessage(message + ' ' + emoji.unified)
   }
 
   const handleSendMsg = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let conn_type = friends[currentUserIndex] && friends[currentUserIndex].users ? "group" : "onetoone"
+    let users = friends[currentUserIndex] && friends[currentUserIndex].users ? friends[currentUserIndex].users : null
     if (message.trim() !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
       const serializedValues: ChatMessage = {
         message: message.trim(),
@@ -42,7 +43,9 @@ const MessageBar = () => {
         senderId: user?.socket_id as string,
         conn_type: conn_type,
         recieverId: friends[currentUserIndex].socket_id,
-        seen: false
+        seen: false,
+        users: users as any,
+        senderName: user?.name ? user.name : user?.mobile as string
       };
       socket.emit("send_message", serializedValues);
       dispatch(handleSendMessage(serializedValues));

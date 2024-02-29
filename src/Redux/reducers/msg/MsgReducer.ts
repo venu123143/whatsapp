@@ -73,11 +73,13 @@ export interface ChatMessage {
     date: string;
     right: boolean;
     msgType: string;
-    senderId: string;
+    senderId: string
     recieverId: string;
     conn_type: string;
     seen: boolean;
     image?: any
+    users?: UserState[];
+    senderName?: string;
 }
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
     try {
@@ -260,6 +262,7 @@ const msgSlice = createSlice({
         }).addCase(getAllUsers.rejected, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.message = action.payload?.message
+            window.location.reload();
             toast.error(state.message, {
                 position: 'top-right'
             })
@@ -274,6 +277,7 @@ const msgSlice = createSlice({
             state.isLoading = false
             state.isError = true
             state.isSuccess = false
+            window.location.reload();
             state.message = action.payload?.message
             toast.error(state.message, {
                 position: 'top-right'

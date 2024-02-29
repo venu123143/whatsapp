@@ -41,7 +41,9 @@ const Home = () => {
         socket.emit("get_all_messages", "friends")
         onReload = false
       }
+      
       socket.on("get_friends", (friends) => {
+        
         dispatch(handleSetFriends(friends))
       })
       socket.on("get_all_messages_on_reload", (friends) => {
@@ -68,7 +70,8 @@ const Home = () => {
 
   useEffect(() => {
     if (socket.connected) {
-      socket.on("recieve_message", (data: ChatMessage) => {        
+      socket.on("recieve_message", (data: ChatMessage) => {    
+            
         setLstMsg({ ...data, right: false })
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
@@ -86,7 +89,6 @@ const Home = () => {
         if (findUserIndex === -1) {
           const user = users.find((user: CommonProperties) => user.socket_id === lstMsg.senderId);
           if (user) {
-            console.log("calling 2");
             socket.emit("add_friend", user);
             socket.on("get_friends", (friend) => {
               dispatch(handleSetFriends(friend))

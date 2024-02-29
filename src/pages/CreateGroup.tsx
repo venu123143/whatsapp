@@ -22,16 +22,16 @@ const CreateGroup = () => {
     // const [profile, setProfile] = useState("")
 
     const handleCreateGroup = () => {
-        if (groupName === "") {
+        if (groupName.trim() === "") {
             window.alert("group name is required.")
         } else if (selectedUsersToGroup.length <= 0) {
             window.alert("select atleast one user to create group.")
         } else {
-            setGroupName("")
-            dispatch(createGroup({ name: groupName, users: selectedUsersToGroup }))
+            dispatch(createGroup({ name: groupName.trim(), users: selectedUsersToGroup }))
             dispatch(toggleCreateContact(false))
             dispatch(handleProfileOpen(true))
             dispatch(toggleContacts(false))
+            setGroupName("")
         }
     }
     useEffect(() => {
