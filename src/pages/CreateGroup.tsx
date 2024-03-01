@@ -15,11 +15,12 @@ import { SocketContext } from "../pages/Home"
 const CreateGroup = () => {
     // const { user } = useSelector((state: RootState) => state.auth)
     const socket = useContext(SocketContext)
-
+    const [groupImage, setGroupImage] = useState<File | null>(null);
     const dispatch: AppDispatch = useDispatch();
-    const { createGrp, selectedUsersToGroup, isLoading, singleGroup } = useSelector((state: RootState) => state.msg);
+    const { createGrp, selectedUsersToGroup, isLoading, isSuccess, singleGroup } = useSelector((state: RootState) => state.msg);
     const [groupName, setGroupName] = useState("")
     // const [profile, setProfile] = useState("")
+    const formData = new FormData()
 
     const handleCreateGroup = () => {
         if (groupName.trim() === "") {
@@ -27,11 +28,21 @@ const CreateGroup = () => {
         } else if (selectedUsersToGroup.length <= 0) {
             window.alert("select atleast one user to create group.")
         } else {
-            dispatch(createGroup({ name: groupName.trim(), users: selectedUsersToGroup }))
+            formData.append('name', groupName.trim())
+            formData.append('users', JSON.stringify(selectedUsersToGroup))
+            if (groupImage !== null) {
+                formData.append('images', groupImage)
+            }
+
+            dispatch(createGroup(formData)).then(() => {
+                if (isSuccess) {
+                    setGroupName("")
+                    setGroupImage(null)
+                }
+            })
             dispatch(toggleCreateContact(false))
             dispatch(handleProfileOpen(true))
             dispatch(toggleContacts(false))
-            setGroupName("")
         }
     }
     useEffect(() => {
@@ -39,21 +50,53 @@ const CreateGroup = () => {
             socket.emit("create_group", singleGroup)
         }
     }, [singleGroup, socket])
+
+    // Function to handle image selection
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (files && files.length > 0) {
+            setGroupImage(files[0]);
+        }
+    }
+    const handleCloseCreateGroup = () => {
+        dispatch(toggleCreateGroup(false))
+        setGroupImage(null)
+        setGroupName("")
+    }
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${createGrp === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="hover:shadow-blue-500 hover:shadow-lg icons flex items-center gap-4  "
-                onClick={() => dispatch(toggleCreateGroup(false))}>
+                onClick={handleCloseCreateGroup}>
                 <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
                 <h1 className="text-white font-[400] ">New Group</h1>
             </div>
             <section className=" py-3 px-5 items-center gap-3">
                 <div className={` transition-all ease-linear duration-200 delay-500  flex justify-center`}>
-                    <div className="bg-[#111b21] hover:bg-[#0c1317] hover:bg-opacity-90 hover:shadow-orange-500 shadow-lg relative group rounded-full p-3 cursor-pointer hover:opacity-90 mt-10">
-                        <PiUserLight size={180} className="hover:text-gray-500" />
-                        <div className="hidden cursor-pointer group-hover:block absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-10 items-center">
-                            <AiOutlineCamera className="text-white " size={40} />
-                        </div>
-                    </div>
+                    {/* Display selected image */}
+                    {groupImage !== null ? (
+                        <img src={URL.createObjectURL(groupImage)} alt="Selected Group Image" className=" w-48 h-48 sm:cursor-pointer hover:shadow-orange-500 shadow-lg  object-cover rounded-full mt-10" />
+                    ) :
+                        <>
+                            <label htmlFor="groupImage" className="bg-[#111b21] hover:bg-[#0c1317] hover:bg-opacity-90 hover:shadow-orange-500 shadow-lg relative group rounded-full p-3 sm:cursor-pointer hover:opacity-90 mt-10">
+                                <PiUserLight size={180} className="hover:text-gray-500" />
+                                <div className={`${isLoading === true ? "block" : "group-hover:block"} cursor-pointer  absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-10 items-center`}>
+                                    {
+                                        isLoading === true ?
+                                            <ClipLoader
+                                                color="#36d7b7"
+                                                loading={false}
+                                                aria-label="Loading Spinner"
+                                                speedMultiplier={.71}
+                                                data-testid="loader"
+                                            />
+                                            :
+                                            <AiOutlineCamera className="text-white " size={40} />
+                                    }
+                                </div>
+                            </label>
+                            <input id="groupImage" onChange={handleImageChange} accept=".jpg, .jpeg, .png" type="file" className="hidden" />
+                        </>
+                    }
                 </div>
                 <div className="mt-10 m-auto w-full flex flex-col gap-4">
                     <div className="relative h-11 w-full min-w-[200px]">

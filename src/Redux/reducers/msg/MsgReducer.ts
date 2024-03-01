@@ -119,7 +119,7 @@ export const updateGroup = createAsyncThunk('authSlice/updateGroup', async (data
     }
 })
 
-export const createGroup = createAsyncThunk('authSlice/createGroup', async (data: { name: string, users: string[], profile?: string }, thunkAPI) => {
+export const createGroup = createAsyncThunk('authSlice/createGroup', async (data: FormData, thunkAPI) => {
     try {
         const res = await msgService.createGroup(data)
         return res
