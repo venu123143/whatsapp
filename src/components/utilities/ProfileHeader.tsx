@@ -58,7 +58,7 @@ const ProfileHeader = () => {
                                 <FaRegUserCircle size={40} className="text-black bg-white hover:bg-opacity-80 rounded-full cursor-pointer " />
                             </div>
                         ) :
-                            <img onClick={() => dispatch(handleProfileOpen(!profileOpen))} src={user?.profile} className="object-cover cursor-pointer hover:bg-black hover:opacity-50 z-0 rounded-full w-[40px] h-[40px]" alt="Profile" />
+                            <img onClick={() => dispatch(handleProfileOpen(!profileOpen))} src={user?.profile} className="object-cover cursor-pointer hover:bg-black rounded-full w-[40px] h-[40px]" alt="Profile" />
                     }
                 </div>
                 <div className=" flex items-center gap-2">

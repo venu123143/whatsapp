@@ -77,7 +77,7 @@ const ChatHeader = () => {
         )}
       </div>
       <div className="mr-auto">
-        <span className="username font-bold">{friends[currentUserIndex]?.name}</span>
+        <span className="username font-bold">{friends[currentUserIndex]?.name ? friends[currentUserIndex]?.name : friends[currentUserIndex]?.mobile }</span>
         <span className="time text-sm  line-clamp-1"> {grpUsers !== ""
           ? grpUsers
           : friends[currentUserIndex]?.online_status === "true"

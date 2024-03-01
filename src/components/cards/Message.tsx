@@ -89,15 +89,16 @@ const Message = ({ message, color }: { message: ChatMessage, color: string }) =>
                 </span>
                 <div
                     className={`${optionPosition === 'bottom' ? message.right === true ? "top-12 right-0" : "-right-52 top-5" : message.right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
-                    ${options ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-10 w-0 opacity-0"} 
-                 transition-all ease-in-out origin-top-right dropdown z-10 `}>
+                    ${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
+                    msgOptions `}>
                     <div className="">
-                        <button className="options" role="menuitem" id="menu-item-0">Edit Message</button>
-                        <Link to="#" className="options">Delete Message</Link>
                         <button className="options" role="menuitem" id="menu-item-1">
-                            <span>Reply</span>
+                            <span>reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>
+                        <button className="options" role="menuitem" id="menu-item-0">edit</button>
+                        <Link to="#" className="options">delete Me</Link>
+                        <Link to="#" className="options">delete All</Link>
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>
                     </div>
                 </div>

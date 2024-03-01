@@ -66,7 +66,7 @@ const ContactsList = () => {
                 <AiOutlineArrowLeft className="text-white sm:cursor-pointer w-9" />
                 <h1 className="text-white font-[200] sm:font-[400] ">New Chat</h1>
             </div>
-            <section className="m-auto w-full">
+            <section className=" w-full">
                 <div className=" header-bg flex w-full py-3 px-5 items-center gap-3">
                     <div className="border border-gray-500 flex gap-5 py-2  w-full  rounded-lg ">
                         <div className="ml-4 flex items-center justify-center">
@@ -109,7 +109,6 @@ const ContactsList = () => {
                                 </div>
                             );
                         }
-
                         return null; // Don't render the section if there are no matching users
                     })}
             </section>

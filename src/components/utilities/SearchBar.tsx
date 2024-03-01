@@ -13,9 +13,9 @@ const SearchBar = () => {
             <div className="bg-[#111b21] flex py-3 pl-5 items-center gap-3">
                 <div className="bg-[#202c33] flex items-center gap-5 flex-grow px-3 py-1 rounded-lg">
                     <div>
-                        <BsSearch className="time cursor-pointer text-l" />
+                        <BsSearch className="time cursor-pointer text-lg" />
                     </div>
-                    <div>
+                    <div className="w-full">
                         <input
                             type="text"
                             value={chatSearchValue}

@@ -18,11 +18,12 @@ const Users = () => {
   const { user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
-  const handleOnClick = async (index: number) => {
-    dispatch(setCurrentGrpOrUser(index))
+  const handleOnClick = async (friend: CommonProperties) => {
+    const friendIndex = friends.findIndex(f => f === friend);
+    dispatch(setCurrentGrpOrUser(friendIndex))
     const data = {
       senderId: user?.socket_id,
-      recieverId: friends[index].socket_id
+      recieverId: friends[friendIndex].socket_id
     }
     if (socket.connected) {
       socket.emit('online_status', data)
@@ -86,7 +87,7 @@ const Users = () => {
               friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
                 // const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length
                 return (
-                  <UserCard key={index} value={each} handleOnClick={() => handleOnClick(index)} />
+                  <UserCard key={index} value={each} handleOnClick={() => handleOnClick(each)} />
                 )
               })}
         </div>

@@ -78,9 +78,14 @@ const CreateContact = () => {
             window.alert("Please select at least one user to create a group.");
         }
     }
+    const hanldeDiscardChanges = () => {
+        dispatch(toggleCreateContact(false))
+        setSelectedUsers([])
+        setSearchInput("")
+    }
     return (
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${createContact === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
-            <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={() => dispatch(toggleCreateContact(false))}>
+            <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={hanldeDiscardChanges}>
                 <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
                 <h1 className="text-white font-medium tracking-wide">Add Members to Group</h1>
             </div>
@@ -89,7 +94,7 @@ const CreateContact = () => {
                     <div className="flex-wrap flex max-h-[200px] overflow-y-scroll custom-scrollbar">
                         {
                             selectedUsers.map((user, idx) => (
-                                <MiniUserCard key={idx} name={user.name} profile={user.profile} onClick={() => handleRemoveUser(user._id)} />
+                                <MiniUserCard key={idx} name={user.name ? user.name : user.mobile} profile={user.profile} onClick={() => handleRemoveUser(user._id)} />
                             ))
                         }
                     </div>
@@ -137,7 +142,7 @@ const CreateContact = () => {
                     })}
 
             </section>
-            <section onClick={createGroup} className="cursor-pointer  hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
+            <section onClick={createGroup} className="cursor-pointer  mt-auto hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
                 <div className="col-span-1 flex justify-center ">
                     <AiOutlineArrowRight size={30} className="text-[#00a884] " />
                 </div>

@@ -62,6 +62,10 @@ header color- 233138
     @apply bg-[#202c33] absolute sm:block hidden w-56 rounded-md shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
 }
 
+.msgOptions {
+    @apply transition-all duration-300 rounded-sm delay-75  ease-in-out origin-top-right w-32 z-10 bg-[#202c33] absolute sm:block hidden shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
+}
+
 .options {
     @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:bg-gray-700 dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2 text-lg
 }
