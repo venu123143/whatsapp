@@ -25,6 +25,7 @@ export interface AppState {
     userName: string;
     createGrp: boolean;
     selectedUsersToGroup: any;
+    replyMessage: any;
 }
 export interface CommonProperties {
     socket_id: string;
@@ -67,6 +68,7 @@ const initialState: AppState = {
     userName: "",
     selectedUsersToGroup: [],
     currentUserIndex: null,
+    replyMessage: null,
 };
 export interface ChatMessage {
     message: string;
@@ -80,6 +82,7 @@ export interface ChatMessage {
     image?: any
     users?: UserState[];
     senderName?: string;
+    replyFor?: any;
 }
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
     try {
@@ -250,6 +253,9 @@ const msgSlice = createSlice({
         },
         handleSetAllUsersChat: (state, action) => {
             state.friends = action.payload
+        },
+        handleSetReply: (state, action) => {
+            state.replyMessage = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -345,7 +351,7 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,
+export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,handleSetReply,
     updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
     storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
 export default msgSlice.reducer

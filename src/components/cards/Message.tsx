@@ -1,19 +1,20 @@
 import { BiCheckDouble, BiCheck } from "react-icons/bi";
 import { AiOutlineDown } from "react-icons/ai";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { RootState } from "../../Redux/store";
-import { RootState } from "../../Redux/store";
+import { AppDispatch, RootState } from "../../Redux/store";
 import React, { useEffect, useRef, useState } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
 import { FaCircleChevronDown } from "react-icons/fa6";
-import { ChatMessage } from "../../Redux/reducers/msg/MsgReducer";
+import { ChatMessage, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
 
 const Message = ({ message, color }: { message: ChatMessage, color: string }) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
     const [optionPosition, setOptionPosition] = useState('')
     const messageRef = useRef<HTMLDivElement>(null);
+    const dispatch: AppDispatch = useDispatch()
 
     useEffect(() => {
         if (messageRef.current) {
@@ -41,16 +42,27 @@ const Message = ({ message, color }: { message: ChatMessage, color: string }) =>
         event.stopPropagation();
         setOptions(!options)
     }
-
+    const handleTagReply = () => {
+        dispatch(handleSetReply(message))
+        setOptions(false)
+    }
     return (
         <div ref={messageRef} className={`flex ${message.right === true ? null : "flex-row-reverse"} `}>
             <div className={`${message.right === true
                 ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
                 : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
-                } group  relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-2 py-1 `} >
+                } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-1 py-1 `} >
 
                 <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
-                <span className="break-words">
+                {
+                    message.replyFor && (
+                        <div className={`${message.right === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-1 mb-1 rounded-lg font-[450] border-l-4`}>
+                            <p className={`${message.right === true ? "text-[#06cf9c]" : "text-[#53bdeb]"} text-[.91rem]  line-clamp-1`}>{message.replyFor?.senderName}</p>
+                            <p className={`${message.right === true ? "text-[#ffffff99]" : "text-slate-500 "}text-[.91rem]  line-clamp-1`}>{message.replyFor?.message}</p>
+                        </div>
+                    )
+                }
+                <span className={`"break-words ${message.replyFor !== null ? "px-1" : null} `}>
                     {renderMessageWithLinks(message)}
                 </span>
                 <span className=" flex h-fit w-fit ml-auto items-end justify-end">
@@ -91,8 +103,8 @@ const Message = ({ message, color }: { message: ChatMessage, color: string }) =>
                     className={`${optionPosition === 'bottom' ? message.right === true ? "top-12 right-0" : "-right-52 top-5" : message.right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
                     ${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                     msgOptions `}>
-                    <div className="">
-                        <button className="options" role="menuitem" id="menu-item-1">
+                    <div className="" >
+                        <button onClick={handleTagReply} className="options" role="menuitem" id="menu-item-1">
                             <span>reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>

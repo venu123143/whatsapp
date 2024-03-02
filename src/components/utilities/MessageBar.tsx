@@ -11,15 +11,14 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage, ChatMessage } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, ChatMessage, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const socket = useContext(SocketContext);
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { user } = useSelector((store: RootState) => store.auth);
-  const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
-  const [tagReply, setTagReply] = useState<boolean>(false);
+  const { currentUserIndex, friends, replyMessage } = useSelector((state: RootState) => state.msg);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -45,11 +44,15 @@ const MessageBar = () => {
         recieverId: friends[currentUserIndex].socket_id,
         seen: false,
         users: users as any,
-        senderName: user?.name ? user.name : user?.mobile as string
+        senderName: user?.name ? user.name : user?.mobile as string,
+        replyFor: replyMessage
       };
       socket.emit("send_message", serializedValues);
       dispatch(handleSendMessage(serializedValues));
       setMessage('')
+      if (replyMessage !== null) {
+        dispatch(handleSetReply(null))
+      }
     }
   }
   useEffect(() => {
@@ -70,15 +73,19 @@ const MessageBar = () => {
   }
   return (
     <>
-      <div className={` bg-[#202c33] transition-all ease-in-out duration-150 origin-bottom-right relative  w-full m-auto ${tagReply === true ? " scale-y-100  pt-2 " : "scale-y-0 h-0"}`}>
-        <div className="bg-[#111b21] mr-[80px]  flex flex-col justify-center px-2 py-1 rounded-lg mx-8 border-l-4 border-green-500">
-          <p className="text-[.91rem] text-green-500 line-clamp-1">user name</p>
-          <p className="text-[.91rem] text-slate-500 line-clamp-1">this is text msg</p>
-        </div>
-        <div onClick={() => setTagReply(false)} className="absolute top-4 right-4 p-2  hover:bg-black rounded-full cursor-pointer">
-          <RxCross2 size={25} className="text-white" title="cancel" />
-        </div>
-      </div>
+      {
+        replyMessage && (
+          <div className={` bg-[#202c33] transition-all ease-in-out duration-150 origin-bottom-right relative  w-full m-auto ${replyMessage !== null ? " scale-y-100  pt-2 " : "scale-y-0 h-0"}`}>
+            <div className="bg-[#111b21] mr-[80px]  flex flex-col justify-center px-2 py-1 rounded-lg mx-8 border-l-4 border-green-500">
+              <p className="text-[.91rem] text-green-500 line-clamp-1">{replyMessage?.senderName ? replyMessage.senderName : 'You'}</p>
+              <p className="text-[.91rem] text-slate-500 line-clamp-1">{replyMessage?.message}</p>
+            </div>
+            <div onClick={() => dispatch(handleSetReply(null))} className="absolute top-4 right-4 p-2  hover:bg-black rounded-full cursor-pointer">
+              <RxCross2 size={25} className="text-white" title="cancel" />
+            </div>
+          </div>
+        )
+      }
       <form className="h-14 w-full" onSubmit={handleSendMsg}>
         <div className="bg-[#202c33] text-white h-14 px-4 flex items-center gap-2 sm:gap-6 ">
           <>
