@@ -26,7 +26,7 @@ const MessageBar = () => {
     setShowEmoji(!showEmoji)
   }
   const handleAddEmoji = (emoji: EmojiClickData) => {
-    setMessage(message + ' ' + emoji.unified)
+    setMessage(message + ' ' + emoji.emoji)
   }
 
   const handleSendMsg = (e: React.FormEvent<HTMLFormElement>) => {

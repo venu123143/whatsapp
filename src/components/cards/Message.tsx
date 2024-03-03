@@ -7,9 +7,10 @@ import React, { useEffect, useRef, useState } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
 import { FaCircleChevronDown } from "react-icons/fa6";
-import { ChatMessage, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
+import { ChatMessage, handleEditMsg, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
+import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
-const Message = ({ message, color }: { message: ChatMessage, color: string }) => {
+const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
     const [optionPosition, setOptionPosition] = useState('')
@@ -46,8 +47,14 @@ const Message = ({ message, color }: { message: ChatMessage, color: string }) =>
         dispatch(handleSetReply(message))
         setOptions(false)
     }
+    const editMessage = () => {
+        dispatch(toggleEditMessage(true))
+        let users = message.conn_type === "group" ? friends[currentUserIndex].users : null
+        dispatch(handleEditMsg({ ...message, index: index, users }))
+    }
+
     return (
-        <div ref={messageRef} className={`flex ${message.right === true ? null : "flex-row-reverse"} `}>
+        <div ref={messageRef} id={`message-${message.date}`} className={`flex ${message.right === true ? null : "flex-row-reverse"} `}>
             <div className={`${message.right === true
                 ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
                 : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
@@ -56,10 +63,10 @@ const Message = ({ message, color }: { message: ChatMessage, color: string }) =>
                 <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
                 {
                     message.replyFor && (
-                        <div className={`${message.right === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-1 mb-1 rounded-lg font-[450] border-l-4`}>
-                            <p className={`${message.right === true ? "text-[#06cf9c]" : "text-[#53bdeb]"} text-[.91rem]  line-clamp-1`}>{message.replyFor?.senderName}</p>
+                        <a href="#" onClick={() => scrollToMessage(message.replyFor.date)} className={`${message.right === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-1 mb-1 rounded-lg font-[450] border-l-4`}>
+                            <p className={`${message.right === true ? "text-[#06cf9c]" : "text-[#53bdeb]"} text-[.91rem] font-semibold line-clamp-1`}>{message.replyFor?.senderName}</p>
                             <p className={`${message.right === true ? "text-[#ffffff99]" : "text-slate-500 "}text-[.91rem]  line-clamp-1`}>{message.replyFor?.message}</p>
-                        </div>
+                        </a>
                     )
                 }
                 <span className={`"break-words ${message.replyFor !== null ? "px-1" : null} `}>
@@ -108,7 +115,7 @@ const Message = ({ message, color }: { message: ChatMessage, color: string }) =>
                             <span>reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>
-                        <button className="options" role="menuitem" id="menu-item-0">edit</button>
+                        <button onClick={editMessage} className="options" role="menuitem" id="menu-item-0">edit</button>
                         <Link to="#" className="options">delete Me</Link>
                         <Link to="#" className="options">delete All</Link>
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>

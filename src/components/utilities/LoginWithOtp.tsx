@@ -50,6 +50,7 @@ const LoginWithOtp = () => {
                     setTimeout(() => codesRef.current[idx - 1]?.focus(), 10);
                 } else {
                     e.preventDefault();
+                    handleVerifyOtp(e);
                 }
             });
         });
@@ -60,7 +61,7 @@ const LoginWithOtp = () => {
             mobile: '',
         },
         validationSchema: otpSchema,
-        onSubmit: values => {
+        onSubmit: (values) => {
             dispatch(sendOtp(values.mobile))
             setSendOtp(true)
             // formik.resetForm()
@@ -69,6 +70,13 @@ const LoginWithOtp = () => {
 
     const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        // Check if all fields are filled
+        const isAllFieldsFilled = otp.every(value => value.trim() !== "");
+
+        if (!isAllFieldsFilled) {
+            setErr("Please Enter Correct Otp");
+            return;
+        }
         try {
             await otpValid.validate({ otp }, { abortEarly: false });
             dispatch(VerifyOtp({ mobile: formik.values.mobile, otp }))
@@ -103,7 +111,7 @@ const LoginWithOtp = () => {
                                         <h1 className="text-xl font-bold leading-tight text-center tracking-tight text-gray-900 md:text-2xl dark:text-white">
                                             Enter Your Otp
                                         </h1>
-                                        <form onSubmit={handleVerifyOtp} action="#" method="post">
+                                        <form onSubmit={handleVerifyOtp}>
                                             <div className="flex flex-col">
                                                 <span className="text-red-500 text-center font-[450]">{err !== "" ? err : null}</span>
                                                 <div className="flex flex-row items-center justify-between mx-auto w-full max-w-xs">
@@ -116,12 +124,11 @@ const LoginWithOtp = () => {
                                                     ))}
                                                 </div>
                                             </div>
-
                                             <div className="text-center">
                                                 <button type="submit" className="bg-[#00a884] shadow-xl hover:scale-105 transition-all border-black border hover:border-2 button my-[10px] text-white text-[0.91rem] px-[25px] py-[6px] rounded-[25px]">
                                                     Submit
                                                 </button> <br />
-                                                <button  onClick={() => setSendOtp(false)} className="hover:underline dark:text-white my-[10px] text-[0.91rem] px-[25px] py-[6px] rounded-[25px]">
+                                                <button onClick={() => setSendOtp(false)} className="hover:underline dark:text-white my-[10px] text-[0.91rem] px-[25px] py-[6px] rounded-[25px]">
                                                     Cancel
                                                 </button>
                                             </div>

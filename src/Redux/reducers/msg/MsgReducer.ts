@@ -26,6 +26,7 @@ export interface AppState {
     createGrp: boolean;
     selectedUsersToGroup: any;
     replyMessage: any;
+    editMessage: any;
 }
 export interface CommonProperties {
     socket_id: string;
@@ -69,6 +70,7 @@ const initialState: AppState = {
     selectedUsersToGroup: [],
     currentUserIndex: null,
     replyMessage: null,
+    editMessage: null,
 };
 export interface ChatMessage {
     message: string;
@@ -256,6 +258,15 @@ const msgSlice = createSlice({
         },
         handleSetReply: (state, action) => {
             state.replyMessage = action.payload
+        },
+        handleEditMsg: (state, action) => {
+            state.editMessage = action.payload
+        },
+        updateChatMesssage: (state, action) => {
+            const friend = state.friends.find(frnd => frnd.socket_id === action.payload[0].recieverId);
+            if (friend) {
+                friend.chat = action.payload
+            }
         }
     },
     extraReducers: (builder) => {
@@ -351,7 +362,7 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat,handleSetReply,
+export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat, handleSetReply, handleEditMsg,
     updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
-    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser } = msgSlice.actions
+    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser, updateChatMesssage } = msgSlice.actions
 export default msgSlice.reducer

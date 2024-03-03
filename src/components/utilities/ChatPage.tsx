@@ -19,7 +19,7 @@ import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../pages/Home"
 import { recieveColors, ReceiveColors } from "../../static/Static";
 
-const ChatPage = () => {
+const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) => void }) => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
@@ -113,6 +113,8 @@ const ChatPage = () => {
                 key={index}
                 message={message}
                 color={getRandomColor() as string}
+                scrollToMessage={scrollToMessage}
+                index={index}
               />
               : null}
             {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}
@@ -120,7 +122,6 @@ const ChatPage = () => {
               : null}
           </div>
         )}
-
         {/* files  */}
         <div aria-orientation="vertical" aria-labelledby="menu-button"
           className={`attachedFiles ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"} `}
