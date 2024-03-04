@@ -22,6 +22,7 @@ interface InitialState {
   currentImage: any;
   zoomLevel: number;
   currentIndex: number | null;
+  contactInfo: boolean;
 }
 
 const initialState: InitialState = {
@@ -35,6 +36,7 @@ const initialState: InitialState = {
   },
   // socket: socket,
   createContact: false,
+  contactInfo: false,
   userName: "",
   about: "",
   nameEditClick: false,
@@ -104,6 +106,9 @@ export const FeatureSlice = createSlice({
     },
     setCurrentIndex: (state, action) => {
       state.currentIndex = action.payload
+    },
+    toggleContactInfo: (state, action) => {
+      state.contactInfo = action.payload
     }
   },
 });
@@ -121,7 +126,8 @@ export const {
   setCurrentImage,
   openfullScreen,
   setZoomLevel,
-  setCurrentIndex
+  setCurrentIndex,
+  toggleContactInfo
 } = FeatureSlice.actions;
 
 export default FeatureSlice.reducer;

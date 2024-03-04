@@ -8,6 +8,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { setCurrentGrpOrUser } from "../../Redux/reducers/msg/MsgReducer"
 import { AiOutlineArrowLeft } from "react-icons/ai"
+import { toggleContactInfo } from "../../Redux/reducers/utils/Features"
 // import { useSelector } from "react-redux"
 // import { RootState } from "../../Redux/store"
 const ChatHeader = () => {
@@ -53,13 +54,15 @@ const ChatHeader = () => {
     dispatch(setCurrentGrpOrUser(null))
     setDropdown(false);
   }
-
+  const handleOopenProfile = () => {
+    dispatch(toggleContactInfo(true))
+  }
   return (
     <div className="h-16  gap-2 sm:gap-5 px-4 py-3 flex justify-between items-center bg-[#202c33] ">
       <div onClick={handleCloseChat} className="sm:hidden block">
         <AiOutlineArrowLeft className="text-white" />
       </div>
-      <div className="flex items-center justify-center gap-6 chatList">
+      <div onClick={handleOopenProfile} className="flex sm:cursor-pointer items-center justify-center gap-6 chatList">
         {friends[currentUserIndex]?.profile ? (
           <div className="relative p-1">
             <img src={friends[currentUserIndex].profile} alt="profile image" className="w-[40px] h-[40px] rounded-full object-cover" />
@@ -76,9 +79,9 @@ const ChatHeader = () => {
           </div>
         )}
       </div>
-      <div className="mr-auto">
-        <span className="username font-bold">{friends[currentUserIndex]?.name ? friends[currentUserIndex]?.name : friends[currentUserIndex]?.mobile }</span>
-        <span className="time text-sm  line-clamp-1"> {grpUsers !== ""
+      <div className="mr-auto sm:cursor-pointer" onClick={handleOopenProfile}>
+        <span className="username font-bold">{friends[currentUserIndex]?.name ? friends[currentUserIndex]?.name : friends[currentUserIndex]?.mobile}</span>
+        <span className="time text-sm line-clamp-1 max-w-[600px]"> {grpUsers !== ""
           ? grpUsers
           : friends[currentUserIndex]?.online_status === "true"
             ? "online"

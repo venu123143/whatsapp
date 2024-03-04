@@ -115,7 +115,7 @@ const Home = () => {
   return (
     <>
       <SocketContext.Provider value={socket} >
-        <main className='w-full grid md:grid-cols-10'>
+        <main className='w-full overflow-hidden grid md:grid-cols-10'>
           <section className={`sm:col-span-3 sm:min-w-[300px] ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
             <Users />
           </section>

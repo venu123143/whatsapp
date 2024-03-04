@@ -6,6 +6,7 @@ import ChatPage from './ChatPage'
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import EditMsg from '../cards/EditMsg';
+import ContactInfo from '../../pages/ContactInfo';
 
 const Chat = () => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
@@ -47,6 +48,7 @@ const Chat = () => {
         </div>
         <MessageBar />
         <EditMsg message={editMessage} />
+        <ContactInfo />
       </div>
     </>
   )

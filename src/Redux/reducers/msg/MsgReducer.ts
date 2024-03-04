@@ -39,6 +39,7 @@ export interface CommonProperties {
     chat: any;
     online_status?: boolean | string;
     users?: UserState[],
+    admins?: UserState[],
     lastMessage: any;
     unreadCount: number;
 }
