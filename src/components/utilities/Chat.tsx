@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ChatHeader from './ChatHeader'
 import MessageBar from './MessageBar'
 import ChatPage from './ChatPage'
@@ -54,4 +54,4 @@ const Chat = () => {
   )
 }
 
-export default Chat
+export default React.memo(Chat)

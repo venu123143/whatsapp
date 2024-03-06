@@ -26,6 +26,7 @@ export interface AppState {
     createGrp: boolean;
     selectedUsersToGroup: any;
     replyMessage: any;
+    contactInfo: boolean;
     editMessage: any;
 }
 export interface CommonProperties {
@@ -72,6 +73,7 @@ const initialState: AppState = {
     currentUserIndex: null,
     replyMessage: null,
     editMessage: null,
+    contactInfo: false,
 };
 export interface ChatMessage {
     message: string;
@@ -150,10 +152,14 @@ const msgSlice = createSlice({
         handleChatSearchValue: (state, action: PayloadAction<string>) => {
             state.chatSearchValue = action.payload;
         },
+        toggleContactInfo: (state, action) => {
+            state.contactInfo = action.payload
+        },
         setCurrentGrpOrUser: (state, action) => {
             state.currentUserIndex = action.payload;
             state.isCurrentLoading = false
             state.chatSearchValue = ""
+            state.contactInfo = false
             if (state.currentUserIndex !== null) {
                 state.friends[state.currentUserIndex].unreadCount = 0
             }
@@ -365,5 +371,5 @@ const msgSlice = createSlice({
 
 export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat, handleSetReply, handleEditMsg,
     updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
-    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser, updateChatMesssage } = msgSlice.actions
+    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser, updateChatMesssage, toggleContactInfo } = msgSlice.actions
 export default msgSlice.reducer

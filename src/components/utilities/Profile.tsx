@@ -22,6 +22,7 @@ const Profile = () => {
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
   const [showOptions, setShowOptions] = useState<any>(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  console.log(profileOpen);
 
   const editAbout = () => {
     dispatch(handleAboutEditClick({ aboutEditClick: !aboutEditClick, about: user?.about }))
@@ -81,7 +82,7 @@ const Profile = () => {
   }
   return (
     <>
-      <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-10" : ""}`}>
+      <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
         <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={() => dispatch(handleProfileOpen(!profileOpen))}>
           <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
           <h1 className="text-white font-[400] ">Profile</h1>

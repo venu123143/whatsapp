@@ -20,7 +20,9 @@ const Users = () => {
 
   const handleOnClick = async (friend: CommonProperties) => {
     const friendIndex = friends.findIndex(f => f === friend);
-    dispatch(setCurrentGrpOrUser(friendIndex))
+    if (friendIndex !== -1) {
+      dispatch(setCurrentGrpOrUser(friendIndex))
+    }
     const data = {
       senderId: user?.socket_id,
       recieverId: friends[friendIndex].socket_id

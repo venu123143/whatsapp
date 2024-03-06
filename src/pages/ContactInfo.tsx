@@ -1,4 +1,4 @@
-import { toggleContactInfo } from "../Redux/reducers/utils/Features";
+import React from "react"
 import { AppDispatch, RootState } from '../Redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { RxCross2 } from 'react-icons/rx';
@@ -7,13 +7,27 @@ import { MdDelete } from "react-icons/md";
 import { MdBlock } from "react-icons/md";
 import { FaThumbsDown } from "react-icons/fa";
 import UserCard from '../components/cards/UserCard';
+import { UserState } from "../Redux/reducers/Auth/AuthReducer";
+import { setCurrentGrpOrUser, toggleContactInfo } from "../Redux/reducers/msg/MsgReducer";
+import { openfullScreen } from "../Redux/reducers/utils/Features";
+import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
 
 const ContactInfo = () => {
     const dispatch: AppDispatch = useDispatch();
-    const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
-    const { contactInfo } = useSelector((state: RootState) => state.features);
+    const { currentUserIndex, friends, contactInfo } = useSelector((state: RootState) => state.msg)
     const closeContact = () => {
         dispatch(toggleContactInfo(false))
+    }
+    let onClickUser = (user: UserState) => {
+        const friendIndex = friends.findIndex(f => f.socket_id === user.socket_id);
+        if (friendIndex !== -1) {
+            dispatch(setCurrentGrpOrUser(friendIndex))
+        } else {            
+            dispatch(handleProfileOpen(true))
+        }
+    }
+    const ShowFullImage = () => {
+        dispatch(openfullScreen({ currentImage: friends[currentUserIndex]?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
     }
     return (
         <div className={`h-screen  max-w-[350px] border-l border-black flex flex-col bg-black text-white fixed top-0 right-0 w-full transition-all ease-linear  duration-300 delay-150 ${contactInfo === true ? "-translate-x-0  z-20" : "translate-x-full"}`}>
@@ -27,7 +41,7 @@ const ContactInfo = () => {
                 <div className=' p-5 bg-[#111b21] space-y-5  sm:cursor-pointer'>
                     <div className='flex justify-center items-center'>
                         {friends[currentUserIndex]?.profile ? (
-                            <img src={friends[currentUserIndex]?.profile} className={` group cursor-pointer rounded-full h-[200px] w-[200px] object-cover`} alt="Profile" />
+                            <img onClick={ShowFullImage} src={friends[currentUserIndex]?.profile} className={` group cursor-pointer rounded-full h-[200px] w-[200px] object-cover`} alt="Profile" />
                         ) : (
                             <div className=" p-1">
                                 <FaCircleUser size={200} className="text-slate-400" />
@@ -47,12 +61,9 @@ const ContactInfo = () => {
                 <div className=''>
                     {
                         friends[currentUserIndex].users && friends[currentUserIndex].users?.slice().reverse().map((user, index) => {
+                            let admin = friends[currentUserIndex] && friends[currentUserIndex]?.admins!.some(admin => admin.socket_id === user.socket_id);
                             return (
-                                <div className='relative' key={index}>
-                                    <div className={`${true === true ? " block " : "hidden"} px-1 absolute top-3 right-3 text-[.71rem] rounded-sm bg-[#2a3942] text-[#aebac1]`}>Group Admin</div>
-                                    <UserCard key={index} value={user} contacts={true} />
-                                </div>
-
+                                <UserCard key={index} value={user} contacts={true} isAdmin={admin} handleOnClick={() => onClickUser(user)} />
                             )
                         })
                     }
@@ -76,4 +87,4 @@ const ContactInfo = () => {
     )
 }
 
-export default ContactInfo
+export default React.memo(ContactInfo)
