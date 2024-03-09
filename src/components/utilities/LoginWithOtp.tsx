@@ -62,9 +62,10 @@ const LoginWithOtp = () => {
         },
         validationSchema: otpSchema,
         onSubmit: (values) => {
-            dispatch(sendOtp(values.mobile))
-            setSendOtp(true)
-            // formik.resetForm()
+            dispatch(sendOtp(values.mobile)).then(() => {
+                setSendOtp(true)
+                setOtp(new Array(6).fill(""))
+            })
         },
     });
 
@@ -79,7 +80,9 @@ const LoginWithOtp = () => {
         }
         try {
             await otpValid.validate({ otp }, { abortEarly: false });
-            dispatch(VerifyOtp({ mobile: formik.values.mobile, otp }))
+            dispatch(VerifyOtp({ mobile: formik.values.mobile, otp })).then(() => {
+                formik.resetForm()
+            })
             setErr("")
         } catch (error: any) {
             setErr(error.errors[0])
@@ -94,7 +97,7 @@ const LoginWithOtp = () => {
             </Link> */}
             <div className="flex justify-center items-center h-screen 400px:mx-5 py-5">
                 <div className=" w-full  flex justify-center">
-                    <div className=" w-full bg-gradient-to-r from-[#009de2] to-[#00a884] rounded-lg shadow-lg border m   x-2 400px:mx-0 md:mt-0 sm:max-w-sm xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                    <div className=" w-full bg-gradient-to-r  from-[#0093E9] to-[#80D0C7] rounded-lg shadow-lg border 400px:mx-0 md:mt-0 sm:max-w-sm xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                         <BarLoader
                             color="#361AE3"
                             loading={isLoading}
@@ -104,7 +107,7 @@ const LoginWithOtp = () => {
                         />
                         <div className={`${isLoading === true ? "block absolute z-10 top-0 left-0 right-0 bottom-0 bg-black opacity-50 group:pointer-events-none overflow-hidden " : "hidden"}`}></div>
 
-                        <div className="p-6 space-y-4  sm:p-8">
+                        <div className="p-2 w-full space-y-4  sm:p-8">
                             {
                                 SendOtp === true ? (
                                     <>
@@ -139,32 +142,32 @@ const LoginWithOtp = () => {
                                         <h1 className="text-xl font-bold leading-tight text-center tracking-tight text-gray-900 md:text-2xl dark:text-white">
                                             Login With Otp
                                         </h1>
-                                        <form onSubmit={formik.handleSubmit} className="space-y-2   md:space-y-4" action="#">
-                                            <div className="w-72">
-                                                <div className="relative w-full min-w-[200px] h-10">
-                                                    <input
-                                                        maxLength={10}
-                                                        id="otpmobile"
-                                                        onChange={formik.handleChange("mobile")}
-                                                        onBlur={formik.handleBlur("mobile")}
-                                                        value={formik.values.mobile}
-                                                        type="tel"
-                                                        name="mobile"
-                                                        className="peer w-full h-full text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
-                                                        placeholder=" "
-                                                    />
-                                                    <label
-                                                        className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[14px] before:content[' '] before:block before:box-border 
+                                        <form onSubmit={formik.handleSubmit} className="space-y-2 md:space-y-4" action="#">
+
+                                            <div className="relative w-full min-w-[200px] h-10">
+                                                <input
+                                                    maxLength={10}
+                                                    id="otpmobile"
+                                                    onChange={formik.handleChange("mobile")}
+                                                    onBlur={formik.handleBlur("mobile")}
+                                                    value={formik.values.mobile}
+                                                    type="tel"
+                                                    name="mobile"
+                                                    className="peer w-full h-full text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
+                                                    placeholder=" "
+                                                />
+                                                <label
+                                                    className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[14px] before:content[' '] before:block before:box-border 
                                                         before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 
                                                         peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900"
-                                                    >
-                                                        Phone No(+91)
-                                                    </label>
-                                                </div>
-                                                {formik.touched.mobile && formik.errors.mobile ? (
-                                                    <div className="text-[#000000] font-bold text-[1rem] "> *  {formik.errors.mobile}</div>
-                                                ) : null}
+                                                >
+                                                    Phone No(+91)
+                                                </label>
                                             </div>
+                                            {formik.touched.mobile && formik.errors.mobile ? (
+                                                <div className="text-[#000000] font-bold text-[1rem] "> *  {formik.errors.mobile}</div>
+                                            ) : null}
+
                                             <div className="flex justify-evenly">
                                                 <button type="submit" className="bg-[#00a884] shadow-xl hover:scale-105 transition-all border-black border-2 font-[550] w-full rounded-md my-[10px] text-[0.91rem] px-[25px] py-[6px]">
                                                     Get Otp

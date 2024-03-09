@@ -56,6 +56,10 @@ const ChatHeader = () => {
   const handleOopenProfile = () => {
     dispatch(toggleContactInfo(true))
   }
+
+  const closeContact = () => {
+    dispatch(toggleContactInfo(true))
+  }
   return (
     <div className="h-16  gap-2 sm:gap-5 px-4 py-3 flex justify-between items-center bg-[#202c33] ">
       <div onClick={handleCloseChat} className="sm:hidden block">
@@ -104,7 +108,7 @@ const ChatHeader = () => {
 
       <div className={`${dropdown ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-30 w-0 opacity-0"} no-scrollbar transition-all  ease-in-out origin-top-right  dropdown z-10 top-16 right-10 `}>
         <div className="">
-          <button className="options" role="menuitem" id="menu-item-0">Contact info</button>
+          <button onClick={closeContact} className="options" role="menuitem" id="menu-item-0">Contact info</button>
           <button className="options" role="menuitem" id="menu-item-1">
             <span>Theme</span>
             <FaCircleChevronDown className="inline font-Rubik" />

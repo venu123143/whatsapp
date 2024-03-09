@@ -6,19 +6,25 @@ import { handleProfileOpen } from "../../Redux/reducers/utils/utilReducer"
 import { toggleContacts } from "../../Redux/reducers/utils/Features"
 import { FaRegUserCircle } from "react-icons/fa";
 import { logout } from "../../Redux/reducers/Auth/AuthReducer"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
+import { SocketContext } from "../../pages/Home";
 
 const ProfileHeader = () => {
     const dispatch: AppDispatch = useDispatch();
+    const socket = useContext(SocketContext)
+
     const { user } = useSelector((state: RootState) => state.auth)
     const { profileOpen } = useSelector((state: RootState) => state.utils);
     const [dropdown, setDropdown] = useState(false)
     const handleLogout = () => {
         dispatch(logout())
         setDropdown(false)
+        if (socket.connected) {
+            socket.disconnect()
+        }
     }
     const openProfile = () => {
         dispatch(handleProfileOpen(!profileOpen))

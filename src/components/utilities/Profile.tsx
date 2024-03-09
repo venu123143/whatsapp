@@ -22,7 +22,6 @@ const Profile = () => {
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
   const [showOptions, setShowOptions] = useState<any>(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-  console.log(profileOpen);
 
   const editAbout = () => {
     dispatch(handleAboutEditClick({ aboutEditClick: !aboutEditClick, about: user?.about }))
