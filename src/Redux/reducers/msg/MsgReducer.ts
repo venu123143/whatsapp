@@ -28,6 +28,7 @@ export interface AppState {
     replyMessage: any;
     contactInfo: boolean;
     editMessage: any;
+    isRecord: boolean;
 }
 export interface CommonProperties {
     socket_id: string;
@@ -74,6 +75,7 @@ const initialState: AppState = {
     replyMessage: null,
     editMessage: null,
     contactInfo: false,
+    isRecord: false
 };
 export interface ChatMessage {
     message: string;
@@ -87,7 +89,7 @@ export interface ChatMessage {
     image?: any
     users?: UserState[];
     senderName?: string;
-    replyFor?: any;
+    replyFor?: any
 }
 export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, thunkAPI) => {
     try {

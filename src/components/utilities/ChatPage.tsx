@@ -65,6 +65,8 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
 
       reader.onloadend = () => {
         const base64data = reader.result?.toString();
+        console.log("base64data");
+        
         const serializedValues: ChatMessage = {
           message: 'image',
           date: new Date().toISOString(),
@@ -83,7 +85,9 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
       };
     };
 
-    imagesArray.forEach((image) => {
+    imagesArray.forEach((image,index) => {
+      console.log(index, "foreach");
+      
       handleImageUpload(image);
     });
 

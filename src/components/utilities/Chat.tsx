@@ -7,10 +7,12 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
 import EditMsg from '../cards/EditMsg';
 import ContactInfo from '../../pages/ContactInfo';
+import MsgRecoder from './MsgRecoder';
 
 const Chat = () => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
   const { friends, currentUserIndex, editMessage } = useSelector((state: RootState) => state.msg);
+  const { isRecord } = useSelector((state: RootState) => state.features);
 
   useEffect(() => {
     if (chatPageRef.current) {
@@ -46,7 +48,10 @@ const Chat = () => {
         <div className='h-full overflow-y-auto custom-scrollbar bg-black bg-opacity-80 scroll-smoothS' ref={chatPageRef}>
           <ChatPage scrollToMessage={scrollToMessage} />
         </div>
-        <MessageBar />
+        {
+          isRecord === true ? <MsgRecoder /> : <MessageBar />
+        }
+
         <EditMsg message={editMessage} />
         <ContactInfo />
       </div>
