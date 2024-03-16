@@ -1,9 +1,8 @@
-import React from "react"
 
 import { BsEmojiSmile } from "react-icons/bs";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -13,13 +12,16 @@ import { RxCross2 } from "react-icons/rx";
 import { FaMicrophone } from "react-icons/fa6";
 import { handleSendMessage, ChatMessage, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../pages/Home"
+import useCloseDropDown from "../reuse/CloseDropDown";
+import { toggleisRecord } from "../../Redux/reducers/utils/Features";
 const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const socket = useContext(SocketContext);
+  const [showEmoji, setShowEmoji] = useCloseDropDown(false, '.emoji-picker-container');
+
   const { showAttachFiles } = useSelector((store: RootState) => store.utils);
   const { user } = useSelector((store: RootState) => store.auth);
   const { currentUserIndex, friends, replyMessage } = useSelector((state: RootState) => state.msg);
-  const [showEmoji, setShowEmoji] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const handleEmojiPicker = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.stopPropagation();
@@ -29,8 +31,7 @@ const MessageBar = () => {
     setMessage(message + ' ' + emoji.emoji)
   }
 
-  const handleSendMsg = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSendMsg = () => {
     let conn_type = friends[currentUserIndex] && friends[currentUserIndex].users ? "group" : "onetoone"
     let users = friends[currentUserIndex] && friends[currentUserIndex].users ? friends[currentUserIndex].users : null
     if (message.trim() !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
@@ -55,21 +56,13 @@ const MessageBar = () => {
       }
     }
   }
-  useEffect(() => {
-    const closeDropdown = (event: MouseEvent) => {
-      const isEmojiPicker = showEmoji && (event.target as HTMLElement).closest('.emoji-picker-container');
-      if (!isEmojiPicker) {
-        setShowEmoji(false);
-      }
-    };
-    document.body.addEventListener('click', closeDropdown);
 
-    return () => {
-      document.body.removeEventListener('click', closeDropdown);
-    };
-  }, [showEmoji]);
   const handleSendMsgFunction = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value)
+  }
+
+  const handleVoiceMsg = () => {
+    dispatch(toggleisRecord(true))
   }
   return (
     <>
@@ -86,8 +79,8 @@ const MessageBar = () => {
           </div>
         )
       }
-      <form className="h-14 w-full" onSubmit={handleSendMsg}>
-        <div className="bg-[#202c33] text-white h-14 px-4 flex items-center gap-2 sm:gap-6 ">
+      <form className="w-full" onSubmit={(e) => { e.preventDefault(); handleSendMsg(); }}>
+        <div className="bg-[#202c33] text-white px-2   flex items-center gap-2 sm:gap-6 ">
           <>
             <div className="flex">
               <div className="icons" onClick={handleEmojiPicker}>
@@ -102,7 +95,7 @@ const MessageBar = () => {
                 <ImAttachment title="Attach file" />
               </div>
             </div>
-            <div className=" w-full rounded-lg h-14 flex items-center">
+            <div className=" w-full rounded-lg py-2 flex items-center">
               <input type="text" placeholder="Type a message"
                 className="bg-[#111b21] text-white w-full font-sans focus:outline-none h-10 px-5 py-4 rounded-lg"
                 onChange={handleSendMsgFunction} value={message} />
@@ -114,7 +107,7 @@ const MessageBar = () => {
                     <MdSend title="send" />
                   </button>
                 ) : (
-                  <button className="icons">
+                  <button onClick={handleVoiceMsg} className="icons">
                     <FaMicrophone title="Record" />
                   </button>
                 )
