@@ -355,125 +355,348 @@
 
 // export default MsgRecoder;
 
-import React, { useEffect, useState, useRef } from 'react';
+// import React, { useEffect, useState, useRef } from 'react';
+// import { MdDelete, MdSend } from "react-icons/md";
+// import { useDispatch } from 'react-redux';
+// import { toggleisRecord } from "../../Redux/reducers/utils/Features";
+// import { FaRegPauseCircle, FaPlay, FaMicrophone, FaPause } from "react-icons/fa";
+// import WaveSurfer from 'wavesurfer.js';
+// import { AppDispatch } from '../../Redux/store';
+// import audioFile from "../../static/Rss Prathana - 8096339900.mp3"
+// import ammayeSannaga from "../../static/Ammaye sannaga.ogg"
+// import { toast } from 'react-toastify';
+// import useWaveSurfer from "../reuse/WaveSurfer"
+// const MsgRecoder = () => {
+//     const dispatch: AppDispatch = useDispatch();
+//     const [waveForm, setWaveForm] = useState<WaveSurfer | null>(null);
+//     const [recordingDuration, setRecordingDuration] = useState(0);
+//     const [totalDuration, setTotalDuration] = useState(0);
+//     const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
+//     const [recordedAudio, setRecordedAudio] = useState<HTMLAudioElement | null>(null);
+//     const [renderedAudio, setRenderedAudio] = useState<File | null>(null);
+
+//     const [isRecording, setIsRecording] = useState(false);
+//     const [isPlaying, setIsPlaying] = useState(false);
+
+//     const waveFormRef = useRef<HTMLDivElement>(null);
+//     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+//     const audioRef = useRef<MediaStream | null>(null);
+//     const [recordedWave, setRecordedWave] = useState();
+
+//     const recordedAudioRef = useRef<HTMLDivElement | null>(null);
+//     const [fileURL, setFileUrl] = useState(ammayeSannaga);
+//     const [wavesurferObj, setWavesurferObj] = useWaveSurfer('waveform')
+//     const [recording, setRecording] = useWaveSurfer('recording')
+//     console.log(wavesurferObj, recording);
+
+//     // useEffect(() => {
+//     //     if (recordedAudioRef.current && !wavesurferObj) {
+//     //         const wavesurfer = WaveSurfer.create({
+//     //             container: '#waveform',
+//     //             waveColor: "#848488",
+//     //             progressColor: "red",
+//     //             barWidth: 2,
+//     //             audioRate: 1,
+//     //             fillParent: true,
+//     //             barGap: 2,
+//     //             autoCenter: true,
+//     //             height: 40,
+//     //             cursorWidth: 2,
+//     //         });
+//     //         setWavesurferObj(wavesurfer);
+//     //         // return () => wavesurfer.destroy()
+//     //     }
+//     // }, [recordedAudioRef, wavesurferObj]);
+
+//     // Load audio file when fileURL or wavesurferObj changes
+//     // useEffect(() => {
+//     //     if (fileURL && wavesurferObj) {
+//     //         wavesurferObj.load(fileURL);
+//     //     }
+//     //     wavesurferObj?.on('finish', () => {
+//     //         setIsPlaying(false);
+//     //     });
+//     //     wavesurferObj?.on('audioprocess', () => {
+//     //         setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
+//     //     });
+//     // }, [fileURL, wavesurferObj]);
+
+//     // Play recording
+//     const handlePlayRecording = () => {
+//         // wavesurferObj?.play();
+//         setIsPlaying(true);
+//     };
+
+//     // Pause recording
+//     const handlePauseRecording = () => {
+//         // wavesurferObj?.pause();
+//         setIsPlaying(false);
+//     };
+
+//     const closeRecorder = () => {
+//         dispatch(toggleisRecord(false));
+//     };
+//     const formatTime = (time: number) => {
+//         const minutes = Math.floor(time / 60);
+//         const seconds = Math.floor(time % 60);
+//         return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+//     };
+
+//     // useEffect(() => {
+//     //     let timerInterval: any;
+//     //     if (isPlaying && wavesurferObj) {
+//     //         timerInterval = setInterval(() => {
+//     //             setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
+//     //         }, 1000);
+//     //     }
+//     //     return () => {
+//     //         clearInterval(timerInterval);
+//     //     };
+//     // }, [isPlaying, wavesurferObj]);
+
+//     const handleStopRecording = () => {
+//         // if (mediaRecorderRef.current && isRecording) {
+//         //     mediaRecorderRef.current.stop();
+//         //     waveForm?.stop();
+//         // }
+
+//         setIsRecording(false);
+//     };
+
+//     const handleStartRecording = () => {
+//         // setCurrentPlaybackTime(0)
+//         // setTotalDuration(0)
+//         // setRecordingDuration(0)
+//         // setIsRecording(true)
+//         // navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+//         //     const mediaRecorder = new MediaRecorder(stream)
+//         //     mediaRecorderRef.current = mediaRecorder
+//         //     audioRef.current = stream
+
+//         //     const chunks = [] as any
+//         //     mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
+//         //     mediaRecorder.onstop = () => {
+//         //         const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" })
+//         //         const audioUrl = URL.createObjectURL(blob)
+
+//         //         const audio = new Audio(audioUrl)
+//         //         setRecordedAudio(audio)
+//         //     }
+//         // }).catch((error) => {
+//         //     console.log(error);
+
+//         //     toast.error("Error while recording:")
+//         // })
+
+//     };
+
+
+//     const sendRecording = async () => {
+//         // Implement your logic for sending the recording
+//     };
+
+//     return (
+//         <div className='w-full bg-[#202c33] text-2xl ml-auto text-white  h-14 flex items-center justify-end gap-2 sm:gap-6 '>
+// <button onClick={closeRecorder} className='icons group p-3'>
+//     <MdDelete title="delete" size={25} className="group-hover:text-[#e9edef]" />
+// </button>
+// <div className='w-[250px] bg-[#111b21] rounded-full px-2 '>
+//     <div className='w-full'>
+//         {
+//             isRecording ? (
+//                 <div className='flex justify-center gap-3 items-center '>
+//                     <div className='font-Rubik text-sm'>
+//                         {formatTime(currentPlaybackTime)}
+//                     </div>
+//                     <div id='recording' className='w-full' />
+
+//                 </div>
+//             ) : (
+//                 <div className=' flex justify-center gap-3 items-center  '>
+//                     {isPlaying ? (
+//                         <button onClick={handlePauseRecording}>
+//                             <FaPause title="pause Record" />
+//                         </button>
+//                     ) : (
+//                         <button onClick={handlePlayRecording}>
+//                             <FaPlay title="play Record" />
+//                         </button>
+//                     )}
+//                     <div id='waveform' className='w-full' />
+//                     <div className='font-Rubik text-sm'>
+//                         {formatTime(currentPlaybackTime)}
+//                     </div>
+//                 </div>
+
+//             )
+//         }
+{/* {
+                        recordedAudio && !isPlaying && (
+                            <span>{formatTime(currentPlaybackTime)}</span>
+                        )
+                    }
+                    {
+                        recordedAudio && isPlaying && (
+                            <span>{formatTime(recordingDuration)}</span>
+                        )
+                    } */}
+//                 </div>
+//             </div>
+
+// {/* <div ref={recordedAudioRef} id='waveform' className='w-full' /> */ }
+
+// {
+//     isRecording ? (
+//         <button onClick={handleStopRecording} className='icons p-3'>
+//             <FaRegPauseCircle title="stop Record" className="text-red-500" size={25} />
+//         </button>
+//     ) : (
+//         <button onClick={handleStartRecording} className="icons p-3">
+//             <FaMicrophone title="start Record" className="text-red-500" size={25} />
+//         </button>
+//     )
+// }
+// <button onClick={sendRecording} className="icons  p-3 bg-[#00a884]" type="submit" >
+//     <MdSend title="send" />
+// </button>
+// </div >
+//     );
+// };
+
+// export default MsgRecoder;
+
+
+
+import React, { useState, useEffect, useRef } from 'react';
 import { MdDelete, MdSend } from "react-icons/md";
-import { useDispatch } from 'react-redux';
-import { toggleisRecord } from "../../Redux/reducers/utils/Features";
 import { FaRegPauseCircle, FaPlay, FaMicrophone, FaPause } from "react-icons/fa";
-import WaveSurfer from 'wavesurfer.js';
+import useWaveSurfer from "../reuse/WaveSurfer";
+import { formatTime } from '../../static/Static';
+import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../Redux/store';
-import audioFile from "../../static/Rss Prathana - 8096339900.mp3"
+import { toggleisRecord } from '../../Redux/reducers/utils/Features';
 import ammayeSannaga from "../../static/Ammaye sannaga.ogg"
+import { toast } from 'react-toastify';
+
 const MsgRecoder = () => {
     const dispatch: AppDispatch = useDispatch();
-    const [waveForm, setWaveForm] = useState<WaveSurfer | null>(null);
-    const [recordingDuration, setRecordingDuration] = useState(0);
-    const [totalDuration, setTotalDuration] = useState(0);
-    const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
-    const [recordedAudio, setRecordedAudio] = useState<HTMLAudioElement | null>(null);
-    const [renderedAudio, setRenderedAudio] = useState<File | null>(null);
+    const [fileUrl, setFileUrl] = useState(ammayeSannaga)
+    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+
+    const waveRef = useRef<HTMLDivElement | null>(null);
+    const recordingRef = useRef<HTMLDivElement | null>(null);
 
     const [isRecording, setIsRecording] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
 
-    const waveFormRef = useRef<HTMLDivElement>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioRef = useRef<MediaStream | null>(null);
-    const [recordedWave, setRecordedWave] = useState();
-
-    const recordedAudioRef = useRef<HTMLDivElement | null>(null);
-    const [fileURL, setFileUrl] = useState(ammayeSannaga);
-    const [wavesurferObj, setWavesurferObj] = useState<WaveSurfer | null>(null);
-
+    const [wavesurferObj, setWavesurferObj] = useWaveSurfer(waveRef);
+    const [recordingWave, setRecordingWave] = useWaveSurfer(recordingRef);
     useEffect(() => {
-        if (recordedAudioRef.current && !wavesurferObj) {
-            const wavesurfer = WaveSurfer.create({
-                container: '#waveform',
-                waveColor: "#848488",
-                progressColor: "red",
-                barWidth: 2,
-                audioRate: 1,
-                fillParent: true,
-                barGap: 2,
-                autoCenter: true,
-                height: 40,
-                cursorWidth: 2,
-            });
-            setWavesurferObj(wavesurfer);
-            // return () => wavesurfer.destroy()
-        }
-    }, [recordedAudioRef, wavesurferObj]);
-
-    // Load audio file when fileURL or wavesurferObj changes
-    useEffect(() => {
-        if (fileURL && wavesurferObj) {
-            wavesurferObj.load(fileURL);
+        if (fileUrl && wavesurferObj) {
+            wavesurferObj.load(fileUrl);
         }
         wavesurferObj?.on('finish', () => {
             setIsPlaying(false);
         });
-    }, [fileURL, wavesurferObj]);
+        wavesurferObj?.on('audioprocess', () => {
+            setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
+        });
+    }, [fileUrl, wavesurferObj]);
+    // Function to start recording
+    // const handleStartRecording = async () => {
+    //     setIsRecording(true)
+    //     try {
+    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    //         const recorder = new MediaRecorder(stream);
+    //         const chunks: BlobPart[] = [];
+    //         recorder.ondataavailable = (event) => {
+    //             chunks.push(event.data);
+    //         };
+    //         recorder.onstop = () => {
+    //             const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+    //             const audioUrl = URL.createObjectURL(blob);
+    //             setFileUrl(audioUrl);
+    //         };
+    //         recorder.start();
+    //         setMediaRecorder(recorder);
 
-    // Play recording
-    const handlePlayRecording = () => {
-        wavesurferObj?.play();
-        setIsPlaying(true);
-    };
-
-    // Pause recording
-    const handlePauseRecording = () => {
-        wavesurferObj?.pause();
-        setIsPlaying(false);
-    };
-
-    const closeRecorder = () => {
-        dispatch(toggleisRecord(false));
-    };
-    const formatTime = (time: number) => {
-        const minutes = Math.floor(time / 60);
-        const seconds = Math.floor(time % 60);
-        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    };
-
-    useEffect(() => {
-        let timerInterval: any;
-        if (isPlaying && wavesurferObj) {
-            timerInterval = setInterval(() => {
-                setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
-            }, 1000);
+    //     } catch (error: any) {
+    //         toast.error(error.message)
+    //     }
+    // };
+    const handleStartRecording = async () => {
+        try {
+            setIsRecording(true);
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+            const chunks: BlobPart[] = [];
+            recorder.ondataavailable = (event) => {
+                chunks.push(event.data);
+            };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                const audioUrl = URL.createObjectURL(blob);
+                setFileUrl(audioUrl);
+            };
+            recorder.start();
+            setMediaRecorder(recorder);
+        } catch (error: any) {
+            toast.error(error.message)
         }
-        return () => {
-            clearInterval(timerInterval);
-        };
-    }, [isPlaying, wavesurferObj]);
+    };
+
+    // Function to stop recording
     const handleStopRecording = () => {
-        // if (mediaRecorderRef.current && isRecording) {
-        //     mediaRecorderRef.current.stop();
-        //     waveForm?.stop();
-        // }
-
-        setIsRecording(false);
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            setIsRecording(false)
+            mediaRecorder.stop();
+        }
+        // Your logic to stop recording
     };
 
-    const handleStartRecording = () => {
-        setIsRecording(true);
+    // Function to play recording
+    const handlePlayRecording = () => {
+        setIsPlaying(true)
+        wavesurferObj?.play()
+        // Your logic to play recording
     };
 
+    // Function to pause recording
+    const handlePauseRecording = () => {
+        setIsPlaying(false)
+        wavesurferObj?.pause()
+        // Your logic to pause recording
+    };
 
-    const sendRecording = async () => {
-        // Implement your logic for sending the recording
+    // Function to send recording
+    const sendRecording = () => {
+        // Your logic to send recording
+    };
+
+    // Function to close the recorder
+    const closeRecorder = () => {
+        // Your logic to close the recorder
+        dispatch(toggleisRecord(false));
+        wavesurferObj?.stop();
     };
 
     return (
-        <div className='w-full bg-[#202c33] text-2xl ml-auto text-white  h-14 flex items-center justify-end gap-2 sm:gap-6 '>
+        <div className='w-full bg-[#202c33] text-2xl ml-auto text-white h-14 flex items-center justify-end gap-2 sm:gap-6'>
             <button onClick={closeRecorder} className='icons group p-3'>
                 <MdDelete title="delete" size={25} className="group-hover:text-[#e9edef]" />
             </button>
+
             <div className='w-[250px] bg-[#111b21] rounded-full px-2 '>
                 <div className='w-full'>
                     {
                         isRecording ? (
-                            <div ref={waveFormRef} id='waveformdd' className='h-10' />
+                            <div className='flex justify-center gap-3 items-center '>
+                                <div className='font-Rubik text-sm'>
+                                    {formatTime(currentPlaybackTime)}
+                                </div>
+                                <div id='recording' ref={recordingRef} className='w-full' />
+                            </div>
                         ) : (
                             <div className=' flex justify-center gap-3 items-center  '>
                                 {isPlaying ? (
@@ -485,7 +708,7 @@ const MsgRecoder = () => {
                                         <FaPlay title="play Record" />
                                     </button>
                                 )}
-                                <div ref={recordedAudioRef} id='waveform' className='w-full' />
+                                <div id='waveform' ref={waveRef} className='w-full' />
                                 <div className='font-Rubik text-sm'>
                                     {formatTime(currentPlaybackTime)}
                                 </div>
@@ -493,36 +716,25 @@ const MsgRecoder = () => {
 
                         )
                     }
-                    {/* {
-                        recordedAudio && !isPlaying && (
-                            <span>{formatTime(currentPlaybackTime)}</span>
-                        )
-                    }
-                    {
-                        recordedAudio && isPlaying && (
-                            <span>{formatTime(recordingDuration)}</span>
-                        )
-                    } */}
                 </div>
             </div>
-
-            {/* <div ref={recordedAudioRef} id='waveform' className='w-full' /> */}
-
-            {isRecording ? (
-                <button onClick={handleStopRecording} className='icons p-3'>
-                    <FaRegPauseCircle title="stop Record" className="text-red-500" size={25} />
-                </button>
-            ) : (
-                <button onClick={handleStartRecording} className="icons p-3">
-                    <FaMicrophone title="start Record" className="text-red-500" size={25} />
-                </button>
-            )}
+            {
+                isRecording ? (
+                    <button onClick={handleStopRecording} className='icons p-3'>
+                        <FaRegPauseCircle title="stop Record" className="text-red-500" size={25} />
+                    </button>
+                ) : (
+                    <button onClick={handleStartRecording} className="icons p-3">
+                        <FaMicrophone title="start Record" className="text-red-500" size={25} />
+                    </button>
+                )
+            }
             <button onClick={sendRecording} className="icons  p-3 bg-[#00a884]" type="submit" >
                 <MdSend title="send" />
             </button>
+
         </div>
     );
 };
 
 export default MsgRecoder;
-
