@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 // import RecordPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.record.min.js';
+import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
 
-const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>) => {
+const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>, scrollingWaveform: boolean = false) => {
     const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>(null);
 
     useEffect(() => {
@@ -16,9 +17,9 @@ const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>) =
                 barGap: 2,
                 height: 40,
                 cursorWidth: 2,
-                // plugins: [
-                //     RecordPlugin.create({ renderRecordedAudio: false }),
-                // ],
+                plugins: [
+                    RecordPlugin.create({ scrollingWaveform, renderRecordedAudio: false }),
+                ],
             });
             setWaveSurfer(newWaveSurfer);
         }
@@ -31,7 +32,8 @@ const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>) =
         };
     }, [waveRef]);
 
-    return [waveSurfer, waveRef] as const;
+    // return [waveSurfer, waveRef] as const;
+    return waveSurfer
 };
 
 export default useWaveSurfer;

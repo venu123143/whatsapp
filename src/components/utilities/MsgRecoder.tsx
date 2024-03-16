@@ -590,8 +590,10 @@ const MsgRecoder = () => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
 
-    const [wavesurferObj, setWavesurferObj] = useWaveSurfer(waveRef);
-    const [recordingWave, setRecordingWave] = useWaveSurfer(recordingRef);
+    const wavesurferObj = useWaveSurfer(waveRef);
+    const recordingWave = useWaveSurfer(recordingRef, true);
+    console.log(recordingWave);
+
     useEffect(() => {
         if (fileUrl && wavesurferObj) {
             wavesurferObj.load(fileUrl);
@@ -604,27 +606,7 @@ const MsgRecoder = () => {
         });
     }, [fileUrl, wavesurferObj]);
     // Function to start recording
-    // const handleStartRecording = async () => {
-    //     setIsRecording(true)
-    //     try {
-    //         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    //         const recorder = new MediaRecorder(stream);
-    //         const chunks: BlobPart[] = [];
-    //         recorder.ondataavailable = (event) => {
-    //             chunks.push(event.data);
-    //         };
-    //         recorder.onstop = () => {
-    //             const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
-    //             const audioUrl = URL.createObjectURL(blob);
-    //             setFileUrl(audioUrl);
-    //         };
-    //         recorder.start();
-    //         setMediaRecorder(recorder);
 
-    //     } catch (error: any) {
-    //         toast.error(error.message)
-    //     }
-    // };
     const handleStartRecording = async () => {
         try {
             setIsRecording(true);
@@ -737,4 +719,4 @@ const MsgRecoder = () => {
     );
 };
 
-export default MsgRecoder;
+export default React.memo(MsgRecoder);
