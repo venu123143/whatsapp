@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -88,8 +89,95 @@ h3 {
         opacity: 0.6;
     }
 }
+.singleusers {
+    position: relative;
+    border-bottom: 1px solid #d3d3d3;
+    background-color: #111b21;
+    overflow: hidden;
+    padding: 15px;
+    /* Ensure that child elements don't overflow */
+}
 
-.waveform{
+.singleusers:after {
+    content: "";
+    position: absolute;
     width: 100%;
-    height: 400px;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: linear-gradient(110deg, rgba(17, 27, 33, 0) 0%, rgba(17, 27, 33, 0) 40%, rgba(17, 27, 33, 0.5) 50%, rgba(17, 27, 33, 0) 60%, rgba(17, 27, 33, 0) 100%);
+    animation: skeleton-loading 1.12s linear infinite alternate;
+    animation-duration: 2s;
+}
+@keyframes skeleton-loading {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Skeleton styles for different elements */
+.skeleton-profile {
+    width: 50px;
+    height: 50px;
+    background-color: #cacaca;
+    border-radius: 50%;
+}
+
+.skeleton-info {
+    padding-left: 10px;
+}
+
+.skeleton-name {
+    width: 100px;
+    height: 20px;
+    background-color: #cacaca;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-lastmsg {
+    width: 150px;
+    height: 20px;
+    background-color: #cacaca;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-admin {
+    padding: 0 5px;
+}
+
+.skeleton-time {
+    width: 100px;
+    height: 20px;
+    background-color: #cacaca;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-unread {
+    width: 30px;
+    height: 20px;
+    background-color: #cacaca;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-admin-tag {
+    width: 80px;
+    height: 20px;
+    background-color: #2a3942;
+    color: #aebac1;
+    font-size: .71rem;
+    text-align: center;
+    border-radius: .2rem;
+    /* Applying border radius */
+    padding: 1px;
 }
