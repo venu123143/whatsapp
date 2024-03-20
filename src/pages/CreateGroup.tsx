@@ -67,7 +67,7 @@ const CreateGroup = () => {
         <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${createGrp === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="hover:shadow-blue-500 hover:shadow-lg icons flex items-center gap-4  "
                 onClick={handleCloseCreateGroup}>
-                <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
+                <AiOutlineArrowLeft className="text-white sm:cursor-pointer w-9" />
                 <h1 className="text-white font-[400] ">New Group</h1>
             </div>
             <section className=" py-3 px-5 items-center gap-3">
@@ -79,7 +79,7 @@ const CreateGroup = () => {
                         <>
                             <label htmlFor="groupImage" className="bg-[#111b21] hover:bg-[#0c1317] hover:bg-opacity-90 hover:shadow-orange-500 shadow-lg relative group rounded-full p-3 sm:cursor-pointer hover:opacity-90 mt-10">
                                 <PiUserLight size={180} className="hover:text-gray-500" />
-                                <div className={`${isLoading === true ? "block" : "group-hover:block"} cursor-pointer  absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-10 items-center`}>
+                                <div className={`${isLoading === true ? "block" : "group-hover:block"} sm:cursor-pointer  absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] z-10 items-center`}>
                                     {
                                         isLoading === true ?
                                             <ClipLoader
@@ -106,7 +106,7 @@ const CreateGroup = () => {
                     </div>
                 </div>
             </section>
-            <section className="cursor-pointer m-auto max-h-full h-auto mt-20">
+            <section className="sm:cursor-pointer m-auto max-h-full h-auto mt-20">
                 {
                     isLoading === true ?
                         <ClipLoader

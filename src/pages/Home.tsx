@@ -33,17 +33,16 @@ const Home = () => {
     initializeSocket();
   }, [user]);
 
-  let onReload = true;
+  let onReload = true;  
   useEffect(() => {
     if (socket.connected && user !== null) {
-      if (onReload) {
+      if (onReload) {                
         // socket.emit("get_frnds_on_reload", user)
         socket.emit("get_all_messages", "friends")
         onReload = false
       }
-      
+
       socket.on("get_friends", (friends) => {
-        
         dispatch(handleSetFriends(friends))
       })
       socket.on("get_all_messages_on_reload", (friends) => {
@@ -70,8 +69,8 @@ const Home = () => {
 
   useEffect(() => {
     if (socket.connected) {
-      socket.on("recieve_message", (data: ChatMessage) => {    
-            
+      socket.on("recieve_message", (data: ChatMessage) => {
+
         setLstMsg({ ...data, right: false })
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
@@ -115,7 +114,7 @@ const Home = () => {
   return (
     <>
       <SocketContext.Provider value={socket} >
-        <main className='w-full grid md:grid-cols-10'>
+        <main className='w-full overflow-hidden grid md:grid-cols-10'>
           <section className={`sm:col-span-3 sm:min-w-[300px] ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
             <Users />
           </section>

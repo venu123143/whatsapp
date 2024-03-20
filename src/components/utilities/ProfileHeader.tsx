@@ -6,19 +6,25 @@ import { handleProfileOpen } from "../../Redux/reducers/utils/utilReducer"
 import { toggleContacts } from "../../Redux/reducers/utils/Features"
 import { FaRegUserCircle } from "react-icons/fa";
 import { logout } from "../../Redux/reducers/Auth/AuthReducer"
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
+import { SocketContext } from "../../pages/Home";
 
 const ProfileHeader = () => {
     const dispatch: AppDispatch = useDispatch();
+    const socket = useContext(SocketContext)
+
     const { user } = useSelector((state: RootState) => state.auth)
     const { profileOpen } = useSelector((state: RootState) => state.utils);
     const [dropdown, setDropdown] = useState(false)
     const handleLogout = () => {
         dispatch(logout())
         setDropdown(false)
+        if (socket.connected) {
+            socket.disconnect()
+        }
     }
     const openProfile = () => {
         dispatch(handleProfileOpen(!profileOpen))
@@ -55,10 +61,10 @@ const ProfileHeader = () => {
                     {
                         user?.profile === "" || !user?.profile ? (
                             <div onClick={() => dispatch(handleProfileOpen(!profileOpen))} className="">
-                                <FaRegUserCircle size={40} className="text-black bg-white hover:bg-opacity-80 rounded-full cursor-pointer " />
+                                <FaRegUserCircle size={40} className="text-black bg-white hover:bg-opacity-80 rounded-full sm:cursor-pointer " />
                             </div>
                         ) :
-                            <img onClick={() => dispatch(handleProfileOpen(!profileOpen))} src={user?.profile} className="object-cover cursor-pointer hover:bg-black rounded-full w-[40px] h-[40px]" alt="Profile" />
+                            <img onClick={() => dispatch(handleProfileOpen(!profileOpen))} src={user?.profile} className="object-cover sm:cursor-pointer hover:bg-black rounded-full w-[40px] h-[40px]" alt="Profile" />
                     }
                 </div>
                 <div className=" flex items-center gap-2">
