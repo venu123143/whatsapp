@@ -94,6 +94,9 @@ const Users = () => {
                 < UserSkeliton />
                 < UserSkeliton />
                 < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
               </div>
               :
               friends.filter(handleSearch).map((each: CommonProperties, index: number) => {

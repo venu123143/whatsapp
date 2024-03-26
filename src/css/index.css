@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -89,26 +88,24 @@ h3 {
         opacity: 0.6;
     }
 }
-.singleusers {
-    position: relative;
-    border-bottom: 1px solid #d3d3d3;
-    background-color: #111b21;
-    overflow: hidden;
-    padding: 15px;
-    /* Ensure that child elements don't overflow */
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: 200px 0;
+    }
 }
 
-.singleusers:after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: linear-gradient(110deg, rgba(17, 27, 33, 0) 0%, rgba(17, 27, 33, 0) 40%, rgba(17, 27, 33, 0.5) 50%, rgba(17, 27, 33, 0) 60%, rgba(17, 27, 33, 0) 100%);
-    animation: skeleton-loading 1.12s linear infinite alternate;
-    animation-duration: 2s;
+.singleusers {
+    animation: blinker 2s linear infinite;
+    z-index: -1;
+    animation-duration: 300;
+    overflow: hidden;
 }
+
 @keyframes skeleton-loading {
     0% {
         transform: translateX(-100%);
