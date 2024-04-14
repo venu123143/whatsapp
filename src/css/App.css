@@ -63,11 +63,11 @@ header color- 233138
 }
 
 .msgOptions {
-    @apply transition-all duration-300 rounded-sm delay-75  ease-in-out origin-top-right w-32 z-10 bg-[#202c33] absolute sm:block hidden shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
+    @apply transition-all duration-300 rounded-sm delay-75 ease-in-out origin-top-right w-32 z-10 bg-[#202c33] absolute sm:block hidden shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
 }
 
 .options {
-    @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:bg-gray-700 dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2 
+    @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:bg-gray-700 dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2
 }
 
 .notification {
@@ -82,13 +82,16 @@ header color- 233138
 .fullscreen-overlay {
     @apply transition-all duration-300 delay-75 scale-0 fixed top-0 left-0 w-full h-full z-40 bg-black bg-opacity-80;
 }
-.active{
+
+.active {
     @apply transition-all ease-out scale-100
 }
+
 .fullscreen-image {
     @apply max-w-[90%] max-h-[90%] object-contain
 }
-.fullscreen-modal{
+
+.fullscreen-modal {
     @apply z-50 flex flex-col items-center justify-center h-full relative
 }
 
