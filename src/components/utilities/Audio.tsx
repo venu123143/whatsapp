@@ -1,4 +1,4 @@
-import React, { MouseEvent } from 'react';
+import React from 'react';
 
 interface AudioProps {
   onClick: () => void;
@@ -9,6 +9,8 @@ interface AudioProps {
 }
 
 const Audio: React.FC<AudioProps> = ({ onClick, date, seen, right, audio }) => {
+  console.log(date, seen, right, audio);
+
   return (
     <div onClick={onClick}>
       {/* Your JSX content here */}
