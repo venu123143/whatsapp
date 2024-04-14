@@ -119,7 +119,17 @@ header color- 233138
     @apply max-w-[100px] m-[5px];
 }
 
+/* skeliton modal */
+.skeleton-profile {
+    @apply w-[50px] h-[50px] bg-[#cacaca] rounded-[50%];
+}
 
+.skeleton {
+    @apply h-[20px] rounded-[4px] bg-[#cacaca];
+}
 
+.skeleton-admin {}
 
-/* full screen image modal close */
+.skeleton-time {}
+
+.skeleton-admin-tag {}
