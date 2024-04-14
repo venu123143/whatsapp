@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -11,6 +12,7 @@ import { FaCircleUser } from "react-icons/fa6";
 import { getAllUsers } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "./Home";
+import UserSkeliton from "../components/reuse/UserSkeliton";
 const ContactsList = () => {
     const dispatch: AppDispatch = useDispatch();
     // const { chatArray } = useSelector((store: RootState) => store.auth);
@@ -83,34 +85,51 @@ const ContactsList = () => {
             </section>
             {/* h-[calc(100vh-100px)] */}
             <section className="bg-[#111b21] overflow-y-scroll custom-scrollbar">
-                <section onClick={handleAddUser} className="singleuser  hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
-                    <div className="col-span-1 flex justify-center ">
-                        <FaCircleUser size={50} className="text-[#00a884]" />
-                    </div>
-                    <div className="col-span-4 flex items-center">
-                        <p className="text-[20px] font-bold">Create Group</p>
-                    </div>
-                </section>
+                {
+                    users.length === 0 ?
+                        <>
+                            <div className=''>
+                                < UserSkeliton />
+                                < UserSkeliton />
+                                < UserSkeliton />
+                                < UserSkeliton />
+                                < UserSkeliton />
+                                < UserSkeliton />
+                                < UserSkeliton />
+                            </div>
+                        </> :
+                        <>
 
-                {Object.entries(groupedByInitial)
-                    .sort(([initialA], [initialB]) => initialA.localeCompare(initialB))
-                    .map(([initialLetter, users], index) => {
-                        const filteredUsers = users.filter(handleSearch);
-
-                        if (filteredUsers.length > 0) {
-                            return (
-                                <div key={index}>
-                                    <div className="singleuser p-3  border-b border-gray-800 text-teal-light">
-                                        {initialLetter}
-                                    </div>
-                                    {filteredUsers.map((user: any, idx: number) => (
-                                        <SingleChat key={idx} value={user} contacts={true} handleOnClick={() => addFriend(user)} />
-                                    ))}
+                            <section onClick={handleAddUser} className="singleuser  hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
+                                <div className="col-span-1 flex justify-center ">
+                                    <FaCircleUser size={50} className="text-[#00a884]" />
                                 </div>
-                            );
-                        }
-                        return null; // Don't render the section if there are no matching users
-                    })}
+                                <div className="col-span-4 flex items-center">
+                                    <p className="text-[20px] font-bold">Create Group</p>
+                                </div>
+                            </section>
+
+                            {Object.entries(groupedByInitial)
+                                .sort(([initialA], [initialB]) => initialA.localeCompare(initialB))
+                                .map(([initialLetter, users], index) => {
+                                    const filteredUsers = users.filter(handleSearch);
+
+                                    if (filteredUsers.length > 0) {
+                                        return (
+                                            <div key={index}>
+                                                <div className="singleuser p-3  border-b border-gray-800 text-teal-light">
+                                                    {initialLetter}
+                                                </div>
+                                                {filteredUsers.map((user: any, idx: number) => (
+                                                    <SingleChat key={idx} value={user} contacts={true} handleOnClick={() => addFriend(user)} />
+                                                ))}
+                                            </div>
+                                        );
+                                    }
+                                    return null; // Don't render the section if there are no matching users
+                                })}
+                        </>
+                }
             </section>
         </div>
     );

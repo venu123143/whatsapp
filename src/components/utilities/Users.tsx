@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect } from 'react'
 import Profile from './Profile'
 import UserCard from '../cards/UserCard'
@@ -10,7 +11,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
 import { CommonProperties, handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../../pages/Home"
-import { ClipLoader } from 'react-spinners'
+// import { ClipLoader } from 'react-spinners'
+import UserSkeliton from '../reuse/UserSkeliton'
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
@@ -19,7 +21,7 @@ const Users = () => {
   const socket = useContext(SocketContext)
 
   const handleOnClick = async (friend: CommonProperties) => {
-    const friendIndex = friends.findIndex(f => f === friend);
+    const friendIndex = friends.findIndex((f) => f === friend);
     if (friendIndex !== -1) {
       dispatch(setCurrentGrpOrUser(friendIndex))
     }
@@ -74,20 +76,30 @@ const Users = () => {
           <SearchBar />
         </div>
         <div className={`${isLoading === true ? "mx-auto overflow-hidden no-scrollbar" : ""} overflow-y-auto custom-scrollbar`}>
-
           {
-            isLoading === true ?
-              <ClipLoader
-                color="#36d7b7"
-                loading={isLoading}
-                aria-label="Loading Spinner"
-                speedMultiplier={.71}
-                data-testid="loader"
-                className=''
-              />
+            friends.length === 0 ?
+              // <ClipLoader
+              //   color="#36d7b7"
+              //   loading={isLoading}
+              //   aria-label="Loading Spinner"
+              //   speedMultiplier={.71}
+              //   data-testid="loader"
+              //   className=''
+              // />
+              <div className=''>
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+                < UserSkeliton />
+              </div>
               :
               friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
-                // const unread = each.chat.filter((msg: any) => msg.seen === false && msg.right === false).length
                 return (
                   <UserCard key={index} value={each} handleOnClick={() => handleOnClick(each)} />
                 )
@@ -100,3 +112,4 @@ const Users = () => {
 }
 
 export default React.memo(Users)
+

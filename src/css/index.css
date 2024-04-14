@@ -89,7 +89,92 @@ h3 {
     }
 }
 
-.waveform{
-    width: 100%;
-    height: 400px;
+@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.singleusers {
+    animation: blinker 2s linear infinite;
+    z-index: -1;
+    animation-duration: 300;
+    overflow: hidden;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Skeleton styles for different elements */
+.skeleton-profile {
+    width: 50px;
+    height: 50px;
+    background-color: #cacaca;
+    border-radius: 50%;
+}
+
+.skeleton-info {
+    padding-left: 10px;
+}
+
+.skeleton-name {
+    width: 100px;
+    height: 20px;
+    background-color: #cacaca;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-lastmsg {
+    width: 150px;
+    height: 20px;
+    background-color: #cacaca;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-admin {
+    padding: 0 5px;
+}
+
+.skeleton-time {
+    width: 100px;
+    height: 20px;
+    background-color: #cacaca;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-unread {
+    width: 30px;
+    height: 20px;
+    background-color: #cacaca;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    /* Applying border radius */
+}
+
+.skeleton-admin-tag {
+    width: 80px;
+    height: 20px;
+    background-color: #2a3942;
+    color: #aebac1;
+    font-size: .71rem;
+    text-align: center;
+    border-radius: .2rem;
+    /* Applying border radius */
+    padding: 1px;
 }
