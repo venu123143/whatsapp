@@ -1,5 +1,184 @@
 
 
+// import React, { useState, useEffect, useRef } from 'react';
+// import { MdDelete, MdSend } from "react-icons/md";
+// import { FaRegPauseCircle, FaPlay, FaMicrophone, FaPause } from "react-icons/fa";
+// import useWaveSurfer from "../reuse/WaveSurfer";
+// import { formatTime } from '../../static/Static';
+// import { useDispatch } from 'react-redux';
+// import { AppDispatch } from '../../Redux/store';
+// import { toggleisRecord } from '../../Redux/reducers/utils/Features';
+// // import ammayeSannaga from "../../static/Ammaye sannaga.ogg"
+// import { toast } from 'react-toastify';
+// import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
+
+// const MsgRecoder = () => {
+//     const dispatch: AppDispatch = useDispatch();
+//     const [fileUrl, setFileUrl] = useState("")
+//     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+
+//     const waveRef = useRef<HTMLDivElement | null>(null);
+//     const recordingRef = useRef<HTMLDivElement | null>(null);
+//     const [isRecording, setIsRecording] = useState(true);
+//     const [isPlaying, setIsPlaying] = useState(false);
+//     const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
+
+//     const wavesurferObj = useWaveSurfer({ waveRef });
+//     var recordingObj = useWaveSurfer({ waveRef: recordingRef });
+
+//     useEffect(() => {
+//         if (fileUrl && wavesurferObj) {
+//             wavesurferObj.load(fileUrl);
+//         }
+//         wavesurferObj?.on('finish', () => {
+//             setIsPlaying(false);
+//         });
+//         wavesurferObj?.on('audioprocess', () => {
+//             setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
+//         });
+//     }, [fileUrl, wavesurferObj]);
+//     // Function to start recording
+
+//     const recordPlugin = RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: false, scrollingWaveformWindow: 3 });
+//     recordingObj?.registerPlugin(recordPlugin);
+//     // Function to start recording
+//     useEffect(() => {
+//         let intervalId: any;
+//         if (isRecording) {
+//             intervalId = setInterval(() => {
+//                 setCurrentPlaybackTime(prevTime => prevTime + 1);
+//             }, 1000);
+
+//             if (currentPlaybackTime === 0) {
+//                 handleStartRecording().then(() => {
+//                     toast.success("started recording")
+//                 })
+//             }
+//         }
+//         return () => {
+//             if (intervalId) {
+//                 clearInterval(intervalId);
+//             }
+//         };
+//     }, [isRecording, currentPlaybackTime])
+
+//     const handleStartRecording = async () => {
+//         try {
+//             setIsRecording(true);
+//             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//             const recorder = new MediaRecorder(stream);
+//             // await recordPlugin.renderMicStream(stream);
+//             const chunks: BlobPart[] = [];
+//             recorder.ondataavailable = (event) => {
+//                 chunks.push(event.data);
+//             };
+//             recorder.onstop = () => {
+//                 const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+//                 const audioUrl = URL.createObjectURL(blob);
+//                 setFileUrl(audioUrl);
+//             };
+//             recorder.start();
+//             setMediaRecorder(recorder);
+//         } catch (error: any) {
+//             toast.error(error.message)
+//         }
+//     };
+
+//     // Function to stop recording
+//     const handleStopRecording = async () => {
+//         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+//             setIsRecording(false)
+//             mediaRecorder.stop();
+//             await recordPlugin.stopRecording()
+//         }
+//         // Your logic to stop recording
+//     };
+
+//     // Function to play recording
+//     const handlePlayRecording = () => {
+//         setIsPlaying(true)
+//         wavesurferObj?.play()
+
+//         // Your logic to play recording
+//     };
+
+//     // Function to pause recording
+//     const handlePauseRecording = () => {
+//         setIsPlaying(false)
+//         wavesurferObj?.pause()
+//         // Your logic to pause recording
+//     };
+
+//     // Function to send recording
+//     const sendRecording = () => {
+//         // Your logic to send recording
+//     };
+
+//     // Function to close the recorder
+//     const closeRecorder = () => {
+//         // Your logic to close the recorder
+//         dispatch(toggleisRecord(false));
+//         wavesurferObj?.stop();
+//     };
+
+//     return (
+//         <div className='w-full bg-[#202c33] text-2xl ml-auto text-white h-14 flex items-center justify-end gap-2 sm:gap-6'>
+//             <button onClick={closeRecorder} className='icons group p-3'>
+//                 <MdDelete title="delete" size={25} className="group-hover:text-[#e9edef]" />
+//             </button>
+
+//             <div className='w-[250px] bg-[#111b21] rounded-full px-2 '>
+//                 <div className='w-full'>
+//                     {
+//                         isRecording ? (
+//                             <div className='flex justify-center gap-3 items-center '>
+//                                 <div className='font-Rubik text-sm'>
+//                                     {formatTime(currentPlaybackTime)}
+//                                 </div>
+//                                 <div id='recording' ref={recordingRef} className='w-full' />
+//                             </div>
+//                         ) : (
+//                             <div className=' flex justify-center gap-3 items-center  '>
+//                                 {isPlaying ? (
+//                                     <button onClick={handlePauseRecording}>
+//                                         <FaPause title="pause Record" />
+//                                     </button>
+//                                 ) : (
+//                                     <button onClick={handlePlayRecording}>
+//                                         <FaPlay title="play Record" />
+//                                     </button>
+//                                 )}
+//                                 <div id='waveform' ref={waveRef} className='w-full' />
+//                                 <div className='font-Rubik text-sm'>
+//                                     {formatTime(currentPlaybackTime)}
+//                                 </div>
+//                             </div>
+
+//                         )
+//                     }
+//                 </div>
+//             </div>
+//             {
+//                 isRecording ? (
+//                     <button onClick={handleStopRecording} className='icons p-3'>
+//                         <FaRegPauseCircle title="stop Record" className="text-red-500" size={25} />
+//                     </button>
+//                 ) : (
+//                     <button onClick={handleStartRecording} className="icons p-3">
+//                         <FaMicrophone title="start Record" className="text-red-500" size={25} />
+//                     </button>
+//                 )
+//             }
+//             <button onClick={sendRecording} className="icons  p-3 bg-[#00a884]" type="submit" >
+//                 <MdSend title="send" />
+//             </button>
+
+//         </div>
+//     );
+// };
+
+// export default React.memo(MsgRecoder);
+
 import React, { useState, useEffect, useRef } from 'react';
 import { MdDelete, MdSend } from "react-icons/md";
 import { FaRegPauseCircle, FaPlay, FaMicrophone, FaPause } from "react-icons/fa";
@@ -12,20 +191,25 @@ import { toggleisRecord } from '../../Redux/reducers/utils/Features';
 import { toast } from 'react-toastify';
 import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
 
+
 const MsgRecoder = () => {
     const dispatch: AppDispatch = useDispatch();
-    const [fileUrl, setFileUrl] = useState("")
+    const [fileUrl, setFileUrl] = useState<null | string>(null)
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-
+    const [recordingTime, setRecordingTime] = useState(0);
     const waveRef = useRef<HTMLDivElement | null>(null);
     const recordingRef = useRef<HTMLDivElement | null>(null);
-    const [isRecording, setIsRecording] = useState(true);
+
+    const [isRecording, setIsRecording] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
 
-    const wavesurferObj = useWaveSurfer({ waveRef });
-    var recordingObj = useWaveSurfer({ waveRef: recordingRef });
-
+    const wavesurferObj = useWaveSurfer(waveRef);
+    // const recordingWave = useWaveSurfer(recordingRef, true);
+    // const getDuration = wavesurferObj?.getDuration().toPrecision()
+    const roundedDuration = Math.floor(parseFloat(wavesurferObj?.getDuration().toString() as string)); 
+    console.log(roundedDuration);
+    
     useEffect(() => {
         if (fileUrl && wavesurferObj) {
             wavesurferObj.load(fileUrl);
@@ -34,40 +218,26 @@ const MsgRecoder = () => {
             setIsPlaying(false);
         });
         wavesurferObj?.on('audioprocess', () => {
+            // console.log('while playing');
+
             setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
         });
+
     }, [fileUrl, wavesurferObj]);
     // Function to start recording
 
-    const recordPlugin = RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: false, scrollingWaveformWindow: 3 });
-    recordingObj?.registerPlugin(recordPlugin);
-    // Function to start recording
     useEffect(() => {
-        let intervalId: any;
-        if (isRecording) {
-            intervalId = setInterval(() => {
-                setCurrentPlaybackTime(prevTime => prevTime + 1);
-            }, 1000);
-            
-            if (currentPlaybackTime === 0) {
-                handleStartRecording().then(() => {
-                    toast.success("started recording")
-                })
-            }
-        }
-        return () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        };
-    }, [isRecording, currentPlaybackTime])
-
+        handleStartRecording()
+    }, [])
+    // const recordPlugin = RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: false, scrollingWaveformWindow: 3 });
+    // recordingWave?.registerPlugin(recordPlugin);
     const handleStartRecording = async () => {
         try {
             setIsRecording(true);
+            setRecordingTime(0);
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // await recordPlugin.renderMicStream(stream); 
             const recorder = new MediaRecorder(stream);
-            // await recordPlugin.renderMicStream(stream);
             const chunks: BlobPart[] = [];
             recorder.ondataavailable = (event) => {
                 chunks.push(event.data);
@@ -84,21 +254,27 @@ const MsgRecoder = () => {
         }
     };
 
+    useEffect(() => {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            setTimeout(() => {
+                setRecordingTime(recordingTime + 1)
+            }, 1000)
+        }
+    }, [recordingTime, mediaRecorder])
+
     // Function to stop recording
-    const handleStopRecording = async () => {
+    const handleStopRecording = () => {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             setIsRecording(false)
             mediaRecorder.stop();
-            await recordPlugin.stopRecording()
         }
         // Your logic to stop recording
-    };
+    }; 
 
     // Function to play recording
     const handlePlayRecording = () => {
         setIsPlaying(true)
         wavesurferObj?.play()
-
         // Your logic to play recording
     };
 
@@ -112,13 +288,14 @@ const MsgRecoder = () => {
     // Function to send recording
     const sendRecording = () => {
         // Your logic to send recording
-    };
+    };  
 
     // Function to close the recorder
     const closeRecorder = () => {
         // Your logic to close the recorder
         dispatch(toggleisRecord(false));
         wavesurferObj?.stop();
+        mediaRecorder?.stop();
     };
 
     return (
@@ -133,8 +310,9 @@ const MsgRecoder = () => {
                         isRecording ? (
                             <div className='flex justify-center gap-3 items-center '>
                                 <div className='font-Rubik text-sm'>
-                                    {formatTime(currentPlaybackTime)}
+                                    {formatTime(recordingTime)}
                                 </div>
+                                {/* <h1 className='font-[450] text-[1rem]'>recording...</h1> */}
                                 <div id='recording' ref={recordingRef} className='w-full' />
                             </div>
                         ) : (
