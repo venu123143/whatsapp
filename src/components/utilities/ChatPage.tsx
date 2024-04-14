@@ -18,6 +18,7 @@ import ShowFullImg from "./ShowFullImg";
 import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../pages/Home"
 import { recieveColors, ReceiveColors } from "../../static/Static";
+import Audio from "./Audio";
 
 const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) => void }) => {
   const dispatch: AppDispatch = useDispatch()
@@ -123,6 +124,9 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
               : null}
             {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}
               date={message.date} right={message.right} image={message.image} seen={message.seen} />
+              : null}
+            {message.msgType === "audio" ? <Audio key={index} onClick={() => handleShowBigImg(message)}
+              date={message.date} right={message.right} audio={message.audio} seen={message.seen} />
               : null}
           </div>
         )}

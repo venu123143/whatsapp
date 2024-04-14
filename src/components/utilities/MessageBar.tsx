@@ -64,6 +64,10 @@ const MessageBar = () => {
   const handleVoiceMsg = () => {
     dispatch(toggleisRecord(true))
   }
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleSendMsg();
+  }
   return (
     <>
       {
@@ -79,7 +83,7 @@ const MessageBar = () => {
           </div>
         )
       }
-      <form className="w-full" onSubmit={(e) => { e.preventDefault(); handleSendMsg(); }}>
+      <form className="w-full" onSubmit={onSubmit}>
         <div className="bg-[#202c33] text-white px-2   flex items-center gap-2 sm:gap-6 ">
           <>
             <div className="flex">
@@ -106,8 +110,8 @@ const MessageBar = () => {
                   <button className="icons" type="submit" >
                     <MdSend title="send" />
                   </button>
-                ) : (
-                  <button onClick={handleVoiceMsg} className="icons">
+                ) : ( 
+                  <button onClick={handleVoiceMsg} type="button" className="icons">
                     <FaMicrophone title="Record" />
                   </button>
                 )

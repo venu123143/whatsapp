@@ -116,46 +116,12 @@ h3 {
     }
 }
 
-/* Skeleton styles for different elements */
-.skeleton-profile {
-    width: 50px;
-    height: 50px;
-    background-color: #cacaca;
-    border-radius: 50%;
-}
-
-.skeleton-info {
-    padding-left: 10px;
-}
-
-.skeleton-name {
-    width: 100px;
-    height: 20px;
-    background-color: #cacaca;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    /* Applying border radius */
-}
-
-.skeleton-lastmsg {
-    width: 150px;
-    height: 20px;
-    background-color: #cacaca;
-    border-radius: 4px;
-    /* Applying border radius */
-}
-
-.skeleton-admin {
-    padding: 0 5px;
-}
-
 .skeleton-time {
     width: 100px;
     height: 20px;
     background-color: #cacaca;
     margin-bottom: 5px;
     border-radius: 4px;
-    /* Applying border radius */
 }
 
 .skeleton-unread {
