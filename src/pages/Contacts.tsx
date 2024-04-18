@@ -61,6 +61,7 @@ const ContactsList = () => {
         dispatch(toggleContacts(false))
         setSearchInput("")
     }
+    const skeliton = new Array(10).fill(0)
     return (
         <div className={`h-screen w-full flex flex-col text-white absolute top-0 left-0 header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
             <div className="icons max-h-[40px] sm:max-h-40 flex items-center gap-4 "
@@ -89,13 +90,9 @@ const ContactsList = () => {
                     users.length === 0 ?
                         <>
                             <div className=''>
-                                < UserSkeliton />
-                                < UserSkeliton />
-                                < UserSkeliton />
-                                < UserSkeliton />
-                                < UserSkeliton />
-                                < UserSkeliton />
-                                < UserSkeliton />
+                                {skeliton.map((_, index: number) => (
+                                    < UserSkeliton key={index} />
+                                ))}
                             </div>
                         </> :
                         <>

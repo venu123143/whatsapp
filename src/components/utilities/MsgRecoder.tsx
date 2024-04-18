@@ -26,8 +26,8 @@ const MsgRecoder = () => {
     const wavesurferObj = useWaveSurfer(waveRef);
     // const recordingWave = useWaveSurfer(recordingRef, true);
     // const getDuration = wavesurferObj?.getDuration().toPrecision()
-    const roundedDuration = Math.floor(parseFloat(wavesurferObj?.getDuration().toString() as string)); 
-    console.log(roundedDuration);
+    // const roundedDuration = Math.floor(parseFloat(wavesurferObj?.getDuration().toString() as string)); 
+    // console.log(roundedDuration);
     
     useEffect(() => {
         if (fileUrl && wavesurferObj) {
@@ -37,25 +37,19 @@ const MsgRecoder = () => {
             setIsPlaying(false);
         });
         wavesurferObj?.on('audioprocess', () => {
-            // console.log('while playing');
-
             setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
         });
 
     }, [fileUrl, wavesurferObj]);
-    // Function to start recording
 
     useEffect(() => {
         handleStartRecording()
     }, [])
-    // const recordPlugin = RecordPlugin.create({ scrollingWaveform: true, renderRecordedAudio: false, scrollingWaveformWindow: 3 });
-    // recordingWave?.registerPlugin(recordPlugin);
     const handleStartRecording = async () => {
         try {
             setIsRecording(true);
             setRecordingTime(0);
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            // await recordPlugin.renderMicStream(stream); 
             const recorder = new MediaRecorder(stream);
             const chunks: BlobPart[] = [];
             recorder.ondataavailable = (event) => {
@@ -106,7 +100,9 @@ const MsgRecoder = () => {
 
     // Function to send recording
     const sendRecording = () => {
-        // Your logic to send recording
+        dispatch(toggleisRecord(false));
+        wavesurferObj?.stop();
+        mediaRecorder?.stop();
     };  
 
     // Function to close the recorder
