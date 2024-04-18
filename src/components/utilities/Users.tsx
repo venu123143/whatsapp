@@ -54,6 +54,7 @@ const Users = () => {
     const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
     return isNameMatched || isMobileMatched;
   };
+  const skeliton = new Array(10).fill(0)
   return (
     <>
       <header className='relative w-full h-screen flex flex-col bg-[#111b21]'>
@@ -87,16 +88,9 @@ const Users = () => {
               //   className=''
               // />
               <div className=''>
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
-                < UserSkeliton />
+                {skeliton.map((_, index: number) => (
+                  < UserSkeliton key={index} />
+                ))}
               </div>
               :
               friends.filter(handleSearch).map((each: CommonProperties, index: number) => {

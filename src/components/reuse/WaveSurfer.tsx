@@ -13,7 +13,7 @@ const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>, s
             const newWaveSurfer = WaveSurfer.create({
                 container: waveRef.current,
                 waveColor: "#848488",
-                progressColor: "red",
+                progressColor: "#00a884",
                 barWidth: 2,
                 audioRate: 1,
                 barGap: 2,
