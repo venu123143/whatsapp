@@ -86,7 +86,7 @@ export interface ChatMessage {
     recieverId: string;
     conn_type: string;
     seen: boolean;
-    image?: any
+    file?: any
     users?: UserState[];
     senderName?: string;
     replyFor?: any

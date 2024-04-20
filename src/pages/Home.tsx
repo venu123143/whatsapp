@@ -33,10 +33,10 @@ const Home = () => {
     initializeSocket();
   }, [user]);
 
-  let onReload = true;  
+  let onReload = true;
   useEffect(() => {
     if (socket.connected && user !== null) {
-      if (onReload) {                
+      if (onReload) {
         // socket.emit("get_frnds_on_reload", user)
         socket.emit("get_all_messages", "friends")
         onReload = false
@@ -70,6 +70,7 @@ const Home = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
+        console.log(data);
 
         setLstMsg({ ...data, right: false })
         dispatch(handleRecieveMessage({ ...data, right: false }));
