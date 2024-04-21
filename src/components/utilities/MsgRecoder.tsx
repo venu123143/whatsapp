@@ -114,6 +114,7 @@ const MsgRecoder = () => {
         wavesurferObj?.stop();
         mediaRecorder?.stop();
         const base64 = await convertBlobToBase64(blobData as Blob)
+        const audio = { profile: user?.profile, audio: base64 }
         const serializedValues: ChatMessage = {
             message: 'audio',
             date: new Date().toISOString(),
@@ -122,7 +123,7 @@ const MsgRecoder = () => {
             senderId: user?.socket_id as string,
             conn_type: "onetoone",
             recieverId: friends[currentUserIndex].socket_id,
-            file: base64,
+            file: audio,
             seen: false
         };
         dispatch(handleSendMessage(serializedValues));
