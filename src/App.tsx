@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify"
 import { Routes, Route, Navigate } from "react-router-dom"
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import VideoHome from "./components/video/VideoHome";
 
 
 const App = () => {
@@ -16,7 +17,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/calls" element={<Login />} />
+        <Route path="/calls" element={<VideoHome />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 

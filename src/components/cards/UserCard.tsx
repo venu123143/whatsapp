@@ -2,6 +2,7 @@ import React from "react"
 import { FaCircleUser } from "react-icons/fa6"
 import { CommonProperties } from "../../Redux/reducers/msg/MsgReducer"
 import { formatDate } from "./ReUseFunc"
+import { maskPhoneNumber } from "../cards/ReUseFunc"
 
 const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleOnClick?: any, isAdmin?: boolean }> = ({ value, contacts, handleOnClick, isAdmin }) => {
   return (
@@ -15,7 +16,7 @@ const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleO
           )}
         </div>
         <div className={`${isAdmin === true ? "col-span-2" : "col-span-3"}`}>
-          <h3 className="username">{value?.name ? value?.name : value?.mobile}</h3>
+          <h3 className="username">{value?.name ? value?.name : maskPhoneNumber(value?.mobile as string)}</h3>
           <p className="lastmsg">{contacts === true ? value?.about : value?.lastMessage?.message}</p>
         </div>
         <div className={`${isAdmin === true ? "col-span-2 " : "col-span-1 justify-between"}  flex flex-col `}>

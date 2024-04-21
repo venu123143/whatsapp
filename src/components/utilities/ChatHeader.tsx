@@ -1,4 +1,4 @@
-import { MdCall } from "react-icons/md"
+// import { MdCall } from "react-icons/md"
 import { IoMdVideocam } from "react-icons/io"
 import { BsSearch, BsThreeDotsVertical } from "react-icons/bs"
 import { useDispatch, useSelector } from "react-redux"
@@ -8,6 +8,8 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { setCurrentGrpOrUser, toggleContactInfo } from "../../Redux/reducers/msg/MsgReducer"
 import { AiOutlineArrowLeft } from "react-icons/ai"
+import { maskPhoneNumber } from "../cards/ReUseFunc"
+
 // import { useSelector } from "react-redux"
 // import { RootState } from "../../Redux/store"
 const ChatHeader = () => {
@@ -19,7 +21,7 @@ const ChatHeader = () => {
   const [dropdown, setDropdown] = useState(false)
 
   function getUsersString(usersArray: any) {
-    return usersArray.map((user: any) => user.name || user.mobile).join(', ');
+    return usersArray.map((user: any) => user.name || maskPhoneNumber(user.mobile)).join(', ');
   }
   useEffect(() => {
     const closeDropdown = (event: MouseEvent) => {
@@ -83,7 +85,7 @@ const ChatHeader = () => {
         )}
       </div>
       <div className="mr-auto sm:cursor-pointer" onClick={handleOopenProfile}>
-        <span className="username font-bold">{friends[currentUserIndex]?.name ? friends[currentUserIndex]?.name : friends[currentUserIndex]?.mobile}</span>
+        <span className="username font-bold">{friends[currentUserIndex]?.name ? friends[currentUserIndex]?.name : maskPhoneNumber(friends[currentUserIndex]?.mobile as string)}</span>
         <span className="time text-sm line-clamp-1 max-w-[600px]"> {grpUsers !== ""
           ? grpUsers
           : friends[currentUserIndex]?.online_status === "true"
@@ -92,12 +94,15 @@ const ChatHeader = () => {
         }</span>
       </div>
       <div className="flex gap-2 ">
-        <div className="icons sm:block hidden" >
+        {/* <div className="icons sm:block hidden" >
           <MdCall className=" sm:cursor-pointer text-xl" title="audio call" />
-        </div>
-        <div className="icons">
+        </div> */}
+        {/* <Link to="/calls" className="icons">
           <IoMdVideocam className="" title="video call" />
-        </div>
+        </Link> */}
+        <a href="/calls" target="_blank" rel="noopener noreferrer" className="icons">
+          <IoMdVideocam title="video call" />
+        </a>
         <div className="icons sm:block hidden" >
           <BsSearch className="" title="search in chat" />
         </div>

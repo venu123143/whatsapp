@@ -24,3 +24,12 @@ export const formatDate = (inputDate: string) => {
         day: 'numeric',
     });
 };
+
+
+export function maskPhoneNumber(phoneNumber: string) {
+    const lastFourDigits = phoneNumber.slice(-4);
+    const maskedPart = phoneNumber.slice(0, -4).replace(/\d/g, 'X');
+    // Return the combined result
+    return maskedPart + lastFourDigits;
+}
+
