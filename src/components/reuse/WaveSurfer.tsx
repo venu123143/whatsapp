@@ -2,26 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import WaveSurfer from 'wavesurfer.js';
-// import RecordPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.record.min.js';
-import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
+// import RecordPlugin from 'wavesurfer.js/dist/plugins/record.esm.js'
 
-const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>, scrollingWaveform: boolean = false) => {
+const useWaveSurfer = (waveRef: React.MutableRefObject<HTMLDivElement | null>, right: boolean = false) => {
     const [waveSurfer, setWaveSurfer] = useState<WaveSurfer | null>(null);
 
     useEffect(() => {
         if (!waveSurfer && waveRef.current) {
             const newWaveSurfer = WaveSurfer.create({
                 container: waveRef.current,
-                waveColor: "#848488",
-                progressColor: "#00a884",
+                waveColor: right === true ? "#cacaca" : "#cacaca",
+                progressColor: right === true ? "#FFD700" : "#00a884",
                 barWidth: 2,
+                autoScroll: false,
                 audioRate: 1,
                 barGap: 2,
                 height: 40,
-                cursorWidth: 2,
-                plugins: [
-                    RecordPlugin.create({ scrollingWaveform, renderRecordedAudio: false }),
-                ],
+                cursorWidth: 2
             });
             setWaveSurfer(newWaveSurfer);
         }

@@ -106,7 +106,7 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
                         <AiOutlineDown size={15} />
                     </span>
                 </span>
-                <div
+                <div    
                     className={`${optionPosition === 'bottom' ? message.right === true ? "top-12 right-0" : "-right-52 top-5" : message.right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
                     ${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                     msgOptions `}>

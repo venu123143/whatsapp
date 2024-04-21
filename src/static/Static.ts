@@ -56,3 +56,28 @@ export const formatTime = (time: number) => {
   const seconds = Math.floor(time % 60);
   return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 };
+
+export const convertBlobToBase64 = (blob: Blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve(reader.result); // This will include the 'data:[content/type];base64,' prefix
+    };
+    reader.onerror = (error) => {
+      reject(error);
+    };
+    reader.readAsDataURL(blob); // Convert the Blob to a Data URL
+  });
+};
+
+export const convertBase64ToBlob = (base64Data: string, contentType: { type: string }) => {
+  const base64String = base64Data.split(',')[1]; // Remove 'data:[content/type];base64,' prefix
+  const byteString = atob(base64String);
+  const byteArrays = [];
+
+  for (let i = 0; i < byteString.length; i++) {
+    byteArrays.push(byteString.charCodeAt(i));
+  }
+  const byteArray = new Uint8Array(byteArrays);
+  return new Blob([byteArray], contentType);
+};

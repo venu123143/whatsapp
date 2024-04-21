@@ -67,7 +67,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
       reader.onloadend = () => {
         const base64data = reader.result?.toString();
         console.log("base64data");
-        
+
         const serializedValues: ChatMessage = {
           message: 'image',
           date: new Date().toISOString(),
@@ -76,7 +76,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
           senderId: user?.socket_id as string,
           conn_type: "onetoone",
           recieverId: friends[currentUserIndex].socket_id,
-          image: base64data,
+          file: base64data,
           seen: false
         };
 
@@ -86,9 +86,9 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
       };
     };
 
-    imagesArray.forEach((image,index) => {
+    imagesArray.forEach((image, index) => {
       console.log(index, "foreach");
-      
+
       handleImageUpload(image);
     });
 
@@ -97,7 +97,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
 
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
-    dispatch(openfullScreen({ currentImage: message.image, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
+    dispatch(openfullScreen({ currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
   }
   // src={URL.createObjectURL(image)}
   return (
@@ -123,10 +123,12 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
               />
               : null}
             {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}
-              date={message.date} right={message.right} image={message.image} seen={message.seen} />
+              date={message.date} right={message.right} image={message.file} seen={message.seen} />
               : null}
-            {message.msgType === "audio" ? <Audio key={index} onClick={() => handleShowBigImg(message)}
-              date={message.date} right={message.right} audio={message.audio} seen={message.seen} />
+            {message.msgType === "audio" ? <Audio key={index}
+              onClick={() => handleShowBigImg(message)}
+              color={getRandomColor() as string}
+              message={message} />
               : null}
           </div>
         )}

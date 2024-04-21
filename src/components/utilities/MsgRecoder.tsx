@@ -1,19 +1,26 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { MdDelete, MdSend } from "react-icons/md";
 import { FaRegPauseCircle, FaPlay, FaMicrophone, FaPause } from "react-icons/fa";
 import useWaveSurfer from "../reuse/WaveSurfer";
-import { formatTime } from '../../static/Static';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../Redux/store';
+import { formatTime, convertBlobToBase64 } from '../../static/Static';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../Redux/store';
 import { toggleisRecord } from '../../Redux/reducers/utils/Features';
 // import ammayeSannaga from "../../static/Ammaye sannaga.ogg"
 import { toast } from 'react-toastify';
-
+import { ChatMessage, handleSendMessage } from '../../Redux/reducers/msg/MsgReducer';
+import { SocketContext } from "../../pages/Home"
 
 const MsgRecoder = () => {
+
+    const { friends, currentUserIndex } = useSelector((state: RootState) => state.msg);
+    const { user } = useSelector((state: RootState) => state.auth)
+    const socket = useContext(SocketContext);
+
     const dispatch: AppDispatch = useDispatch();
     const [fileUrl, setFileUrl] = useState<null | string>(null)
+    const [blobData, setBlobData] = useState<null | Blob>(null)
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [recordingTime, setRecordingTime] = useState(0);
     const waveRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +35,7 @@ const MsgRecoder = () => {
     // const getDuration = wavesurferObj?.getDuration().toPrecision()
     // const roundedDuration = Math.floor(parseFloat(wavesurferObj?.getDuration().toString() as string)); 
     // console.log(roundedDuration);
-    
+
     useEffect(() => {
         if (fileUrl && wavesurferObj) {
             wavesurferObj.load(fileUrl);
@@ -57,6 +64,7 @@ const MsgRecoder = () => {
             };
             recorder.onstop = () => {
                 const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                setBlobData(blob)
                 const audioUrl = URL.createObjectURL(blob);
                 setFileUrl(audioUrl);
             };
@@ -79,10 +87,11 @@ const MsgRecoder = () => {
     const handleStopRecording = () => {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             setIsRecording(false)
+            wavesurferObj?.stop()
             mediaRecorder.stop();
         }
         // Your logic to stop recording
-    }; 
+    };
 
     // Function to play recording
     const handlePlayRecording = () => {
@@ -99,11 +108,27 @@ const MsgRecoder = () => {
     };
 
     // Function to send recording
-    const sendRecording = () => {
+    const sendRecording = async () => {
         dispatch(toggleisRecord(false));
+        setIsRecording(false)
         wavesurferObj?.stop();
         mediaRecorder?.stop();
-    };  
+        const base64 = await convertBlobToBase64(blobData as Blob)
+        const audio = { profile: user?.profile, audio: base64 }
+        const serializedValues: ChatMessage = {
+            message: 'audio',
+            date: new Date().toISOString(),
+            right: true,
+            msgType: 'audio',
+            senderId: user?.socket_id as string,
+            conn_type: "onetoone",
+            recieverId: friends[currentUserIndex].socket_id,
+            file: audio,
+            seen: false
+        };
+        dispatch(handleSendMessage(serializedValues));
+        socket.emit("send_message", serializedValues)
+    };
 
     // Function to close the recorder
     const closeRecorder = () => {
