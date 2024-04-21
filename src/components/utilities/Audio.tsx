@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineDown } from 'react-icons/ai';
 import { BiCheck, BiCheckDouble } from 'react-icons/bi';
-import { IoMdMic } from "react-icons/io";
+// import { IoMdMic } from "react-icons/io";
 import useCloseDropDown from '../reuse/CloseDropDown';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
@@ -10,22 +10,39 @@ import { formatTime } from '../../static/Static';
 import useWaveSurfer from '../reuse/WaveSurfer';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
+// const blob = new Blob([message.file.data], { type: 'audio/ogg; codecs=opus' });
+// const audioUrl = URL.createObjectURL(blob);
+// console.log("audioUrl", audioUrl);
+// wavesurferObj.load(audioUrl);
+
 interface AudioProps {
   onClick: () => void;
   message: any;
   color: string
 }
 
-const Audio: React.FC<AudioProps> = ({ onClick, message, color }) => {
+const Audio: React.FC<AudioProps> = ({ message, color }) => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
-
+  const [totalDuration, setTotalDuration] = useState(0);
   const waveRef = useRef<HTMLDivElement | null>(null);
   const wavesurferObj = useWaveSurfer(waveRef);
+
   useEffect(() => {
     if (message.file && wavesurferObj) {
-      wavesurferObj.load(message.file);
+      try {
+        wavesurferObj.load(message.file);
+        wavesurferObj.on('ready', () => {
+          setTotalDuration(wavesurferObj.getDuration()); // Total duration
+        });
+        // const getDuration = parseInt(wavesurferObj?.getDuration().toPrecision());
+        // setCurrentPlaybackTime(getDuration)
+        // const roundedDuration = Math.floor(parseFloat(wavesurferObj?.getDuration().toString() as string)); 
+        // console.log(roundedDuration);
+      } catch (error: any) {
+        console.log('error', error.message);
+      }
     }
     wavesurferObj?.on('finish', () => {
       setIsPlaying(false);
@@ -67,16 +84,13 @@ const Audio: React.FC<AudioProps> = ({ onClick, message, color }) => {
         <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
         <div className={`flex  justify-center items-center space-x-2  ${message.right === true ? "flex-row-reverse" : "flex-row"}`}>
           <div id='waveform' ref={waveRef} className='w-[140px]' />
-          <div className='font-Rubik text-sm'>
-            {formatTime(currentPlaybackTime)}
-          </div>
           {isPlaying ? (
             <button onClick={handlePauseRecording}>
-              <FaPause title="pause Record" />
+              <FaPause title="pause Record" size={25} />
             </button>
           ) : (
             <button onClick={handlePlayRecording}>
-              <FaPlay title="play Record" />
+              <FaPlay title="play Record" size={25} />
             </button>
           )}
           <div className="cursor-pointer">
@@ -94,31 +108,38 @@ const Audio: React.FC<AudioProps> = ({ onClick, message, color }) => {
 
 
         <span className=" flex h-fit w-fit ml-auto items-end justify-end">
-          <span className="text-[10px] text-[#ffffff99]">
-            {new Date(message.date).toLocaleTimeString("en-US", {
-              hour: "numeric",
-              hour12: true,
-              minute: "numeric",
-            })}
-            {message.seen === true ?
-              <BiCheckDouble
-                className={`${message.right === true ? "inline text-[#4FB6EC]" : "hidden"
-                  }`}
-                size={20}
-              /> :
-              friends[currentUserIndex]?.online_status === "true" ?
+          <span className="grid grid-cols-10 w-full gap-5 text-[10px] text-[#ffffff99]">
+            <div className='font-Rubik  text-center col-span-6 text-[10px]'>
+              {isPlaying ? formatTime(currentPlaybackTime) : formatTime(totalDuration)}
+            </div>
+            <span className='col-span-2'>
+              {new Date(message.date).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                hour12: true,
+                minute: "numeric",
+              })}
+            </span>
+            <span className='col-span-2'>
+              {message.seen === true ?
                 <BiCheckDouble
-                  className={`${message.right === true ? "inline text-[#ffffff99]" : "hidden"
+                  className={`${message.right === true ? "inline text-[#4FB6EC]" : "hidden"
                     }`}
                   size={20}
                 /> :
-                <BiCheck
-                  className={`${message.right === true ? "inline text-[#f0f2f5]" : "hidden"
-                    }`}
-                  size={20}
-                />
+                friends[currentUserIndex]?.online_status === "true" ?
+                  <BiCheckDouble
+                    className={`${message.right === true ? "inline text-[#ffffff99]" : "hidden"
+                      }`}
+                    size={20}
+                  /> :
+                  <BiCheck
+                    className={`${message.right === true ? "inline text-[#f0f2f5]" : "hidden"
+                      }`}
+                    size={20}
+                  />
 
-            }
+              }
+            </span>
           </span>
           <span className={`${message.right === true ? "bg-[#008069] " : "bg-[#233138] "} 
                     absolute top-0 right-2 group-hover:translate-y-0 translate-y-5 group-hover:visible invisible transition-all shadow-sm

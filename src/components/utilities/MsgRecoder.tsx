@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { MdDelete, MdSend } from "react-icons/md";
 import { FaRegPauseCircle, FaPlay, FaMicrophone, FaPause } from "react-icons/fa";
 import useWaveSurfer from "../reuse/WaveSurfer";
-import { formatTime } from '../../static/Static';
+import { formatTime, convertBlobToBase64 } from '../../static/Static';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 import { toggleisRecord } from '../../Redux/reducers/utils/Features';
@@ -20,6 +20,7 @@ const MsgRecoder = () => {
 
     const dispatch: AppDispatch = useDispatch();
     const [fileUrl, setFileUrl] = useState<null | string>(null)
+    const [blobData, setBlobData] = useState<null | Blob>(null)
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [recordingTime, setRecordingTime] = useState(0);
     const waveRef = useRef<HTMLDivElement | null>(null);
@@ -61,8 +62,9 @@ const MsgRecoder = () => {
             recorder.ondataavailable = (event) => {
                 chunks.push(event.data);
             };
-            recorder.onstop = () => {                
+            recorder.onstop = () => {
                 const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' });
+                setBlobData(blob)
                 const audioUrl = URL.createObjectURL(blob);
                 setFileUrl(audioUrl);
             };
@@ -85,6 +87,7 @@ const MsgRecoder = () => {
     const handleStopRecording = () => {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             setIsRecording(false)
+            wavesurferObj?.stop()
             mediaRecorder.stop();
         }
         // Your logic to stop recording
@@ -110,6 +113,7 @@ const MsgRecoder = () => {
         setIsRecording(false)
         wavesurferObj?.stop();
         mediaRecorder?.stop();
+        const base64 = await convertBlobToBase64(blobData as Blob)
         const serializedValues: ChatMessage = {
             message: 'audio',
             date: new Date().toISOString(),
@@ -118,11 +122,10 @@ const MsgRecoder = () => {
             senderId: user?.socket_id as string,
             conn_type: "onetoone",
             recieverId: friends[currentUserIndex].socket_id,
-            file: fileUrl,
+            file: base64,
             seen: false
         };
         dispatch(handleSendMessage(serializedValues));
-        
         socket.emit("send_message", serializedValues)
     };
 
