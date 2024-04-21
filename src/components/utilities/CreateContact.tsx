@@ -8,7 +8,7 @@ import { RxCross2 } from "react-icons/rx"
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import { FaCircleUser } from "react-icons/fa6";
 import { storeSelectedUsers, toggleCreateGroup } from "../../Redux/reducers/msg/MsgReducer";
-
+import { maskPhoneNumber } from "../cards/ReUseFunc"
 
 
 export const MiniUserCard: React.FC<{ name: string, profile?: string, onClick?: any }> = ({ name, profile, onClick }) => {
@@ -94,7 +94,7 @@ const CreateContact = () => {
                     <div className="flex-wrap flex max-h-[200px] overflow-y-scroll custom-scrollbar">
                         {
                             selectedUsers.map((user, idx) => (
-                                <MiniUserCard key={idx} name={user.name ? user.name : user.mobile} profile={user.profile} onClick={() => handleRemoveUser(user._id)} />
+                                <MiniUserCard key={idx} name={user.name ? user.name : maskPhoneNumber(user.mobile)} profile={user.profile} onClick={() => handleRemoveUser(user._id)} />
                             ))
                         }
                     </div>

@@ -11,6 +11,7 @@ import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { setCurrentGrpOrUser, toggleContactInfo } from "../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
+import { maskPhoneNumber } from "../components/cards/ReUseFunc"
 
 const ContactInfo = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -50,7 +51,7 @@ const ContactInfo = () => {
                         }
                     </div>
                     <div>
-                        <h3 className='text-[#d1d7db] font-Rubik tracking-wider text-[1.2rem] text-center'> {friends[currentUserIndex]?.users?.length! > 0 ? friends[currentUserIndex].name : `${friends[currentUserIndex].mobile}`}</h3>
+                        <h3 className='text-[#d1d7db] font-Rubik tracking-wider text-[1.2rem] text-center'> {friends[currentUserIndex]?.users?.length! > 0 ? friends[currentUserIndex].name : `${maskPhoneNumber(friends[currentUserIndex].mobile as string)}`}</h3>
                         <p className='text-center text-[#667181] font-Rubik'>~ {friends[currentUserIndex]?.users?.length! > 0 ? `Group ${friends[currentUserIndex]?.users?.length} members` : friends[currentUserIndex]?.name}</p>
                     </div>
                 </div>
