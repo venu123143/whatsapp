@@ -80,7 +80,7 @@ const LoginWithOtp = () => {
         }
         try {
             await otpValid.validate({ otp }, { abortEarly: false });
-            dispatch(VerifyOtp({ mobile: formik.values.mobile, otp })).then(() => {
+            dispatch(VerifyOtp({ otp })).then(() => {
                 formik.resetForm()
             })
             setErr("")

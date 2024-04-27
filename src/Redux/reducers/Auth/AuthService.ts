@@ -21,10 +21,20 @@ const reset = async (token: string, password: string) => {
 }
 const sendotp = async (mobile: string) => {
     const res = await axios.post(`${import.meta.env.VITE_API_CLIENT_URL}/users/sendotp`, { mobile })
+    const sessionId = res.headers['sessionid'];
+    if (sessionId) {
+        localStorage.setItem('sessionId', sessionId);
+    }
     return res.data
 }
-const verifyOtp = async (mobile: string, otp: string[]) => {
-    const res = await axios.post(`${import.meta.env.VITE_API_CLIENT_URL}/users/verifyotp`, { mobile, otp }, { withCredentials: true })
+const verifyOtp = async (otp: string[]) => {
+    const sessionId = localStorage.getItem("sessionId");
+    const headers = {} as any;
+    if (sessionId) {
+        headers["sessionid"] = sessionId;
+    }
+    const res = await axios.post(`${import.meta.env.VITE_API_CLIENT_URL}/users/verifyotp`,
+        { otp }, { headers: headers, withCredentials: true })
     if (res.data) {
         localStorage.setItem("token", JSON.stringify(res.data?.user))
         return res.data
