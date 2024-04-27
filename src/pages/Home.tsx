@@ -25,7 +25,7 @@ const Home = () => {
 
   useEffect(() => {
     const initializeSocket = async () => {
-      if (user !== null) {
+      if (user !== null && !socket.connected) {
         const socket = await createSocket(user);
         setSocket(socket)
       }
@@ -111,16 +111,15 @@ const Home = () => {
       }
     };
   }, [socket, lstMsg]);
-  console.log(currentUserIndex);
 
   return (
     <>
       <SocketContext.Provider value={socket} >
-        <main className='w-full overflow-hidden md:grid grid-cols-10'>
-          <section className={`sm:col-span-3 sm:min-w-[300px] ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
+        <main className='overflow-hidden md:grid grid-cols-10 '>
+          <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
             <Users />
           </section>
-          <section className={`md:col-span-7 sm:static fixed top-0 right-0 w-full transition-all ease-linear duration-300 delay-150 ${currentUserIndex !== null ? "translate-x-0" : "sm:translate-x-0 translate-x-full"}`}>
+          <section className={`md:col-span-7 md:static fixed top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0" : "md:translate-x-0 translate-x-full"}`}>
             {currentUserIndex === null ? <DefaultComp /> : <Chat />}
           </section>
         </main>
