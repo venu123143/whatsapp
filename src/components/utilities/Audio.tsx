@@ -82,7 +82,7 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
         } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-1 py-1 `} >
         <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
         <div className={`flex justify-center items-center gap-4 ${message.right === true ? "flex-row" : "flex-row-reverse"} `}>
-          <div className="cursor-pointer">
+          <div className="sm:cursor-pointer">
             {
               message.file?.profile === "" || !message.file?.profile ? (
                 <div className="">

@@ -136,7 +136,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
         <div aria-orientation="vertical" aria-labelledby="menu-button"
           className={`attachedFiles ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"} `}
           role="menu" >
-          <div className="py-1 px-3 cursor-pointer" role="none">
+          <div className="py-1 px-3 sm:cursor-pointer" role="none">
             <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
               <IoDocumentTextOutline
                 size={20}
@@ -145,7 +145,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
               <input type="file" id="document" className="hidden" multiple />
               <label
                 htmlFor="document"
-                className=" text-md text-white cursor-pointer"
+                className=" text-md text-white sm:cursor-pointer"
                 role="menuitem"
               >
                 {" "}
@@ -156,14 +156,14 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
               <IoMdPhotos size={20} className="inline text-[#007bfc]" />
               <input id="photosvideos" multiple={true} type="file" accept=".jpg, .jpeg, .png" className="hidden"
                 onChange={handleUploadImages} />
-              <label htmlFor="photosvideos" className=" text-md text-white cursor-pointer" role="menuitem">
+              <label htmlFor="photosvideos" className=" text-md text-white sm:cursor-pointer" role="menuitem">
                 {" "} photos & videos
               </label>
             </div>
             <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
               <AiOutlineCamera size={20} className="inline text-[#c78399]" />
               <p
-                className=" block  text-md  text-white cursor-pointer"
+                className=" block  text-md  text-white sm:cursor-pointer"
                 role="menuitem"
               >
                 camera
@@ -172,7 +172,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
             <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
               <FcContacts size={20} className="inline text-[#007bfc]" />
               <p
-                className=" block  text-md  text-white cursor-pointer"
+                className=" block  text-md  text-white sm:cursor-pointer"
                 role="menuitem"
               >
                 contact
@@ -181,7 +181,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
             <div className="hover:bg-[#111b21] rounded-md text-white flex gap-3  items-center py-1.5 px-2">
               <MdPoll size={20} className="inline text-[#ffbc38]" />
               <p
-                className="block  text-md  text-white cursor-pointer"
+                className="block  text-md  text-white sm:cursor-pointer"
                 role="menuitem"
               >
                 poll
