@@ -64,7 +64,7 @@ const ChatHeader = () => {
   }
   return (
     <div className="h-16 gap-2 sm:gap-5 py-3 px-1 flex justify-between items-center bg-[#202c33] ">
-      <div onClick={handleCloseChat} className="sm:hidden block w-5 p-5">
+      <div onClick={handleCloseChat} className="md:hidden block w-5 p-5">
         <AiOutlineArrowLeft className="text-white" />
       </div>
       <div onClick={handleOopenProfile} className="flex sm:cursor-pointer items-center justify-center gap-6 chatList">

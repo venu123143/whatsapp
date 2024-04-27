@@ -55,9 +55,12 @@ const Users = () => {
     return isNameMatched || isMobileMatched;
   };
   const skeliton = new Array(10).fill(0)
+  const divStyle = {
+    height: 'calc(100vh - 12px)',
+  };
   return (
     <>
-      <header className='relative w-full h-screen flex flex-col bg-[#111b21]'>
+      <header style={divStyle} className=' w-full  flex flex-col bg-[#111b21]'>
         <div className='relative ' >
           <Profile />
         </div>
