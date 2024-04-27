@@ -115,7 +115,7 @@ h3 {
         transform: translateX(100%);
     }
 }
-
+/* 
 .skeleton-time {
     width: 100px;
     height: 20px;
@@ -130,7 +130,6 @@ h3 {
     background-color: #cacaca;
     margin-bottom: 5px;
     border-radius: 4px;
-    /* Applying border radius */
 }
 
 .skeleton-admin-tag {
@@ -141,6 +140,5 @@ h3 {
     font-size: .71rem;
     text-align: center;
     border-radius: .2rem;
-    /* Applying border radius */
     padding: 1px;
-}
+} */

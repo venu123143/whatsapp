@@ -24,7 +24,7 @@ export const MiniUserCard: React.FC<{ name: string, profile?: string, onClick?: 
             <div className="">
                 <h3 className="username font-sans text-[.81rem]">{name.split(' ')[0]}</h3>
             </div>
-            <div onClick={onClick} className="cursor-pointer rounded-full">
+            <div onClick={onClick} className="sm:cursor-pointer rounded-full">
                 <RxCross2 size={15} />
             </div>
         </div>
@@ -84,9 +84,9 @@ const CreateContact = () => {
         setSearchInput("")
     }
     return (
-        <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${createContact === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
-            <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={hanldeDiscardChanges}>
-                <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
+        <div className={`h-screen flex flex-col text-white absolute top-0 left-0 w-full transition-all ease-linear  duration-300 delay-150 ${createContact === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
+            <div className="flex bg-[#202c33] items-center gap-4 w-full p-5 h-20 sm:cursor-pointer" onClick={hanldeDiscardChanges}>
+                <AiOutlineArrowLeft className="text-white sm:cursor-pointer" />
                 <h1 className="text-white font-medium tracking-wide">Add Members to Group</h1>
             </div>
             <section className="bg-[#111b21] flex py-3 px-5 items-center gap-3">

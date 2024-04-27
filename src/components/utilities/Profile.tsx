@@ -82,8 +82,8 @@ const Profile = () => {
   return (
     <>
       <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
-        <div className="flex w-full items-center gap-4 mt-10 pb-4 ml-8 cursor-pointer" onClick={() => dispatch(handleProfileOpen(!profileOpen))}>
-          <AiOutlineArrowLeft className="text-white cursor-pointer w-9" />
+        <div className="flex items-center gap-4 w-full h-20 p-3 sm:cursor-pointer" onClick={() => dispatch(handleProfileOpen(!profileOpen))}>
+          <AiOutlineArrowLeft className="text-white sm:cursor-pointer w-9" />
           <h1 className="text-white font-[400] ">Profile</h1>
         </div>
         <div className="profile">
@@ -107,8 +107,8 @@ const Profile = () => {
                     }}>
                       {({ getRootProps, getInputProps }) => (
                         <label htmlFor="dropzone-file" {...getRootProps()} className=" rounded-full group">
-                          <PiUserLight size={200} className=" bg-gray-700 rounded-full cursor-pointer hover:opacity-90 hover:shadow-orange-500 shadow-lg hover:bg-gray-700 mt-10" />
-                          <div className={`${isLoading === true ? "block" : "hidden"} cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+                          <PiUserLight size={200} className=" bg-gray-700 rounded-full sm:cursor-pointer hover:opacity-90 hover:shadow-orange-500 shadow-lg hover:bg-gray-700 mt-10" />
+                          <div className={`${isLoading === true ? "block" : "hidden"} sm:cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
                             {
                               isLoading === true ?
                                 <ClipLoader
@@ -129,8 +129,8 @@ const Profile = () => {
                     </Dropzone>
                   ) : (
                     <>
-                      <img onClick={showAllOptions} src={user?.profile} className={` ${isLoading === true ? "bg-black opacity-50" : ""} group cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] object-cover mt-10`} alt="Profile" />
-                      <div className={`${isProfileLoading === true ? "block" : "hidden"} cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
+                      <img onClick={showAllOptions} src={user?.profile} className={` ${isLoading === true ? "bg-black opacity-50" : ""} group sm:cursor-pointer hover:bg-black hover:opacity-50 rounded-full h-[200px] w-[200px] object-cover mt-10`} alt="Profile" />
+                      <div className={`${isProfileLoading === true ? "block" : "hidden"} sm:cursor-pointer mt-5 group-hover:block absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-10 items-center`}>
                         {
                           isProfileLoading &&
                           <ClipLoader
@@ -167,13 +167,13 @@ const Profile = () => {
                       speedMultiplier={.71}
                       data-testid="loader"
                     /> :
-                    <AiOutlineCheck size={25} className="text-white mr-6 cursor-pointer w-6" onClick={updateUserDb} />
+                    <AiOutlineCheck size={25} className="text-white mr-6 sm:cursor-pointer w-6" onClick={updateUserDb} />
                 }
               </div>)
             ) : (
               <div className={`${user?.name === "" ? "border border-dashed border-white" : "bg-slate-800 rounded-md bg-opacity-50 px-2 py-3"} flex justify-between items-center mt-4`}>
                 <p className="text-white  ">{user?.name}</p>
-                <AiOutlineEdit size={25} className="text-white mr-4 cursor-pointer" onClick={editNames} />
+                <AiOutlineEdit size={25} className="text-white mr-4 sm:cursor-pointer" onClick={editNames} />
               </div>
             )}
           </div>
@@ -197,13 +197,13 @@ const Profile = () => {
                       data-testid="loader"
                     />
                     :
-                    <AiOutlineCheck size={25} className="text-white mr-6 cursor-pointer w-6" onClick={updateAboutDb} />
+                    <AiOutlineCheck size={25} className="text-white mr-6 sm:cursor-pointer w-6" onClick={updateAboutDb} />
                 }
               </div>
             ) : (
               <div className={`${user?.about === "" ? "border border-dashed border-white" : "bg-slate-800 rounded-md bg-opacity-50 px-2 py-3"} flex justify-between  items-center mt-4`}>
                 <p className="text-white">{user?.about}</p>
-                <AiOutlineEdit size={25} className="text-white mr-4 cursor-pointer" onClick={editAbout} />
+                <AiOutlineEdit size={25} className="text-white mr-4 sm:cursor-pointer" onClick={editAbout} />
               </div>
             )
             }
@@ -224,7 +224,7 @@ const Profile = () => {
               </button>
               <input id="uploadImage" multiple={false} type="file" accept=".jpg, .jpeg, .png" className="hidden"
                 onChange={uploadProfileImage} />
-              <label htmlFor="uploadImage" role="menuitem" className="options cursor-pointer">Upload Photo</label>
+              <label htmlFor="uploadImage" role="menuitem" className="options sm:sm:cursor-pointer">Upload Photo</label>
               <button onClick={removeProfile} className="options" role="menuitem" id="menu-item-0">Remove Photo</button>
             </div>
 

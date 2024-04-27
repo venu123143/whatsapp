@@ -40,10 +40,11 @@ const Chat = () => {
       }, 1000);
     }
   };
+  // absolute top-0 left-0 right-0 bottom-0
 
   return (
     <>
-      <div className=' sm:static absolute top-0 left-0 right-0 bottom-0 h-screen flex flex-col backImg bg-black'>
+      <div className=' h-screen flex flex-col backImg bg-black'>
         <ChatHeader />
         <div className='h-full overflow-y-auto custom-scrollbar bg-black bg-opacity-80 scroll-smoothS' ref={chatPageRef}>
           <ChatPage scrollToMessage={scrollToMessage} />
