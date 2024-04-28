@@ -68,7 +68,7 @@ const EditMsg = ({ message }: { message: ChatMessage }) => {
                         <div className="w-full rounded-lg flex items-center ml-5">
                             <input
                                 type="text" value={msg} onChange={handleChangeMsg}
-                                placeholder="type a message" autoFocus={true}
+                                placeholder="type a message"
                                 className="text-white focus:outline-none h-10 font-Rubik text-[1rem] bg-[#2a3942] px-5 py-4 rounded-lg w-full"
                             />
                         </div>

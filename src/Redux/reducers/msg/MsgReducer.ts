@@ -288,7 +288,7 @@ const msgSlice = createSlice({
         }).addCase(getAllUsers.rejected, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.message = action.payload?.message
-            window.location.reload();
+            // window.location.reload();
             toast.error(state.message, {
                 position: 'top-right'
             })
@@ -303,7 +303,7 @@ const msgSlice = createSlice({
             state.isLoading = false
             state.isError = true
             state.isSuccess = false
-            window.location.reload();
+            // window.location.reload();
             state.message = action.payload?.message
             toast.error(state.message, {
                 position: 'top-right'
