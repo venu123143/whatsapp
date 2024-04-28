@@ -81,7 +81,7 @@ const Profile = () => {
   }
   return (
     <>
-      <div className={`absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
+      <div className={`h-screen overflow-y-scroll custom-scrollbar absolute top-0 left-0 w-full header-bg transition-all ease-linear  duration-300 delay-150 ${profileOpen === true ? "-translate-x-full  z-20" : ""}`}>
         <div className="flex items-center gap-4 w-full h-20 p-3 sm:cursor-pointer" onClick={() => dispatch(handleProfileOpen(!profileOpen))}>
           <AiOutlineArrowLeft className="text-white sm:cursor-pointer w-9" />
           <h1 className="text-white font-[400] ">Profile</h1>
