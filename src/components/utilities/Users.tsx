@@ -54,14 +54,12 @@ const Users = () => {
     const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
     return isNameMatched || isMobileMatched;
   };
-  const skeliton = new Array(10).fill(0)
-  const divStyle = {
-    height: 'calc(100vh - 12px)',
-  };
+  const skeliton = new Array(20).fill(0)
+
   return (
     <>
-      <header style={divStyle} className=' w-full  flex flex-col bg-[#111b21]'>
-        <div className='relative ' >
+      <header className=' w-full h-screen flex flex-col bg-[#111b21]'>
+        <div className='relative z-10 ' >
           <Profile />
         </div>
         <div className='relative z-10'>
@@ -73,7 +71,7 @@ const Users = () => {
         <div className='relative z-10'>
           <CreateGroup />
         </div>
-        <div className=''>
+        <div className='relative'>
           <ProfileHeader />
         </div>
         <div className=''>

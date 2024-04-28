@@ -115,8 +115,8 @@ const Home = () => {
   return (
     <>
       <SocketContext.Provider value={socket} >
-        <main className='overflow-hidden md:grid grid-cols-10 '>
-          <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-x-hidden custom-scrollbar" : ""}`}>
+        <main className='overflow-hidden h-screen md:grid grid-cols-10 '>
+          <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
             <Users />
           </section>
           <section className={`md:col-span-7 md:static fixed top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0" : "md:translate-x-0 translate-x-full"}`}>

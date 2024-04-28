@@ -99,7 +99,7 @@ const CreateContact = () => {
                         }
                     </div>
                     <div className="relative h-11 w-full min-w-[200px]">
-                        <input placeholder="Search here" autoFocus={true}
+                        <input placeholder="Search here"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             className="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5  text-md font-sans text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200
@@ -142,7 +142,7 @@ const CreateContact = () => {
                     })}
 
             </section>
-            <section onClick={createGroup} className="cursor-pointer  mt-auto hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
+            <section onClick={createGroup} className="cursor-pointer  mt-auto bg-[#202c33] hover:bg-[#313d46] w-full grid grid-cols-5 p-3  gap-3">
                 <div className="col-span-1 flex justify-center ">
                     <AiOutlineArrowRight size={30} className="text-[#00a884] " />
                 </div>

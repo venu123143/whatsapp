@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import LoginWithOtp from "../components/utilities/LoginWithOtp"
 import { backgroundImages } from "../static/Static"
 import { useNavigate } from "react-router-dom";
-import {  RootState } from "../Redux/store"
+import { RootState } from "../Redux/store"
 import { useSelector } from "react-redux";
 const Login = () => {
   const [backgroundImage, setBackgroundImage] = useState('');
@@ -26,7 +26,7 @@ const Login = () => {
     setBackgroundImage(getRandomBackgroundImage());
   }, []);
   return (
-    <section className="w-full h-screen grid md:grid-cols-3 ">
+    <section className="w-full overflow-hidden  h-screen grid md:grid-cols-3 ">
       <div className="hidden md:block md:col-span-2 shadow-lg">
         <div className="col-span-2 w-full h-full border-r-2 border-black shadowImg" style={{ backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         </div>

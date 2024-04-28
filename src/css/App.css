@@ -14,10 +14,6 @@ header color- 233138
 3b3b3b
 } */
 
-.body-css {
-    @apply overflow-y-hidden
-}
-
 .singleuser {
     @apply bg-[#111b21] hover:bg-[#202c33] hover:bg-opacity-80 text-white sm:cursor-pointer border-b border-gray-800
 }
