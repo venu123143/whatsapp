@@ -31,7 +31,7 @@ const ContactInfo = () => {
         dispatch(openfullScreen({ currentImage: friends[currentUserIndex]?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
     }
     return (
-        <div className={`h-screen  md:max-w-[350px] border-l border-black flex flex-col bg-black text-white fixed top-0 right-0 w-full transition-all ease-linear  duration-300 delay-150 ${contactInfo === true ? "-translate-x-0  z-20" : "translate-x-full"}`}>
+        <div className={`max-h-screen h-screen  md:max-w-[350px] border-l border-black flex flex-col bg-black text-white absolute top-0 right-0 w-full transition-all ease-linear  duration-300 delay-150 ${contactInfo === true ? "-translate-x-0  z-20" : "translate-x-full"}`}>
             <div className='h-16 gap-2 sm:gap-5 px-4 py-3 flex items-center bg-[#202c33]'>
                 <div onClick={closeContact} className="top-4 left-4 w-fit p-3 icons ">
                     <RxCross2 size={25} className="text-white" title="cancel" />
