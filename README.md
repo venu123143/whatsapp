@@ -2,7 +2,7 @@
 
 This project is a WhatsApp-like messaging application built with a modern tech stack, including React, Vite, and TypeScript. It provides a wide range of features such as real-time communication, group chats, user authentication with OTP, and message management functionalities.
 
-You can check the hosted version of this project [here](https://whatsapp-chat-imbu.onrender.com/).
+You can check the hosted version of this project here [https://whatsapp-chat-imbu.onrender.com/](https://whatsapp-chat-imbu.onrender.com/).
 
 ## Key Features
 
@@ -15,6 +15,7 @@ You can check the hosted version of this project [here](https://whatsapp-chat-im
 - **Validation and Forms**: Utilizes Formik and Yup for form handling and validation.
 - **UX/UI Components**: React Router for navigation, React Select for dropdowns, React Toastify for notifications, and React Spinners for loading indicators.
 - **Design and Styling**: Tailwind CSS for styling and React Icons for icons.
+- **Responsive**: This website is fully responsive for the all types of devices.
 
 ## Technology Stack
 
