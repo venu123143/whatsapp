@@ -61,6 +61,9 @@ Description: The home page shows the list of active chats and groups. Users can 
 
 Description: This is the profile page where users can customize their profile picture, name, and bio. They can also manage personal settings and account information.
 
+![Home page Gif](https://res.cloudinary.com/dsnq9xdwt/image/upload/v1715265914/Whatsapp-GoogleChrome2024-05-0920-07-28-ezgif.com-video-to-gif-converter_wlzlm5.gif)
+
+
 ## Setup and Development
 
 ## Environment Variables
