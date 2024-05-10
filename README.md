@@ -1,4 +1,4 @@
-# [WhatsApp Clone with React, Vite, and TypeScript](https://whatsapp-chat-imbu.onrender.com/)
+# [WhatsApp Clone with React and Node with Socket Io ](https://whatsapp-chat-imbu.onrender.com/)
 
 This project is a WhatsApp-like messaging application built with a modern tech stack, including React, Vite, and TypeScript. It provides a wide range of features such as real-time communication, group chats, user authentication with OTP, and message management functionalities.
 
