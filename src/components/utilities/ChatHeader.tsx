@@ -5,11 +5,10 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../../Redux/store"
 import { FaCircleChevronDown, FaCircleUser } from "react-icons/fa6"
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
 import { setCurrentGrpOrUser, toggleContactInfo } from "../../Redux/reducers/msg/MsgReducer"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
-
+import { Link } from "react-router-dom"
 // import { useSelector } from "react-redux"
 // import { RootState } from "../../Redux/store"
 const ChatHeader = () => {
@@ -18,6 +17,7 @@ const ChatHeader = () => {
 
   // const { activeChat } = useSelector((store: RootState) => store.features) 
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
+  // const { user } = useSelector((state: RootState) => state.auth)
   const [dropdown, setDropdown] = useState(false)
 
   function getUsersString(usersArray: any) {
@@ -100,9 +100,9 @@ const ChatHeader = () => {
         {/* <Link to="/calls" className="icons">
           <IoMdVideocam className="" title="video call" />
         </Link> */}
-        <a href="/calls" target="_blank" rel="noopener noreferrer" className="icons">
+        <Link to={`/calls`} target="_blank" rel="noopener noreferrer" className="icons">
           <IoMdVideocam title="video call" />
-        </a>
+        </Link>
         <div className="icons sm:block hidden" >
           <BsSearch className="" title="search in chat" />
         </div>
