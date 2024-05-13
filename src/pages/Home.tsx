@@ -70,8 +70,6 @@ const Home = () => {
   useEffect(() => {
     if (socket.connected) {
       socket.on("recieve_message", (data: ChatMessage) => {
-        console.log(data);
-
         setLstMsg({ ...data, right: false })
         dispatch(handleRecieveMessage({ ...data, right: false }));
       });
