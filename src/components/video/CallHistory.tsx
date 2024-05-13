@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { BsSearch } from 'react-icons/bs';
 import UserSkeliton from '../reuse/UserSkeliton';
 import AccordionItem from '../cards/Accordition';
@@ -42,7 +41,7 @@ const CallHistory = ({ calls }: { calls: ICall[] }) => {
                     </div>
                 </section>
                 {/* h-[calc(100vh-100px)] */}
-                <section className="bg-[#111b21] overflow-y-scroll custom-scrollbar">
+                <section className="bg-[#111b21] h-full overflow-y-scroll custom-scrollbar">
                     {
                         calls.length === 0 ?
                             <>
@@ -65,4 +64,4 @@ const CallHistory = ({ calls }: { calls: ICall[] }) => {
     )
 }
 
-export default CallHistory
+export default React.memo(CallHistory)
