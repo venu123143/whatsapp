@@ -9,8 +9,8 @@ const CreateCall = () => {
     const [checked, setChecked] = useState(false);
 
     return (
-        <section className='w-full h-screen p-5'>
-            <div className='space-y-3 p-2 border-black shadow-lg border rounded-md'>
+        <section className=' w-full p-5'>
+            <div className='space-y-3 p-2 bg-white border-black shadow-lg border rounded-md'>
                 <div className='flex justify-center items-center'>
                     <h1 className='font-[500] text-[1.2rem] font-Rubik'>Start Your Call</h1>
                 </div>
@@ -32,3 +32,4 @@ const CreateCall = () => {
 }
 
 export default React.memo(CreateCall)
+

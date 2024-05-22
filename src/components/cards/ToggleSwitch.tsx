@@ -1,6 +1,4 @@
 
-import { useState } from 'react';
-
 const ToggleSwitch = ({ setChecked, checked }: { checked: boolean, setChecked: React.Dispatch<React.SetStateAction<boolean>> }) => {
     const handleToggle = () => {
         setChecked(!checked);

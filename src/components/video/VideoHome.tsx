@@ -30,12 +30,27 @@ const VideoHome = () => {
     }, [user])
     return (
         <>
-            <section className='block sm:grid grid-cols-10 w-full h-screen'>
+            <section className=' block sm:grid grid-cols-10 w-full h-screen'>
                 <aside className='col-span-3'>
                     <LiveCalls calls={liveCalls} />
                 </aside>
-                <main className='col-span-4 '>
+                <main className='col-span-4 relative flex items-center '>
                     {/* <button className='w-full p-2 border mt-5 hover:shadow-xl transition-all hover:bg-yellow-100  ease-linear shadow-md rounded-sm' onClick={() => setContactInfo(!contactInfo)}>click me</button> */}
+                    <div className=" absolute top-0 left-0 area">
+                        <ul className="circles">
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                    </div>
+
                     <CreateCall />
                 </main>
                 <section className={`sm:col-span-3 sm:static fixed top-0 right-0 w-full transition-all ease-linear  duration-300 delay-150 ${contactInfo === true ? "-translate-x-0  z-20" : "sm:-translate-x-0 translate-x-full"}`}>
