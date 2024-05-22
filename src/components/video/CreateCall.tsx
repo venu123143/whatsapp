@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import CustomInput from '../cards/CustomInput'
 import ToggleSwitch from '../cards/ToggleSwitch'
 import Button from '../cards/Button'
+import OtpInput from './OtpInput'
 
 
 const CreateCall = () => {
+    const [checked, setChecked] = useState(false);
+
     return (
         <section className='w-full h-screen p-5'>
             <div className='space-y-3 p-2 border-black shadow-lg border rounded-md'>
@@ -14,7 +17,10 @@ const CreateCall = () => {
                 <CustomInput color='focus:border-teal-500' label='Call Title' />
                 <div className='flex justify-between items-center'>
                     <span className='font-light text-[1rem] font-Rubik fir'>Do you want to set pin ?</span>
-                    <ToggleSwitch />
+                    <ToggleSwitch checked={checked} setChecked={setChecked} />
+                </div>
+                <div className={`transition-all  ${checked ? "visible " : "invisible"}`}>
+                    <OtpInput />
                 </div>
                 <div className='flex justify-center items-center'>
                     <Button />
