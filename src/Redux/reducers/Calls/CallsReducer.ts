@@ -15,11 +15,13 @@ interface User {
 }
 
 export interface ICall {
+    title?: string;
     _id: string;
     socketId: string;
     status: string;
     createdBy: User;
     joinedUsers: User[];
+    pin?: string;
     callType: string;
     callDuration: number;
     createdAt: string;
