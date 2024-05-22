@@ -1,6 +1,7 @@
 import React from "react";
 
 const Avatars = ({ urls }: { urls?: string[] }) => {
+    console.log(urls)
     return (
         // <div className="">
         <div className="flex items-end justify-center">
@@ -44,4 +45,4 @@ const Avatars = ({ urls }: { urls?: string[] }) => {
     )
 }
 
-export default Avatars
+export default React.memo(Avatars)

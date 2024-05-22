@@ -57,4 +57,4 @@ const LiveCalls = ({ calls }: { calls: ICall[] }) => {
     )
 }
 
-export default LiveCalls
+export default React.memo(LiveCalls)
