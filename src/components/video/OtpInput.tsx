@@ -36,7 +36,7 @@ const OtpInput = () => {
             {otp.map((value, index) => (
                 <input
                     key={index}
-                    type="text"
+                    type="tel"
                     maxLength={1}
                     value={value}
                     onChange={(e) => handleChange(e, index)}
