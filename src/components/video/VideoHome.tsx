@@ -7,6 +7,7 @@ import { getAllCallsHistory, getAllLiveCalls } from '../../Redux/reducers/Calls/
 import LiveCalls from './LiveCalls';
 import { useNavigate } from 'react-router-dom';
 import CreateCall from './CreateCall';
+import { ClipLoader } from 'react-spinners'
 
 const VideoHome = () => {
     const dispatch: AppDispatch = useDispatch()
@@ -28,6 +29,8 @@ const VideoHome = () => {
             navigate('/login')
         }
     }, [user])
+    const background = new Array(20).fill(0)
+
     return (
         <>
             <section className=' block sm:grid grid-cols-10 w-full h-screen'>
@@ -38,16 +41,7 @@ const VideoHome = () => {
                     {/* <button className='w-full p-2 border mt-5 hover:shadow-xl transition-all hover:bg-yellow-100  ease-linear shadow-md rounded-sm' onClick={() => setContactInfo(!contactInfo)}>click me</button> */}
                     <div className=" absolute top-0 left-0 area">
                         <ul className="circles">
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
+                            {background.map((_, index) => <li key={index}></li>)}
                         </ul>
                     </div>
 

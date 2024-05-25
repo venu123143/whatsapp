@@ -58,7 +58,11 @@ const Home = () => {
   }, [socket])
 
   useEffect(() => {
-    dispatch(getAllGroups())
+    dispatch(getAllGroups()).then(() => {
+      if (user === null) {
+        navigate('/login')
+      }
+    })
   }, [createGrp])
 
   useEffect(() => {

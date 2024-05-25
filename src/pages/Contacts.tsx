@@ -13,18 +13,27 @@ import { getAllUsers } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "./Home";
 import UserSkeliton from "../components/reuse/UserSkeliton";
+import { useNavigate } from "react-router-dom";
 const ContactsList = () => {
     const dispatch: AppDispatch = useDispatch();
+    const navigate = useNavigate()
+
     // const { chatArray } = useSelector((store: RootState) => store.auth);
     const { contacts, createContact } = useSelector((state: RootState) => state.features);
+    const { user } = useSelector((state: RootState) => state.auth);
     const { users } = useSelector((state: RootState) => state.msg);
     const socket = useContext(SocketContext);
 
     const [searchInput, setSearchInput] = useState("");
 
     useEffect(() => {
-        dispatch(getAllUsers())
+        dispatch(getAllUsers()).then(() => {
+            if (!user) {
+                navigate('/login')
+            }
+        })
     }, [])
+
     let groupedByInitial: Record<string, any[]> = {};
 
     users?.forEach((obj: any) => {

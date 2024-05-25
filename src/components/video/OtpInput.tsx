@@ -1,33 +1,28 @@
-import { useState, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 
-const OtpInput = () => {
-    const [otp, setOtp] = useState(['', '', '', '']);
+const OtpInput = ({ otp, setOtp, color, activePin }: { otp: string[], setOtp: any, color: string, activePin: boolean }) => {
     const inputRefs = useRef([]) as any;
-
+    useEffect(() => {
+        if (activePin === false) {
+            setOtp(['', '', '', ''])
+            inputRefs.current[0].style.borderColor = '';
+            inputRefs.current[1].style.borderColor = '';
+            inputRefs.current[2].style.borderColor = '';
+            inputRefs.current[3].style.borderColor = '';
+        }
+    }, [activePin])
     const handleChange = (e: any, index: number) => {
         const { value } = e.target;
-        const regex = /^[0-9]*$/; 
-
-        // Check if the input value matches the regex or if the backspace key was pressed
-        if (value === '' || regex.test(value) || (value === '' && e.key === 'Backspace')) {
+        const regex = /^[0-9]*$/;
+        if (value === '' || regex.test(value)) {
             const newOtp = [...otp];
+            newOtp[index] = value.slice(-1);
+            setOtp(newOtp);
 
-            // If the backspace key was pressed and the current field is empty,
-            // move the focus to the previous input field and clear its value
-            if (value === '' && e.key === 'Backspace' && index > 0) {
-                newOtp[index - 1] = '';
-                setOtp(newOtp);
-                inputRefs.current[index - 1].focus();
-            } else {
-                // Update the OTP array with the new value
-                newOtp[index] = value.slice(-1);
-                setOtp(newOtp);
-
-                // Move focus to the next input field
-                if (value && index < inputRefs.current.length - 1) {
-                    inputRefs.current[index + 1].focus();
-                }
+            if (value && index < inputRefs.current.length - 1) {
+                inputRefs.current[index + 1].focus();
             }
+            inputRefs.current[index].style.borderColor = 'green';
         }
     };
 
@@ -42,12 +37,12 @@ const OtpInput = () => {
                     onChange={(e) => handleChange(e, index)}
                     onKeyDown={(e) => {
                         if (e.key === 'Backspace' && !otp[index]) {
-                            // Move focus to the previous input field on backspace
                             inputRefs.current[index - 1]?.focus();
+                            inputRefs.current[index].style.borderColor = 'red';
                         }
                     }}
                     ref={(ref) => (inputRefs.current[index] = ref)}
-                    className="w-12 h-12 mx-2 text-center text-lg font-semibold border-2 border-gray-400 rounded focus:outline-none focus:border-blue-500"
+                    className={`${color} focus:border-blue-500 w-12 h-12 mx-2 text-center text-lg font-semibold border-2  rounded focus:outline-none `}
                 />
             ))}
         </div>

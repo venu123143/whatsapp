@@ -100,7 +100,7 @@ const ChatHeader = () => {
         {/* <Link to="/calls" className="icons">
           <IoMdVideocam className="" title="video call" />
         </Link> */}
-        <Link to={`/calls`} target="_blank" rel="noopener noreferrer" className="icons">
+        <Link to={`/calls`} target="_self" rel="noopener noreferrer" className="icons">
           <IoMdVideocam title="video call" />
         </Link>
         <div className="icons sm:block hidden" >
