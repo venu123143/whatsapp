@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, CSSProperties } from 'react'
 import CustomInput from '../cards/CustomInput'
 import ToggleSwitch from '../cards/ToggleSwitch'
 import Button from '../cards/Button'
 import OtpInput from './OtpInput'
 import * as Yup from 'yup';
-import { ClipLoader } from 'react-spinners'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../../Redux/store';
-import { useNavigate } from 'react-router-dom'
-import { setErrors, setActivePin } from "../../Redux/reducers/Calls/CallsReducer"
+import { setErrors } from "../../Redux/reducers/Calls/CallsReducer"
+import { RingLoader } from 'react-spinners'
 const baseSchema = {
     title: Yup.string()
 };
@@ -21,10 +20,12 @@ const otpSchema = {
         .min(4, 'OTP must have 4 digits')
         .max(4, 'OTP must have 4 digits'),
 };
+const cssOverride: CSSProperties = {
+}
 const CreateCall = () => {
     const dispatch: AppDispatch = useDispatch()
+    const [isLoading, setIsLoading] = useState(false)
     const { activePin, errors } = useSelector((state: RootState) => state.calls)
-
     const [otp, setOtp] = useState(['', '', '', '']);
     const [title, setTitle] = useState("")
     const validationSchema = Yup.object().shape(
@@ -35,20 +36,18 @@ const CreateCall = () => {
         validationSchema.validate({ title, otp, activePin }, { abortEarly: false })
             .then(() => {
                 dispatch(setErrors({}))
+                setIsLoading(true)
             })
             .catch(err => {
                 if (err.errors.length > 0) {
                     dispatch(setErrors({ otp: 'must fill otp' }))
-
                 }
             });
-
-
     }
 
     return (
         <section className=' w-full p-5'>
-            <form onSubmit={handleSubmit} className='space-y-3 p-2 bg-white border-black shadow-lg border rounded-md'>
+            <form onSubmit={handleSubmit} className='group space-y-3 p-2 bg-white border-black shadow-lg border rounded-md'>
                 <div className='flex justify-center items-center'>
                     <h1 className='font-[500] text-[1.2rem] font-Rubik'>Start Your Call</h1>
                 </div>
@@ -64,6 +63,17 @@ const CreateCall = () => {
                     <Button type="submit" />
                 </div>
             </form>
+            <div onClick={() => setIsLoading(false)} className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
+                <RingLoader
+                    color="#36d7b7"
+                    size={500}
+                    cssOverride={cssOverride}
+                    loading={true}
+                    aria-label="Loading Spinner"
+                    speedMultiplier={.51}
+                    data-testid="loader"
+                />
+            </div>
         </section>
     )
 }
