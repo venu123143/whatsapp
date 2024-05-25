@@ -3,16 +3,16 @@ import React from 'react';
 interface CustomInputProps {
     color: string;
     label: string;
-    onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     value?: string;
     onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
-const CustomInput: React.FC<CustomInputProps> = ({ color, label, onClick, value, onBlur }) => {
+const CustomInput: React.FC<CustomInputProps> = ({ color, label, onChange, value, onBlur }) => {
 
     return (
         <div className="relative w-full min-w-[200px] h-10">
-            <input onClick={onClick} value={value} onBlur={onBlur}
+            <input onChange={onChange} value={value} onBlur={onBlur}
                 className={`${color} border-gray-500  peer w-full h-full bg-transparent text-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-gray-500 placeholder-shown:border-t-gray-500 border focus:border-2 border-t-transparent focus:border-t-transparent text-md px-3 py-2.5 rounded-[7px]  `}
                 placeholder=" " />
             <label
