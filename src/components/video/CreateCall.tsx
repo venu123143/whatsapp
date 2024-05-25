@@ -47,7 +47,7 @@ const CreateCall = () => {
 
     return (
         <section className=' w-full p-5'>
-            <form onSubmit={handleSubmit} className='group space-y-3 p-2 bg-white border-black shadow-lg border rounded-md'>
+            <form onSubmit={handleSubmit} className=' space-y-3 p-2 bg-white border-black shadow-lg border rounded-md'>
                 <div className='flex justify-center items-center'>
                     <h1 className='font-[500] text-[1.2rem] font-Rubik'>Start Your Call</h1>
                 </div>
