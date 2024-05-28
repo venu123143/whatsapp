@@ -1,5 +1,5 @@
 // import React from 'react'
-import { useState, useRef, useEffect, CSSProperties } from "react"
+import { useState, useRef, CSSProperties } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { BarLoader } from "react-spinners"
 import { AppDispatch, RootState } from "../../Redux/store"
