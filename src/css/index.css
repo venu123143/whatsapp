@@ -4,63 +4,63 @@
 
 /* Use the font stack for the body or general text */
 body {
-    font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Lucida Grande', 'Arial', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
+	font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Lucida Grande', 'Arial', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
 }
 
 /* Use the same font stack for specific elements like headings */
 h1,
 h2,
 h3 {
-    font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Lucida Grande', 'Arial', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
+	font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Lucida Grande', 'Arial', 'Ubuntu', 'Cantarell', 'Fira Sans', sans-serif;
 }
 
 .backImg {
-    background-image: url('../assets/chat-bg.png');
+	background-image: url('../assets/chat-bg.png');
 }
 
 .whatsappBgImg {
-    background-image: url('../assets/chat-bg.png');
+	background-image: url('../assets/chat-bg.png');
 }
 
 @layer utilities {
-    @variants responsive {
+	@variants responsive {
 
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+		/* Hide scrollbar for Chrome, Safari and Opera */
+		.no-scrollbar::-webkit-scrollbar {
+			display: none;
+		}
 
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            /* IE and Edge */
-            scrollbar-width: none;
-            /* Firefox */
-        }
-    }
+		/* Hide scrollbar for IE, Edge and Firefox */
+		.no-scrollbar {
+			-ms-overflow-style: none;
+			/* IE and Edge */
+			scrollbar-width: none;
+			/* Firefox */
+		}
+	}
 }
 
 /* toggle switch */
 
 @layer utilities {
-    .bg-repeating-radial-gradient {
-        background: repeating-radial-gradient(circle at 50% 50%, rgba(200, 200, 200, .2) 0%, rgba(200, 200, 200, .2) 2%, transparent 2%, transparent 3%, rgba(200, 200, 200, .2) 3%, transparent 3%);
-    }
-    
+	.bg-repeating-radial-gradient {
+		background: repeating-radial-gradient(circle at 50% 50%, rgba(200, 200, 200, .2) 0%, rgba(200, 200, 200, .2) 2%, transparent 2%, transparent 3%, rgba(200, 200, 200, .2) 3%, transparent 3%);
+	}
 
-    .bg-conic-gradient {
-        background: conic-gradient(white 0%, silver 10%, white 35%, silver 45%, white 60%, silver 70%, white 80%, silver 95%, white 100%);
-    }
+
+	.bg-conic-gradient {
+		background: conic-gradient(white 0%, silver 10%, white 35%, silver 45%, white 60%, silver 70%, white 80%, silver 95%, white 100%);
+	}
 }
 
 @layer components {
-    .shadow-inner {
-        box-shadow: inset 0 0 16px rgba(0, 0, 0, .3);
-    }
+	.shadow-inner {
+		box-shadow: inset 0 0 16px rgba(0, 0, 0, .3);
+	}
 
-    .shadow {
-        box-shadow: 3px 5px 10px 0 rgba(0, 0, 0, .4);
-    }
+	.shadow {
+		box-shadow: 3px 5px 10px 0 rgba(0, 0, 0, .4);
+	}
 }
 
 /* toggle switch */
@@ -73,41 +73,49 @@ h3 {
 		top: -300px;
 		opacity: 0;
 	}
+
 	to {
 		top: 0;
 		opacity: 1;
 	}
 }
+
 @keyframes animatetop {
 	from {
 		top: -300px;
 		opacity: 0;
 	}
+
 	to {
 		top: 0;
 		opacity: 1;
 	}
 }
+
 @-webkit-keyframes zoomIn {
 	0% {
 		opacity: 0;
 		-webkit-transform: scale3d(0.3, 0.3, 0.3);
 		transform: scale3d(0.3, 0.3, 0.3);
 	}
+
 	50% {
 		opacity: 1;
 	}
 }
+
 @keyframes zoomIn {
 	0% {
 		opacity: 0;
 		-webkit-transform: scale3d(0.3, 0.3, 0.3);
 		transform: scale3d(0.3, 0.3, 0.3);
 	}
+
 	50% {
 		opacity: 1;
 	}
 }
+
 /*End Animations*/
 /*
 -- Start BackGround Animation 
@@ -229,80 +237,81 @@ h3 {
 		border-radius: 50%;
 	}
 }
+
 /*
 -- End BackGround Animation 
 */
 .custom-scrollbar::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
+	height: 8px;
+	width: 8px;
 }
 
 /* / Track / */
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: #131c21;
+	background: #131c21;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #394045;
+	background-color: #394045;
 }
 
 
 .emoji-picker-container {
-    position: absolute;
-    z-index: 10;
-    bottom: 70px;
-    opacity: 0;
-    scale: 0;
-    transform: translateY(-70px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+	position: absolute;
+	z-index: 10;
+	bottom: 70px;
+	opacity: 0;
+	scale: 0;
+	transform: translateY(-70px);
+	transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .show-emoji-picker {
-    opacity: 1;
-    scale: 1;
-    transform: translateY(0);
+	opacity: 1;
+	scale: 1;
+	transform: translateY(0);
 }
 
 /* green dot online css */
 .blink_me {
-    animation: blinker 2s linear infinite;
-    width: 13px;
-    height: 13px;
-    display: inline-block;
-    border: 1px solid green;
-    background-color: green;
-    border-radius: 100%;
+	animation: blinker 2s linear infinite;
+	width: 13px;
+	height: 13px;
+	display: inline-block;
+	border: 1px solid green;
+	background-color: green;
+	border-radius: 100%;
 }
 
 @keyframes blinker {
-    50% {
-        opacity: 0.6;
-    }
+	50% {
+		opacity: 0.6;
+	}
 }
 
 @keyframes skeleton-loading {
-    0% {
-        background-position: -200px 0;
-    }
+	0% {
+		background-position: -200px 0;
+	}
 
-    100% {
-        background-position: 200px 0;
-    }
+	100% {
+		background-position: 200px 0;
+	}
 }
 
 .singleusers {
-    animation: blinker 2s linear infinite;
-    z-index: -1;
-    animation-duration: 300;
-    overflow: hidden;
+	animation: blinker 2s linear infinite;
+	z-index: -1;
+	animation-duration: 300;
+	overflow: hidden;
 }
 
 @keyframes skeleton-loading {
-    0% {
-        transform: translateX(-100%);
-    }
+	0% {
+		transform: translateX(-100%);
+	}
 
-    100% {
-        transform: translateX(100%);
-    }
+	100% {
+		transform: translateX(100%);
+	}
 }
