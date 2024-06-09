@@ -16,7 +16,7 @@ import UserSkeliton from '../reuse/UserSkeliton'
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { chatSearchValue, friends, isLoading } = useSelector((state: RootState) => state.msg)
+  const { chatSearchValue, friends, users, isLoading } = useSelector((state: RootState) => state.msg)
   const { user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
@@ -79,7 +79,7 @@ const Users = () => {
         </div>
         <div className={`${isLoading === true ? "mx-auto overflow-hidden no-scrollbar" : ""} overflow-y-auto custom-scrollbar`}>
           {
-            friends.length === 0 ?
+            users.length === 0 ?
               // <ClipLoader
               //   color="#36d7b7"
               //   loading={isLoading}
@@ -93,7 +93,7 @@ const Users = () => {
                   < UserSkeliton key={index} />
                 ))}
               </div>
-              :
+              : 
               friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
                 return (
                   <UserCard key={index} value={each} handleOnClick={() => handleOnClick(each)} />
