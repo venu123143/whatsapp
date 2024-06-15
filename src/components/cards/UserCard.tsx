@@ -3,6 +3,7 @@ import { FaCircleUser } from "react-icons/fa6"
 import { CommonProperties } from "../../Redux/reducers/msg/MsgReducer"
 import { formatDate } from "./ReUseFunc"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
+import { IoCall } from "react-icons/io5"
 
 const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleOnClick?: any, isAdmin?: boolean }> = ({ value, contacts, handleOnClick, isAdmin }) => {
   return (
@@ -31,6 +32,9 @@ const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleO
                 : value?.lastMessage?.date && formatDate(value?.lastMessage?.date)
               }
             </span>
+            <div className="animate-ring">
+              <IoCall className="text-green-500" size={24} />
+            </div>
           </div>
           {value?.unreadCount !== 0 ? (
             <div className="unreadmessage">

@@ -19,6 +19,7 @@ import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../pages/Home"
 import { recieveColors, ReceiveColors } from "../../static/Static";
 import Audio from "./Audio";
+import IncomingCall from "../cards/IncommingCall";
 
 const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) => void }) => {
   const dispatch: AppDispatch = useDispatch()
@@ -102,6 +103,9 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
   // src={URL.createObjectURL(image)}
   return (
     <div className=" h-full ">
+      <div className="absolute z-[1] top-15 w-full p-2">
+        <IncomingCall imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
+      </div>
       <div className=" sm:px-16 sm:py-5 px-5 py-5">
         {chats && chats.map((message: any, index: number) =>
           <div key={index}>
@@ -132,6 +136,7 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
               : null}
           </div>
         )}
+
         {/* files  */}
         <div aria-orientation="vertical" aria-labelledby="menu-button"
           className={`attachedFiles ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"} `}
@@ -201,9 +206,9 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
           </div>
         </div>
       </div>
-      <div>
+      {/* <div>
         <ShowFullImg images={currChatImages} />
-      </div>
+      </div> */}
     </div>
   );
 };

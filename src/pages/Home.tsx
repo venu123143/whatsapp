@@ -11,6 +11,7 @@ import {
 import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
 import DefaultComp from '../components/utilities/DefaultComp'
+import ShowFullImg from '../components/utilities/ShowFullImg'
 
 export const SocketContext = createContext<Socket>({} as Socket);
 
@@ -22,6 +23,7 @@ const Home = () => {
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
   const [lstMsg, setLstMsg] = useState<any>(null)
+  const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
 
   useEffect(() => {
     const initializeSocket = async () => {
@@ -124,6 +126,9 @@ const Home = () => {
           <section className={`md:col-span-7 md:static absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
             {currentUserIndex === null ? <DefaultComp /> : <Chat />}
           </section>
+          <div>
+            <ShowFullImg images={currChatImages} />
+          </div>
         </main>
       </SocketContext.Provider >
     </>
