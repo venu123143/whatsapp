@@ -14,19 +14,19 @@ import {
 import ImageComp from "./ImageComp";
 import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
-import ShowFullImg from "./ShowFullImg";
 import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../pages/Home"
 import { recieveColors, ReceiveColors } from "../../static/Static";
 import Audio from "./Audio";
 import IncomingCall from "../cards/IncommingCall";
+import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer";
 
 const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) => void }) => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user, startCall } = useSelector((state: RootState) => state.auth)
   const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
   const chats = friends[currentUserIndex]?.chat
 
@@ -95,7 +95,9 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
 
   }
 
-
+  const handleCall = () => {
+    dispatch(setStartCall({ userId: null, call: false }))
+  }
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
     dispatch(openfullScreen({ currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
@@ -103,9 +105,13 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
   // src={URL.createObjectURL(image)}
   return (
     <div className=" h-full ">
-      <div className="absolute z-[1] top-15 w-full p-2">
-        <IncomingCall imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
-      </div>
+      {
+        startCall.call && friends[currentUserIndex]._id === startCall.userId && (
+          <div className="absolute z-[1]  w-full p-2">
+            <IncomingCall rejectOnClick={handleCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
+          </div>
+        )
+      }
       <div className=" sm:px-16 sm:py-5 px-5 py-5">
         {chats && chats.map((message: any, index: number) =>
           <div key={index}>

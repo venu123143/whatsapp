@@ -6,36 +6,22 @@ import { AppDispatch, RootState } from "../../Redux/store"
 import { FaCircleChevronDown, FaCircleUser } from "react-icons/fa6"
 import { useEffect, useState } from "react"
 import { setCurrentGrpOrUser, toggleContactInfo } from "../../Redux/reducers/msg/MsgReducer"
+import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
 import { Link } from "react-router-dom"
-// import { useSelector } from "react-redux"
-// import { RootState } from "../../Redux/store"
+import useCloseDropDown from "../reuse/CloseDropDown"
+
 const ChatHeader = () => {
   const [grpUsers, setGrpUsers] = useState("")
   const dispatch: AppDispatch = useDispatch()
 
-  // const { activeChat } = useSelector((store: RootState) => store.features) 
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
-  // const { user } = useSelector((state: RootState) => state.auth)
-  const [dropdown, setDropdown] = useState(false)
+  const [dropdown, setDropdown] = useCloseDropDown(false, '.dropdown')
 
   function getUsersString(usersArray: any) {
     return usersArray.map((user: any) => user.name || maskPhoneNumber(user.mobile)).join(', ');
   }
-  useEffect(() => {
-    const closeDropdown = (event: MouseEvent) => {
-      if (dropdown && !event.target || !(event.target as HTMLElement).closest('.dropdown')) {
-        setDropdown(false);
-      }
-    };
-
-    document.body.addEventListener('click', closeDropdown);
-
-    return () => {
-      document.body.removeEventListener('click', closeDropdown);
-    };
-  }, [dropdown]);
   useEffect(() => {
     // Check if 'users' array exists in currentUserorGroup
     if (friends[currentUserIndex]?.users?.length! > 0) {
@@ -62,14 +48,17 @@ const ChatHeader = () => {
   const closeContact = () => {
     dispatch(toggleContactInfo(true))
   }
+  const handleStartCall = () => {
+    dispatch(setStartCall({ userId: friends[currentUserIndex]?._id, call: true }))
+  }
   return (
     <div className="h-16 gap-2 sm:gap-5 py-3 px-1 flex justify-between items-center bg-[#202c33] ">
       <div onClick={handleCloseChat} className="md:hidden block w-5 p-5">
         <AiOutlineArrowLeft className="text-white" />
       </div>
-      <div onClick={handleOopenProfile} className="flex sm:cursor-pointer items-center justify-center gap-6 chatList">
+      <div onClick={handleOopenProfile} className="flex sm:cursor-pointer items-center justify-center sm:gap-6 chatList">
         {friends[currentUserIndex]?.profile ? (
-          <div className="relative p-1">
+          <div className="relative sm:p-1 sm:w-auto w-[50px]">
             <img src={friends[currentUserIndex].profile} alt="profile image" className="w-[40px] h-[40px] rounded-full object-cover" />
             {friends[currentUserIndex]?.online_status === "true" ? (
               <span className="blink_me absolute bottom-1 right-0"></span>
@@ -100,9 +89,9 @@ const ChatHeader = () => {
         {/* <Link to="/calls" className="icons">
           <IoMdVideocam className="" title="video call" />
         </Link> */}
-        <Link to={`/calls`} target="_self" rel="noopener noreferrer" className="icons">
+        <button onClick={handleStartCall} className="icons">
           <IoMdVideocam title="video call" />
-        </Link>
+        </button>
         <div className="icons sm:block hidden" >
           <BsSearch className="" title="search in chat" />
         </div>
@@ -111,7 +100,7 @@ const ChatHeader = () => {
         </div>
       </div>
 
-      <div className={`${dropdown ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-30 w-0 opacity-0"} no-scrollbar transition-all  ease-in-out origin-top-right  dropdown z-10 top-16 right-10 `}>
+      <div className={`${dropdown ? "scale-y-100 opacity-100  duration-300 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-0 duration-100 w-0 opacity-0"}  transition-all  ease-in-out origin-top-right  dropdown z-10 top-16 right-10 `}>
         <div className="">
           <button onClick={closeContact} className="options" role="menuitem" id="menu-item-0">Contact info</button>
           <button className="options" role="menuitem" id="menu-item-1">
@@ -122,7 +111,6 @@ const ChatHeader = () => {
           <button onClick={handleCloseChat} className="options" role="menuitem" id="menu-item-0">Close Chat</button>
         </div>
       </div>
-
 
     </div>
   )

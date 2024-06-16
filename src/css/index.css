@@ -319,22 +319,27 @@ h3 {
 /* call button ring */
 .animate-ring {
 	animation: ring 2s infinite;
-  }
-  
-  @keyframes ring {
+	z-index: 1;
+}
+
+@keyframes ring {
 	0% {
-	  transform: rotate(0deg);
+		transform: rotate(0deg);
 	}
+
 	25% {
-	  transform: rotate(30deg);
+		transform: rotate(30deg);
 	}
+
 	50% {
-	  transform: rotate(0deg);
+		transform: rotate(0deg);
 	}
+
 	75% {
-	  transform: rotate(-30deg);
+		transform: rotate(-30deg);
 	}
+
 	100% {
-	  transform: rotate(0deg);
+		transform: rotate(0deg);
 	}
-  }
+}

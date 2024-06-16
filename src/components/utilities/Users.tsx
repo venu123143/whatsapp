@@ -17,7 +17,7 @@ import UserSkeliton from '../reuse/UserSkeliton'
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
   const { chatSearchValue, friends, users, isLoading } = useSelector((state: RootState) => state.msg)
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user, startCall } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
   const handleOnClick = async (friend: CommonProperties) => {
@@ -93,10 +93,11 @@ const Users = () => {
                   < UserSkeliton key={index} />
                 ))}
               </div>
-              : 
+              :
               friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
+                let call = each._id === startCall.userId && startCall.call === true
                 return (
-                  <UserCard key={index} value={each} handleOnClick={() => handleOnClick(each)} />
+                  <UserCard key={index} startCall={call} value={each} handleOnClick={() => handleOnClick(each)} />
                 )
               })}
         </div>

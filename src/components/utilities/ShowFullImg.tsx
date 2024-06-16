@@ -7,11 +7,15 @@ interface ShowFullImgProps {
     images: any[];
 }
 import { setCurrentImage, setIsFullscreen, setZoomLevel, setCurrentIndex } from '../../Redux/reducers/utils/Features';
+// import useCloseDropDown from '../reuse/CloseDropDown';
 const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
+    console.log(images);
+
     const { currentImage, isFullscreen, zoomLevel, currentIndex } = useSelector((state: RootState) => state.features)
     const dispatch: AppDispatch = useDispatch()
     const [image, setImage] = useState<any>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    // const [dropdown, setDropdown] = useCloseDropDown(false, '.dropdown')
     // URL.createObjectURL(currentImage)
     useEffect(() => {
         if (currentImage) {
@@ -79,6 +83,7 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
             dispatch(setIsFullscreen(false))
         }
     };
+    console.log(currentImage, currentIndex);
 
     const prevImage = () => {
         if (currentIndex !== null && currentIndex > 0) {
@@ -116,8 +121,7 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
                     </span>
                     <span
                         className="prev-button p-2 hover:bg-gray-600 rounded-full"
-                        onClick={prevImage}
-                    >
+                        onClick={prevImage}>
                         <AiOutlineLeft size={25} />
                     </span>
                     <span
