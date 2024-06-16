@@ -7,22 +7,21 @@ import { upateUser, uploadProfile } from "../../Redux/reducers/Auth/AuthReducer"
 import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange, openfullScreen } from "../../Redux/reducers/utils/Features"
 import { AiOutlineEdit, AiOutlineCheck } from "react-icons/ai"
 import { ClipLoader } from "react-spinners"
-import ShowFullImg from "./ShowFullImg"
 import Dropzone from 'react-dropzone'
 import { toast } from "react-toastify";
 import { HiOutlineCamera } from "react-icons/hi";
 
 import { PiUserLight } from "react-icons/pi"
 import { useState } from "react"
+import useCloseDropDown from "../reuse/CloseDropDown"
 const Profile = () => {
   const dispatch: AppDispatch = useDispatch()
 
   const { user, isLoading, isSuccess, isProfileLoading } = useSelector((state: RootState) => state.auth)
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { nameEditClick, aboutEditClick, userName, about } = useSelector((state: RootState) => state.features);
-  const [showOptions, setShowOptions] = useState<any>(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
-
+  const [showOptions, setShowOptions] = useCloseDropDown(false, '.dropdown')
   const editAbout = () => {
     dispatch(handleAboutEditClick({ aboutEditClick: !aboutEditClick, about: user?.about }))
   }
@@ -48,7 +47,7 @@ const Profile = () => {
   // options functions.
   const ShowFullImage = () => {
     setShowOptions(false)
-    dispatch(openfullScreen({ currentImage: user?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
+    dispatch(openfullScreen({ images: user?.profile, currentImage: user?.profile, isFullscreen: true, zoomLevel: 1, currentIndex: 0 }))
   }
   const uploadProfileImage = (e: any) => {
     setShowOptions(false);
@@ -59,22 +58,7 @@ const Profile = () => {
     });
     dispatch(uploadProfile({ images: formData, _id: user?._id }))
   }
-  useEffect(() => {
-    const closeDropdown = (event: MouseEvent) => {
-      // Check if the clicked element is outside the dropdown
-      if (showOptions && !event.target || !(event.target as HTMLElement).closest('.dropdown')) {
-        setShowOptions(false)
-      }
-    };
 
-    // Attach the event listener to the document body
-    document.body.addEventListener('click', closeDropdown);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      document.body.removeEventListener('click', closeDropdown);
-    };
-  }, [showOptions])
   const removeProfile = () => {
     setShowOptions(false);
     dispatch(upateUser({ id: user?._id as string, value: { profile: "" } }))
@@ -208,9 +192,6 @@ const Profile = () => {
             )
             }
           </div>
-        </div>
-        <div>
-          <ShowFullImg images={[user?.profile]} />
         </div>
       </div>
       {

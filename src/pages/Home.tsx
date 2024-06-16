@@ -23,7 +23,6 @@ const Home = () => {
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
   const [lstMsg, setLstMsg] = useState<any>(null)
-  const currChatImages = friends[currentUserIndex] && friends[currentUserIndex]?.chat.filter((msg: any) => msg?.msgType === "image")
 
   useEffect(() => {
     const initializeSocket = async () => {
@@ -127,7 +126,7 @@ const Home = () => {
             {currentUserIndex === null ? <DefaultComp /> : <Chat />}
           </section>
           <div>
-            <ShowFullImg images={currChatImages} />
+            <ShowFullImg />
           </div>
         </main>
       </SocketContext.Provider >
