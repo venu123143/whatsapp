@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../Redux/store'
 import { setCallStart } from '../../Redux/reducers/Calls/CallsReducer'
 
+// import { FaMicrophone } from "react-icons/fa6";
+// import { MdSend } from "react-icons/md";
 const VideoCall = () => {
     const dispatch: AppDispatch = useDispatch()
 
@@ -15,3 +17,33 @@ const VideoCall = () => {
 }
 
 export default React.memo(VideoCall)
+
+
+
+
+// const VideoCall = () => {
+//   return (
+
+//     <div className="mt-4 p-4 bg-black flex justify-between items-center">
+//       <div className="flex space-x-2">
+//         <span className="bg-green-500 p-2 rounded-full">
+//         </span>
+//         <span className="bg-red-500 p-2 rounded-full">
+//         </span>
+//         <span className="bg-gray-700 p-2 rounded-full">
+//         </span>
+//       </div>
+//       <div className="flex-1 mx-4 bg-gray-700 rounded-lg p-2">
+//         <input type="text" placeholder="Write message here" className="bg-gray-700 text-white w-full outline-none" />
+//       </div>
+//       <div className="flex space-x-2">
+//         <button className="bg-blue-500 p-2 rounded-full">
+//           <i className="fas fa-paper-plane"></i>
+//           <MdSend title="send" />
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default VideoCall;

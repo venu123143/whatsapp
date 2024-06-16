@@ -10,7 +10,7 @@ const JoinCall = ({ data, id }: { data: ICall, id: number }) => {
         <div key={id} className='p-2 border-b space-y-3' >
             <div className='flex justify-between items-center'>
                 <div className='flex gap-3'>
-                    <CiVideoOn size={25} />
+                    <CiVideoOn size={25} /> 
                     <h1 className='font-semibold '>Created By :
                         <span className='text-[1rem] font-medium tracking-wide' > {data.createdBy.name ? data.createdBy.name.split(' ')[0] : data.createdBy.mobile}</span> </h1>
                     {/* <p className='line-clamp-2'>Call Id {data._id }</p> */}
