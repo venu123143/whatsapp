@@ -27,8 +27,8 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const { user, startCall } = useSelector((state: RootState) => state.auth)
-  const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
   const chats = friends[currentUserIndex]?.chat
+  const currChatImages = friends[currentUserIndex] && friends[currentUserIndex]?.chat.filter((msg: any) => msg?.msgType === "image")
 
 
   const getRandomColor = () => {
@@ -100,8 +100,8 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
   }
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
-    dispatch(openfullScreen({ currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
-  }
+    dispatch(openfullScreen({ images: currChatImages, currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
+  } 
   // src={URL.createObjectURL(image)}
   return (
     <div className=" h-full ">
@@ -212,9 +212,6 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
           </div>
         </div>
       </div>
-      {/* <div>
-        <ShowFullImg images={currChatImages} />
-      </div> */}
     </div>
   );
 };

@@ -8,10 +8,10 @@ interface ShowFullImgProps {
 }
 import { setCurrentImage, setIsFullscreen, setZoomLevel, setCurrentIndex } from '../../Redux/reducers/utils/Features';
 // import useCloseDropDown from '../reuse/CloseDropDown';
-const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
-    console.log(images);
+const ShowFullImg = () => {
 
-    const { currentImage, isFullscreen, zoomLevel, currentIndex } = useSelector((state: RootState) => state.features)
+    const { currentImage, isFullscreen, zoomLevel, currentIndex, images } = useSelector((state: RootState) => state.features)
+    
     const dispatch: AppDispatch = useDispatch()
     const [image, setImage] = useState<any>(null);
     const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -20,7 +20,6 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
     useEffect(() => {
         if (currentImage) {
             if (currentImage instanceof File || currentImage instanceof Blob) {
-
                 setImage(URL.createObjectURL(currentImage))
             } else if (typeof currentImage === 'string') {
                 setImage(currentImage); // Already a URL
@@ -74,16 +73,14 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
         if (currentIndex !== null && currentIndex < images.length - 1) {
             setPosition({ x: 0, y: 0 })
             dispatch(setZoomLevel(1))
-
             dispatch(setCurrentIndex(currentIndex + 1))
-            dispatch(setCurrentImage(images[currentIndex + 1].image))
+            dispatch(setCurrentImage(images[currentIndex + 1].file))
 
         } else if (currentIndex! >= images.length - 1) {
             setPosition({ x: 0, y: 0 })
             dispatch(setIsFullscreen(false))
         }
     };
-    console.log(currentImage, currentIndex);
 
     const prevImage = () => {
         if (currentIndex !== null && currentIndex > 0) {
@@ -92,7 +89,7 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
             dispatch(setCurrentIndex(currentIndex - 1))
 
             // setCurrentImage(URL.createObjectURL(images[currentIndex - 1]));
-            dispatch(setCurrentImage(images[currentIndex - 1].image))
+            dispatch(setCurrentImage(images[currentIndex - 1].file))
             // setIsZoomed(false); // Reset zoom state when changing images
         } else if (currentIndex! <= 0) {
             setPosition({ x: 0, y: 0 })
@@ -107,7 +104,7 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
         <div>
             <div className={` fullscreen-overlay ${isFullscreen ? "active" : ""}`}>
                 <div className={`fullscreen-modal `}>
-                    <img onMouseMove={handleMouseMove}
+                    <img draggable onMouseMove={handleMouseMove}
                         src={image}
                         alt={`Image ${currentIndex! + 1}`}
                         style={{
@@ -138,4 +135,4 @@ const ShowFullImg: React.FC<ShowFullImgProps> = ({ images }) => {
     )
 }
 
-export default ShowFullImg
+export default React.memo(ShowFullImg)
