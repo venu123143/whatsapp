@@ -1,4 +1,4 @@
-import { useEffect, createContext, useState } from 'react'
+import { useEffect, createContext, useContext, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -12,17 +12,41 @@ import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
 import DefaultComp from '../components/utilities/DefaultComp'
 import ShowFullImg from '../components/utilities/ShowFullImg'
+import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
+import { UserState } from '../Redux/reducers/Auth/AuthReducer'
+import { getStream } from '../components/video/UseVideoCustom'
+import { setIsCalling } from '../Redux/reducers/Calls/CallsReducer'
+import { toast } from 'react-toastify'
+import { CallsContext } from '../App'
 
 export const SocketContext = createContext<Socket>({} as Socket);
+
+const pcConfig = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },  // Keep the existing Google STUN server
+    { urls: 'stun:stun1.l.google.com:19302' },  // Alternate Google STUN server
+    { urls: 'stun:stun.sipgate.net:3478' },    // SIPGATE STUN server
+    { urls: 'stun:stun.services.mozilla.com:3478' }, // Mozilla STUN server
+  ],
+};
+
 
 const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
+
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
+  const callSocket = useContext(CallsContext)
   const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [lstMsg, setLstMsg] = useState<any>(null)
+  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null)
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null)
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+
+  useGetAllMsgs(socket, user as UserState)
+  useRecieveMessage(socket, users, lstMsg, setLstMsg, friends, currentUserIndex)
 
   useEffect(() => {
     const initializeSocket = async () => {
@@ -34,29 +58,6 @@ const Home = () => {
     initializeSocket();
   }, [user]);
 
-  let onReload = true;
-  useEffect(() => {
-    if (socket.connected && user !== null) {
-      if (onReload) {
-        // socket.emit("get_frnds_on_reload", user)
-        socket.emit("get_all_messages", "friends")
-        onReload = false
-      }
-
-      socket.on("get_friends", (friends) => {
-        dispatch(handleSetFriends(friends))
-      })
-      socket.on("get_all_messages_on_reload", (friends) => {
-        dispatch(handleSetAllUsersChat(friends))
-      })
-    }
-    return () => {
-      if (socket.connected) {
-        socket.off("get_friends");
-        socket.off("get_all_messages_on_reload")
-      }
-    };
-  }, [socket])
 
   useEffect(() => {
     dispatch(getAllGroups()).then(() => {
@@ -73,47 +74,84 @@ const Home = () => {
   }, [user])
 
   useEffect(() => {
-    if (socket.connected) {
-      socket.on("recieve_message", (data: ChatMessage) => {
-        setLstMsg({ ...data, right: false })
-        dispatch(handleRecieveMessage({ ...data, right: false }));
+    if (callSocket.connected) {
+      callSocket.on('ice-candiate', async (data) => {
+        await handleICECandidate(data.candiate)
       });
-      socket.on("update_view", (data: ChatMessage) => {
-        dispatch(handleUpdateSeen(data))
+      callSocket.on('call-offer', async (data) => {
+        await handleAnswer(data.offer)
       });
-
-      if (lstMsg !== null) {
-        let findUserIndex;
-        if (lstMsg.conn_type === "group") {
-          findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.recieverId) : -1
-        } else {
-          findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.senderId) : -1
-        }
-        if (findUserIndex === -1) {
-          const user = users.find((user: CommonProperties) => user.socket_id === lstMsg.senderId);
-          if (user) {
-            socket.emit("add_friend", user);
-            socket.on("get_friends", (friend) => {
-              dispatch(handleSetFriends(friend))
-            });
-          }
-        }
-        if (friends[0]?.socket_id === lstMsg.senderId && currentUserIndex === 0) {
-          dispatch(makeUnreadCountZero())
-          socket.emit("update_seen", [lstMsg])
-        }
-      }
+      callSocket.on('call-answer', async (data) => {
+        await handleAnswer(data.answer)
+      });
     }
-    // Cleanup function to close the socket connection
     return () => {
       if (socket.connected) {
-        // socket.disconnect();
-        socket.off("recieve_message");
-        socket.off("update_view");
-        socket.off("get_friends");
+        callSocket.off('ice-candiate');
+        callSocket.off('call-offer');
+        callSocket.off('call-answer');
       }
     };
-  }, [socket, lstMsg]);
+  }, [socket])
+  const handleSendOffer = async () => {
+    try {
+      const stream = await getStream()
+      setLocalStream(stream);
+      const peerConnection = new RTCPeerConnection(pcConfig);
+      stream.getTracks().forEach(track => peerConnection!.addTrack(track, stream));
+
+      // Create Offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      peerConnection.ontrack = (event) => {
+        setRemoteStream(event.streams[0]);
+      }
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          callSocket!.emit('ice-candidate', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+        }
+      };
+      setPeerConnection(peerConnection)
+      dispatch(setIsCalling(true))
+      // socket!.emit('call-answer', { answer, to: callingUser });
+      callSocket!.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
+
+    } catch (error: any) {
+      toast.error(error.message, { position: "top-left" })
+      console.error('Error accessing media devices:', error);
+    }
+  };
+
+  const handleOffer = async (offer: RTCSessionDescriptionInit) => {
+    const peerConnection = new RTCPeerConnection(pcConfig);
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        callSocket.emit('ice-candidate', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+      }
+    };
+    peerConnection.ontrack = (event) => {
+      setRemoteStream(event.streams[0])
+    };
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const stream = await getStream()
+    stream.getTracks().forEach(track => peerConnection!.addTrack(track, stream));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    callSocket!.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
+
+    setPeerConnection(peerConnection)
+
+  }
+
+  const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
+    await peerConnection!.setRemoteDescription(new RTCSessionDescription(answer));
+  };
+
+  const handleICECandidate = (candidate: RTCIceCandidate) => {
+    peerConnection!.addIceCandidate(new RTCIceCandidate(candidate));
+  };
 
   return (
     <>

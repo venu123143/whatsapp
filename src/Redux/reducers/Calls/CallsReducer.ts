@@ -74,10 +74,12 @@ interface AppState {
     activePin: boolean;
     errors: any;
     callStarted: boolean;
+    isCalling: boolean;
 
 }
 const initialState: AppState = {
     callStarted: false,
+    isCalling: false,
     liveCalls: [],
     recentCalls: [],
     isError: false,
@@ -99,6 +101,9 @@ const callsSlice = createSlice({
         },
         setCallStart: (state, action) => {
             state.callStarted = action.payload
+        },
+        setIsCalling: (state, action) => {
+            state.isCalling = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -180,5 +185,5 @@ const callsSlice = createSlice({
     }
 })
 
-export const { setActivePin, setErrors, setCallStart } = callsSlice.actions
+export const { setIsCalling, setActivePin, setErrors, setCallStart } = callsSlice.actions
 export default callsSlice.reducer

@@ -9,10 +9,13 @@ import EditMsg from '../cards/EditMsg';
 import ContactInfo from '../../pages/ContactInfo';
 import MsgRecoder from './MsgRecoder';
 
+
 const Chat = () => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
   const { friends, currentUserIndex, editMessage } = useSelector((state: RootState) => state.msg);
   const { isRecord } = useSelector((state: RootState) => state.features);
+
+
 
   useEffect(() => {
     if (chatPageRef.current) {

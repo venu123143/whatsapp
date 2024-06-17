@@ -50,6 +50,7 @@ const ChatHeader = () => {
   }
   const handleStartCall = () => {
     dispatch(setStartCall({ userId: friends[currentUserIndex]?._id, call: true }))
+    
   }
   return (
     <div className="h-16 gap-2 sm:gap-5 py-3 px-1 flex justify-between items-center bg-[#202c33] ">

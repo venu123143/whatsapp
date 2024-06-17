@@ -1,17 +1,37 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../Redux/store'
 import { setCallStart } from '../../Redux/reducers/Calls/CallsReducer'
 
 // import { FaMicrophone } from "react-icons/fa6";
 // import { MdSend } from "react-icons/md";
-const VideoCall = () => {
+const VideoCall = ({ localStream, remoteStream }: { localStream: MediaStream | null, remoteStream: MediaStream | null }) => {
     const dispatch: AppDispatch = useDispatch()
+    const localVideoRef = useRef<HTMLVideoElement>(null);
+    const remoteVideoRef = useRef<HTMLVideoElement>(null);
+    useEffect(() => {
+        if (localStream && localVideoRef.current) {
+            localVideoRef.current.srcObject = localStream;
+        }
+    }, [localStream]);
+
+    useEffect(() => {
+        if (remoteStream && remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
 
     return (
         <div>
-            <h1>video Ccall</h1>
-            <button onClick={() => dispatch(setCallStart(false))} className='px-3 py-2 border shadow-lg rounded-md mx-10 bg-gradient-to-r from-slate-400 to-red-500'>stop call</button>
+            {/* <h1>video Ccall</h1>
+            <button onClick={() => dispatch(setCallStart(false))} className='px-3 py-2 border shadow-lg rounded-md mx-10 bg-gradient-to-r from-slate-400 to-red-500'>stop call</button> */}
+            {localStream && (
+                <video ref={localVideoRef} autoPlay muted width="200" height="150"></video>
+            )}
+            {remoteStream && (
+                <video ref={remoteVideoRef} autoPlay width="400" height="300"></video>
+            )}
+
         </div>
     )
 }

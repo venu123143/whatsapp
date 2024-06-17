@@ -7,7 +7,6 @@ import { Routes, Route, Navigate } from "react-router-dom"
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import VideoHome from "./components/video/VideoHome";
-import VideoCall from "./components/video/VideoCall";
 import { createContext, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
@@ -37,7 +36,6 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/calls" element={<VideoHome />} />
-          <Route path="/video" element={<VideoCall />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </CallsContext.Provider>
