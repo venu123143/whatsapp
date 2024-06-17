@@ -1,7 +1,7 @@
 import { FaCircleUser } from 'react-icons/fa6';
 import { FiPhoneCall, FiPhoneMissed } from "react-icons/fi";
 
-const IncomingCall = ({ imageUrl, rejectOnClick }: { imageUrl: string | null, rejectOnClick: () => void }) => {
+const IncomingCall = ({ imageUrl, rejectOnClick, acceptCall }: { imageUrl: string | null, rejectOnClick: () => void, acceptCall: () => void }) => {
 
     return (
         <div className="bg-gray-900 shadow-md hover:shadow-green-500 rounded-lg overflow-hidden">
@@ -21,7 +21,7 @@ const IncomingCall = ({ imageUrl, rejectOnClick }: { imageUrl: string | null, re
                     <p className="text-white font-semibold">Incoming call</p>
                 </div>
                 <div className="flex items-center">
-                    <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full mr-2">
+                    <button onClick={acceptCall} className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full mr-2">
                         <FiPhoneCall className="" size={24} />
                     </button>
                     <button onClick={rejectOnClick} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full">

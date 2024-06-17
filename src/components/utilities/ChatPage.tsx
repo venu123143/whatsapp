@@ -21,7 +21,7 @@ import Audio from "./Audio";
 import IncomingCall from "../cards/IncommingCall";
 import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer";
 
-const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) => void }) => {
+const ChatPage = ({ scrollToMessage, handleOffer }: { scrollToMessage: (messageId: string) => void, handleOffer: () => void }) => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
@@ -101,14 +101,14 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
     dispatch(openfullScreen({ images: currChatImages, currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
-  } 
+  }
   // src={URL.createObjectURL(image)}
   return (
     <div className=" h-full ">
       {
         startCall.call && friends[currentUserIndex]._id === startCall.userId && (
           <div className="absolute z-[1]  w-full p-2">
-            <IncomingCall rejectOnClick={handleCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
+            <IncomingCall acceptCall={handleOffer} rejectOnClick={handleCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
           </div>
         )
       }
