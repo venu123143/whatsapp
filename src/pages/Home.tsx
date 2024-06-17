@@ -20,14 +20,14 @@ const Home = () => {
   const dispatch: AppDispatch = useDispatch()
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
-  const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [socket, setSocket] = useState({} as Socket)
+  const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const [lstMsg, setLstMsg] = useState<any>(null)
 
   useEffect(() => {
     const initializeSocket = async () => {
       if (user !== null && !socket.connected) {
-        const socket = await createSocket(user);
+        const socket = await createSocket(user, import.meta.env.VITE_API_SOCKET_URL as string);
         setSocket(socket)
       }
     };
