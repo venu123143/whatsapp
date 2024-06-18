@@ -1,4 +1,4 @@
-import { useEffect, createContext, useContext, useState } from 'react'
+import { useEffect, createContext, useContext, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -43,9 +43,14 @@ const Home = () => {
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const { isCalling } = useSelector((state: RootState) => state.calls);
   const [lstMsg, setLstMsg] = useState<any>(null)
-  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null)
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+
+  // const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null)
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+
+  const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
+  const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
 
   useGetAllMsgs(socket, user as UserState)
   useRecieveMessage(socket, users, lstMsg, setLstMsg, friends, currentUserIndex)
@@ -76,54 +81,56 @@ const Home = () => {
   }, [user])
 
   useEffect(() => {
-    if (callSocket.connected) {
-      callSocket.on('ice-candiate', async (data) => {
-        console.log(data, "ice")
+    console.log(callSocket.connected);
 
+    if (callSocket.connected) {
+      callSocket.on('ice-candiate-offer', async (data) => {
+        setIceCandidate(data.candidate)
+      });
+      callSocket.on('ice-candiate-answer', async (data) => {
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
-        console.log("offcer", data);
-
-        dispatch(setStartCall({ userId: data.userId, call: true }))
-        await handleAnswer(data.offer)
+        dispatch(setStartCall({ userId: data.from, call: true }))
+        setOffer(data.offer)
       });
       callSocket.on('call-answer', async (data) => {
         console.log("answer", data);
-
         await handleAnswer(data.answer)
       });
     }
     return () => {
       if (socket.connected) {
-        callSocket.off('ice-candiate');
+        callSocket.off('ice-candidate-offer');
+        callSocket.off('ice-candidate-answer');
         callSocket.off('call-offer');
         callSocket.off('call-answer');
       }
     };
   }, [socket])
+  console.log(peerConnectionRef.current);
 
   const handleSendOffer = async () => {
     try {
       const stream = await getStream()
       setLocalStream(stream);
       const peerConnection = new RTCPeerConnection(pcConfig);
-      stream.getTracks().forEach(track => peerConnection!.addTrack(track, stream));
+      peerConnectionRef.current = peerConnection;  // Set the ref
 
-      // Create Offer
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
+      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
 
       peerConnection.ontrack = (event) => {
         setRemoteStream(event.streams[0]);
       }
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
-          callSocket!.emit('ice-candidate', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+          callSocket!.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
         }
       };
+      // Create Offer
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
 
-      setPeerConnection(peerConnection)
       dispatch(setIsCalling(true))
       callSocket!.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
 
@@ -135,30 +142,43 @@ const Home = () => {
 
   const handleOffer = async () => {
     const peerConnection = new RTCPeerConnection(pcConfig);
+    peerConnectionRef.current = peerConnection;
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        callSocket.emit('ice-candidate', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+        callSocket.emit('ice-candidate-answer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
       }
     };
     peerConnection.ontrack = (event) => {
       setRemoteStream(event.streams[0])
     };
-    // await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
+    peerConnection!.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
+
     // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     const stream = await getStream()
-    stream.getTracks().forEach(track => peerConnection!.addTrack(track, stream));
+    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
     callSocket!.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
-    setPeerConnection(peerConnection)
+    dispatch(setIsCalling(true))
   }
 
   const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
-    await peerConnection!.setRemoteDescription(new RTCSessionDescription(answer));
+    const peerConnection = peerConnectionRef.current;
+    if (peerConnection) {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    } else {
+      console.error("Peer connection is null");
+    }
   };
 
   const handleICECandidate = (candidate: RTCIceCandidate) => {
-    peerConnection!.addIceCandidate(new RTCIceCandidate(candidate));
+    const peerConnection = peerConnectionRef.current;
+    if (peerConnection) {
+      peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    } else {
+      console.error("Peer connection is null");
+    }
   };
 
   return (
