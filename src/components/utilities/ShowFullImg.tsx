@@ -3,9 +3,7 @@ import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { RxCross2 } from 'react-icons/rx';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
-interface ShowFullImgProps {
-    images: any[];
-}
+
 import { setCurrentImage, setIsFullscreen, setZoomLevel, setCurrentIndex } from '../../Redux/reducers/utils/Features';
 // import useCloseDropDown from '../reuse/CloseDropDown';
 const ShowFullImg = () => {

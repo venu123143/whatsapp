@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { AppDispatch, RootState } from "../../Redux/store"
 import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"

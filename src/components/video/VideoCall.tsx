@@ -1,12 +1,8 @@
 import React, { useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '../../Redux/store'
-import { setCallStart } from '../../Redux/reducers/Calls/CallsReducer'
 
 // import { FaMicrophone } from "react-icons/fa6";
 // import { MdSend } from "react-icons/md";
 const VideoCall = ({ localStream, remoteStream }: { localStream: MediaStream | null, remoteStream: MediaStream | null }) => {
-    const dispatch: AppDispatch = useDispatch()
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     useEffect(() => {

@@ -4,10 +4,7 @@ import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-import {
-  ChatMessage, getAllGroups, handleSetAllUsersChat, makeUnreadCountZero,
-  handleRecieveMessage, handleSetFriends, handleUpdateSeen, CommonProperties
-} from '../Redux/reducers/msg/MsgReducer'
+import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 import { Socket } from 'socket.io-client'
 import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
 import DefaultComp from '../components/utilities/DefaultComp'
