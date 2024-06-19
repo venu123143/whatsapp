@@ -93,6 +93,9 @@ const callsSlice = createSlice({
     name: 'authSlice',
     initialState,
     reducers: {
+        setIsLoading: (state, action) => {
+            state.isLoading = action.payload
+        },
         setActivePin: (state, action) => {
             state.activePin = action.payload
         },
@@ -104,6 +107,7 @@ const callsSlice = createSlice({
         },
         setIsCalling: (state, action) => {
             state.isCalling = action.payload
+            state.isLoading = false
         }
     },
     extraReducers: (builder) => {
@@ -185,5 +189,5 @@ const callsSlice = createSlice({
     }
 })
 
-export const { setIsCalling, setActivePin, setErrors, setCallStart } = callsSlice.actions
+export const { setIsLoading, setIsCalling, setActivePin, setErrors, setCallStart } = callsSlice.actions
 export default callsSlice.reducer

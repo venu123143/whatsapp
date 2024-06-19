@@ -1,4 +1,4 @@
-import { useEffect, createContext, useContext, useState, useRef } from 'react'
+import { useEffect, createContext, useContext, useState, useRef, useMemo, useCallback, CSSProperties } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -12,10 +12,11 @@ import ShowFullImg from '../components/utilities/ShowFullImg'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
 import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
 import { getStream } from '../components/video/UseVideoCustom'
-import { setIsCalling } from '../Redux/reducers/Calls/CallsReducer'
+import { setIsCalling, setIsLoading } from '../Redux/reducers/Calls/CallsReducer'
 import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
+import { RingLoader } from 'react-spinners'
 
 export const SocketContext = createContext<Socket>({} as Socket);
 
@@ -27,7 +28,8 @@ const pcConfig = {
     { urls: 'stun:stun.services.mozilla.com:3478' }, // Mozilla STUN server
   ],
 };
-
+const cssOverride: CSSProperties = {
+}
 
 const Home = () => {
   const navigate = useNavigate()
@@ -38,7 +40,7 @@ const Home = () => {
   const callSocket = useContext(CallsContext)
   const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
-  const { isCalling } = useSelector((state: RootState) => state.calls);
+  const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
   const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
 
@@ -62,24 +64,16 @@ const Home = () => {
     initializeSocket();
   }, [user]);
 
-
-  useEffect(() => {
-    dispatch(getAllGroups()).then(() => {
-      if (user === null) {
-        navigate('/login')
-      }
-    })
-  }, [createGrp])
-
   useEffect(() => {
     if (user === null) {
       navigate('/login')
+    } else {
+      dispatch(getAllGroups())
     }
-  }, [user])
+  }, [user, createGrp])
 
   useEffect(() => {
     console.log(callSocket.connected);
-
     if (callSocket.connected) {
       callSocket.on('ice-candiate-offer', async (data) => {
         setIceCandidate(data.candidate)
@@ -92,7 +86,6 @@ const Home = () => {
         setOffer(data.offer)
       });
       callSocket.on('call-answer', async (data) => {
-        console.log("answer", data);
         await handleAnswer(data.answer)
       });
     }
@@ -104,11 +97,12 @@ const Home = () => {
         callSocket.off('call-answer');
       }
     };
-  }, [socket])
-  console.log(peerConnectionRef.current);
+  }, [callSocket])
 
-  const handleSendOffer = async () => {
+
+  const handleSendOffer = useCallback(async () => {
     try {
+      dispatch(setIsLoading(true))
       const stream = await getStream()
       setLocalStream(stream);
       const peerConnection = new RTCPeerConnection(pcConfig);
@@ -127,59 +121,63 @@ const Home = () => {
       // Create Offer
       const offer = await peerConnection.createOffer();
       await peerConnectionRef?.current?.setLocalDescription(offer);
-
-      dispatch(setIsCalling(true))
       callSocket!.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
 
+      dispatch(setIsCalling(true))
+
     } catch (error: any) {
+      dispatch(setIsLoading(false))
       toast.error(error.message, { position: "top-left" })
-      console.error('Error accessing media devices:', error);
     }
-  };
+  }, [callSocket, friends, currentUserIndex, dispatch])
 
-  const handleOffer = async () => {
-    const peerConnection = new RTCPeerConnection(pcConfig);
-    peerConnectionRef.current = peerConnection;
-    peerConnection.onicecandidate = (event) => {
-      if (event.candidate) {
-        callSocket.emit('ice-candidate-answer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
-      }
-    };
-    peerConnection.ontrack = (event) => {
-      setRemoteStream(event.streams[0])
-    };
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
-    peerConnection!.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
+  const handleOffer = useCallback(async () => {
+    try {
+      dispatch(setIsLoading(true))
+      const peerConnection = new RTCPeerConnection(pcConfig);
+      peerConnectionRef.current = peerConnection;
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          callSocket.emit('ice-candidate-answer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+        }
+      };
+      peerConnection.ontrack = (event) => {
+        setRemoteStream(event.streams[0])
+      };
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
+      peerConnection!.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
 
-    // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const stream = await getStream()
+      setLocalStream(stream);
+      stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
+      const answer = await peerConnection.createAnswer();
+      await peerConnectionRef.current?.setLocalDescription(answer);
+      callSocket!.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
+      dispatch(setIsCalling(true))
+    } catch (error: any) {
+      dispatch(setIsLoading(false))
+      toast.error(`⬆️ ${error.message}`, { position: "top-left" })
+    }
+  }, [callSocket, friends, currentUserIndex, offer, iceCandidate, dispatch])
 
-    const stream = await getStream()
-    setLocalStream(stream);
-    stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
-    const answer = await peerConnection.createAnswer();
-    await peerConnectionRef.current?.setLocalDescription(answer);
-    callSocket!.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
-    dispatch(setIsCalling(true))
-  }
-
-  const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
-    const peerConnection = peerConnectionRef.current;
+  const handleAnswer = useCallback(async (answer: RTCSessionDescriptionInit) => {
+    const peerConnection = peerConnectionRef.current
     if (peerConnection) {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
     } else {
-      console.error("Peer connection is null");
+      toast.error("Peer connection is null", { position: "top-left" })
     }
-  };
+  }, [])
 
-  const handleICECandidate = (candidate: RTCIceCandidate) => {
-    const peerConnection = peerConnectionRef.current;
+  const handleICECandidate = useCallback((candidate: RTCIceCandidate) => {
+    const peerConnection = peerConnectionRef.current
     if (peerConnection) {
-      peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+      peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
     } else {
-      console.error("Peer connection is null");
+      toast.error("Peer connection is null", { position: "top-left" })
     }
-  };
-  console.log(localStream, remoteStream);
+  }, [])
 
   return (
     <>
@@ -200,6 +198,17 @@ const Home = () => {
                 </section>
                 <div>
                   <ShowFullImg />
+                </div>
+                <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
+                  <RingLoader
+                    color="#36d7b7"
+                    size={500}
+                    cssOverride={cssOverride}
+                    loading={true}
+                    aria-label="Loading Spinner"
+                    speedMultiplier={.51}
+                    data-testid="loader"
+                  />
                 </div>
               </main >
             )
