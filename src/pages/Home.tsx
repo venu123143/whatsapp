@@ -117,7 +117,7 @@ const Home = () => {
       const peerConnection = new RTCPeerConnection(pcConfig);
       peerConnectionRef.current = peerConnection;  // Set the ref
 
-      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+      stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
 
       peerConnection.ontrack = (event) => {
         setRemoteStream(event.streams[0]);
@@ -129,7 +129,7 @@ const Home = () => {
       };
       // Create Offer
       const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
+      await peerConnectionRef?.current?.setLocalDescription(offer);
 
       dispatch(setIsCalling(true))
       callSocket!.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
@@ -155,10 +155,12 @@ const Home = () => {
     peerConnection!.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
 
     // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
     const stream = await getStream()
-    stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+    setLocalStream(stream);
+    stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
     const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+    await peerConnectionRef.current?.setLocalDescription(answer);
     callSocket!.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
     dispatch(setIsCalling(true))
   }
@@ -180,6 +182,7 @@ const Home = () => {
       console.error("Peer connection is null");
     }
   };
+  console.log(localStream, remoteStream);
 
   return (
     <>
