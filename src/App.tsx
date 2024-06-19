@@ -12,6 +12,7 @@ import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "./Redux/store";
 import createSocket from "./Redux/reducers/utils/socket/SocketConnection";
+import VideoCall from "./components/video/VideoCall";
 
 export const CallsContext = createContext<Socket>({} as Socket);
 
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/calls" element={<VideoHome />} />
           <Route path="*" element={<Navigate to="/" />} />
+          {/* <Route path="/video" element={<VideoCard />} /> */}
         </Routes>
       </CallsContext.Provider>
 

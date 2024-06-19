@@ -1,10 +1,19 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
+import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop, FaPhoneSlash } from 'react-icons/fa';
+import { drawWaveform, getAudioContext, getUserMedia } from './UseVideoCustom';
 
-// import { FaMicrophone } from "react-icons/fa6";
-// import { MdSend } from "react-icons/md";
+
 const VideoCall = ({ localStream, remoteStream }: { localStream: MediaStream | null, remoteStream: MediaStream | null }) => {
     const localVideoRef = useRef<HTMLVideoElement>(null);
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
+    const [isAudioMuted, setIsAudioMuted] = useState(false);
+    const [isVideoMuted, setIsVideoMuted] = useState(false);
+    const [isScreenSharing, setIsScreenSharing] = useState(false);
+    const [viewType, setViewType] = useState('grid'); // "grid" or "popup"
+
+    const waveformCanvasRef = useRef(null);
+    const [audioContext, setAudioContext] = useState(null);
+    const [analyser, setAnalyser] = useState(null);
     useEffect(() => {
         if (localStream && localVideoRef.current) {
             localVideoRef.current.srcObject = localStream;
@@ -17,49 +26,238 @@ const VideoCall = ({ localStream, remoteStream }: { localStream: MediaStream | n
         }
     }, [remoteStream]);
 
+    const toggleAudio = () => {
+        setIsAudioMuted(!isAudioMuted);
+        // Implement audio mute/unmute logic here
+    };
+
+    const toggleVideo = () => {
+        setIsVideoMuted(!isVideoMuted);
+        // Implement video mute/unmute logic here
+    };
+
+    const toggleScreenShare = () => {
+        setIsScreenSharing(!isScreenSharing);
+        // Implement screen sharing logic here
+    };
+
+    const endCall = () => {
+        // Implement end call logic here
+    };
+
+    // useEffect(() => {
+    //     const initAudio = async () => {
+    //         const audioCtx = await getAudioContext();
+    //         setAudioContext(audioCtx);
+
+    //         const stream = await getUserMedia({ audio: true });
+    //         const source = audioCtx.createMediaStreamSource(stream);
+    //         const analyser = audioCtx.createAnalyser();
+    //         source.connect(analyser);
+    //         setAnalyser(analyser);
+
+    //         const animate = () => {
+    //             drawWaveform(analyser, waveformCanvasRef.current);
+    //             requestAnimationFrame(animate);
+    //         };
+    //         animate();
+    //     };
+
+    //     initAudio();
+    // }, []);
+
     return (
-        <div>
-            {/* <h1>video Ccall</h1>
-            <button onClick={() => dispatch(setCallStart(false))} className='px-3 py-2 border shadow-lg rounded-md mx-10 bg-gradient-to-r from-slate-400 to-red-500'>stop call</button> */}
-            {localStream && (
-                <video ref={localVideoRef} autoPlay muted width="200" height="150"></video>
-            )}
-            {remoteStream && (
-                <video ref={remoteVideoRef} autoPlay width="400" height="300"></video>
+        <div className="video-call-container h-screen">
+            <div className="absolute z-10  top-3 view-type-buttons space-x-3">
+                <button
+                    onClick={() => setViewType('grid')}
+                    className={`view-type-button ${viewType === 'grid' ? 'active' : ''}`}
+                >
+                    Grid View
+                </button>
+                <button
+                    onClick={() => setViewType('popup')}
+                    className={`view-type-button ${viewType === 'popup' ? 'active' : ''}`}
+                >
+                    Popup View
+                </button>
+            </div>
+
+            {viewType === 'grid' ? (
+                <div className="video-grid">
+                    <div>
+                        {remoteStream && (
+                            <video ref={remoteVideoRef} autoPlay></video>
+                        )}
+                    </div>
+                    <div>
+                        {localStream && (
+                            <video ref={localVideoRef} autoPlay muted></video>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <div className="video-popup">
+                    <div>
+                        {remoteStream && (
+                            <div className='h-screen overflow-hidden no-scrollbar' >
+                                <video ref={localVideoRef} autoPlay muted className="w-full"></video>
+                                <div className="controls absolute botom-0 right-0">
+                                    <canvas ref={waveformCanvasRef} className="waveform-canvas"></canvas>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        {localStream && (
+                            <div className='h-screen overflow-hidden' >
+                                <video ref={localVideoRef} autoPlay muted className="w-full local"></video>
+                                <div className="controls absolute botom-0 right-0">
+                                    {/* Other control buttons */}
+                                    <h1 className='bg-red-500'>hello</h1>
+                                    <canvas ref={waveformCanvasRef} className="waveform-canvas"></canvas>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             )}
 
+            <div className="controls">
+                <button
+                    onClick={toggleAudio}
+                    className={`control-button ${isAudioMuted ? 'muted' : ''}`}
+                >
+                    {isAudioMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+                </button>
+                <button
+                    onClick={toggleVideo}
+                    className={`control-button ${isVideoMuted ? 'muted' : ''}`}
+                >
+                    {isVideoMuted ? <FaVideoSlash /> : <FaVideo />}
+                </button>
+                <button onClick={toggleScreenShare} className="control-button">
+                    <FaDesktop />
+                </button>
+                <button onClick={endCall} className="control-button end-call">
+                    <FaPhoneSlash />
+                </button>
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default React.memo(VideoCall)
+export default React.memo(VideoCall);
 
+// import React, { useEffect, useRef, useState } from 'react';
+// import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaDesktop, FaPhoneSlash } from 'react-icons/fa';
 
+// const VideoCall = ({ localStream, remoteStream }: { localStream: MediaStream | null, remoteStream: MediaStream | null }) => {
+//     const localVideoRef = useRef<HTMLVideoElement>(null);
+//     const remoteVideoRef = useRef<HTMLVideoElement>(null);
+//     const [isAudioMuted, setIsAudioMuted] = useState(false);
+//     const [isVideoMuted, setIsVideoMuted] = useState(false);
+//     const [isScreenSharing, setIsScreenSharing] = useState(false);
+//     const [viewType, setViewType] = useState('grid'); // "grid" or "popup"
 
+//     useEffect(() => {
+//         if (localStream && localVideoRef.current) {
+//             localVideoRef.current.srcObject = localStream;
+//         }
+//     }, [localStream]);
 
-// const VideoCall = () => {
-//   return (
+//     useEffect(() => {
+//         if (remoteStream && remoteVideoRef.current) {
+//             remoteVideoRef.current.srcObject = remoteStream;
+//         }
+//     }, [remoteStream]);
 
-//     <div className="mt-4 p-4 bg-black flex justify-between items-center">
-//       <div className="flex space-x-2">
-//         <span className="bg-green-500 p-2 rounded-full">
-//         </span>
-//         <span className="bg-red-500 p-2 rounded-full">
-//         </span>
-//         <span className="bg-gray-700 p-2 rounded-full">
-//         </span>
-//       </div>
-//       <div className="flex-1 mx-4 bg-gray-700 rounded-lg p-2">
-//         <input type="text" placeholder="Write message here" className="bg-gray-700 text-white w-full outline-none" />
-//       </div>
-//       <div className="flex space-x-2">
-//         <button className="bg-blue-500 p-2 rounded-full">
-//           <i className="fas fa-paper-plane"></i>
-//           <MdSend title="send" />
-//         </button>
-//       </div>
-//     </div>
-//   );
+//     const toggleAudio = () => {
+//         setIsAudioMuted(!isAudioMuted);
+//         // Implement audio mute/unmute logic here
+//     };
+
+//     const toggleVideo = () => {
+//         setIsVideoMuted(!isVideoMuted);
+//         // Implement video mute/unmute logic here
+//     };
+
+//     const toggleScreenShare = () => {
+//         setIsScreenSharing(!isScreenSharing);
+//         // Implement screen sharing logic here
+//     };
+
+//     const endCall = () => {
+//         // Implement end call logic here
+//     };
+
+//     return (
+//         <div className="video-call-container">
+//             <div className="view-type-buttons">
+//                 <button
+//                     onClick={() => setViewType('grid')}
+//                     className={`view-type-button ${viewType === 'grid' ? 'active' : ''}`}
+//                 >
+//                     Grid View
+//                 </button>
+//                 <button
+//                     onClick={() => setViewType('popup')}
+//                     className={`view-type-button ${viewType === 'popup' ? 'active' : ''}`}
+//                 >
+//                     Popup View
+//                 </button>
+//             </div>
+
+//             {viewType === 'grid' ? (
+//                 <div className="video-grid">
+//                     <div>
+//                         {remoteStream && (
+//                             <video ref={remoteVideoRef} autoPlay></video>
+//                         )}
+//                     </div>
+//                     <div>
+//                         {localStream && (
+//                             <video ref={localVideoRef} autoPlay muted></video>
+//                         )}
+//                     </div>
+//                 </div>
+//             ) : (
+//                 <div className="video-popup">
+//                     <div>
+//                         {remoteStream && (
+//                             <video ref={remoteVideoRef} autoPlay className="remote"></video>
+//                         )}
+//                     </div>
+//                     <div>
+//                         {localStream && (
+//                             <video ref={localVideoRef} autoPlay muted className="local"></video>
+//                         )}
+//                     </div>
+//                 </div>
+//             )}
+
+//             <div className="controls">
+//                 <button
+//                     onClick={toggleAudio}
+//                     className={`control-button ${isAudioMuted ? 'muted' : ''}`}
+//                 >
+//                     {isAudioMuted ? <FaMicrophoneSlash /> : <FaMicrophone />}
+//                 </button>
+//                 <button
+//                     onClick={toggleVideo}
+//                     className={`control-button ${isVideoMuted ? 'muted' : ''}`}
+//                 >
+//                     {isVideoMuted ? <FaVideoSlash /> : <FaVideo />}
+//                 </button>
+//                 <button onClick={toggleScreenShare} className="control-button">
+//                     <FaDesktop />
+//                 </button>
+//                 <button onClick={endCall} className="control-button end-call">
+//                     <FaPhoneSlash />
+//                 </button>
+//             </div>
+//         </div>
+//     );
 // };
 
-// export default VideoCall;
+// export default React.memo(VideoCall);
