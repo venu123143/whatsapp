@@ -10,6 +10,7 @@ import { AiOutlineArrowLeft } from "react-icons/ai"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
 import { Link } from "react-router-dom"
 import useCloseDropDown from "../reuse/CloseDropDown"
+import { toast } from "react-toastify"
 
 const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
   const [grpUsers, setGrpUsers] = useState("")
@@ -48,7 +49,15 @@ const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
     dispatch(toggleContactInfo(true))
   }
   const handleStartCall = () => {
-    handleSendOffer()
+    if (friends[currentUserIndex]?.users) {
+      toast.info("For group video call is not implemented", { position: "top-left" })
+    } else {
+      if (friends[currentUserIndex]?.online_status === "true") {
+        handleSendOffer() 
+      } else {
+        toast.info("You cannot call offline user.", { position: "top-left" })
+      }
+    }
   }
   return (
     <div className="h-16 gap-2 sm:gap-5 py-3 px-1 flex justify-between items-center bg-[#202c33] ">

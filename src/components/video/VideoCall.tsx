@@ -134,7 +134,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                     </div>
                     <div className='relative overflow-hidden rounded aspect-w-16 aspect-h-9'>
                         {localStream && (
-                            <video ref={localVideoRef}
+                            <video ref={localVideoRef} muted
                                 className='absolute inset-0 w-full h-full object-cover shadow-lg'
                                 autoPlay
                             >
@@ -159,6 +159,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                                 <video
                                     ref={localVideoRef}
                                     autoPlay
+                                    muted
                                     className="rounded-lg shadow-md absolute bottom-1 right-1 w-[20%] h-auto shadow-slate-300 sm:hover:cursor-pointer hover:shadow-green-500"
                                     draggable={true}
                                     onDragStart={(e) => handleDragStart(e)}
