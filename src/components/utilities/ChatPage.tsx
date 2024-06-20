@@ -19,9 +19,8 @@ import { SocketContext } from "../../pages/Home"
 import { recieveColors, ReceiveColors } from "../../static/Static";
 import Audio from "./Audio";
 import IncomingCall from "../cards/IncommingCall";
-import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer";
 
-const ChatPage = ({ scrollToMessage, handleOffer }: { scrollToMessage: (messageId: string) => void, handleOffer: () => void }) => {
+const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessage: (messageId: string) => void, handleOffer: () => void, rejectCall: () => void }) => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
@@ -94,10 +93,6 @@ const ChatPage = ({ scrollToMessage, handleOffer }: { scrollToMessage: (messageI
     });
 
   }
-
-  const handleCall = () => {
-    dispatch(setStartCall({ userId: null, call: false }))
-  }
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
     dispatch(openfullScreen({ images: currChatImages, currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
@@ -108,7 +103,7 @@ const ChatPage = ({ scrollToMessage, handleOffer }: { scrollToMessage: (messageI
       {
         startCall.call && friends[currentUserIndex]._id === startCall.userId && (
           <div className="absolute z-[1]  w-full p-2">
-            <IncomingCall acceptCall={handleOffer} rejectOnClick={handleCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
+            <IncomingCall acceptCall={handleOffer} rejectOnClick={rejectCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
           </div>
         )
       }

@@ -10,7 +10,7 @@ import ContactInfo from '../../pages/ContactInfo';
 import MsgRecoder from './MsgRecoder';
 
 
-const Chat = ({ handleSendOffer, handleOffer }: { handleSendOffer: () => void, handleOffer: () => void }) => {
+const Chat = ({ handleSendOffer, handleOffer, rejectCall }: { handleSendOffer: () => void, handleOffer: () => void, rejectCall: () => void }) => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
   const { friends, currentUserIndex, editMessage } = useSelector((state: RootState) => state.msg);
   const { isRecord } = useSelector((state: RootState) => state.features);
@@ -50,7 +50,7 @@ const Chat = ({ handleSendOffer, handleOffer }: { handleSendOffer: () => void, h
       <div className=' h-screen flex flex-col backImg bg-black'>
         <ChatHeader handleSendOffer={handleSendOffer} />
         <div className='h-full overflow-y-auto custom-scrollbar bg-black bg-opacity-80 scroll-smoothS' ref={chatPageRef}>
-          <ChatPage handleOffer={handleOffer} scrollToMessage={scrollToMessage} />
+          <ChatPage rejectCall={rejectCall} handleOffer={handleOffer} scrollToMessage={scrollToMessage} />
         </div>
         {
           isRecord === true ? <MsgRecoder /> : <MessageBar />

@@ -127,6 +127,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                     <div className='relative overflow-hidden rounded aspect-w-16 aspect-h-9'>
                         {remoteStream && (
                             <video ref={remoteVideoRef}
+                                controls={false}
                                 className='absolute inset-0 w-full h-full object-cover shadow-gray-400 shadow-lg'
                                 autoPlay
                             ></video>
@@ -134,7 +135,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                     </div>
                     <div className='relative overflow-hidden rounded aspect-w-16 aspect-h-9'>
                         {localStream && (
-                            <video ref={localVideoRef} muted
+                            <video ref={localVideoRef} muted controls={false} 
                                 className='absolute inset-0 w-full h-full object-cover shadow-lg'
                                 autoPlay
                             >
@@ -147,7 +148,8 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                     <div className=''>
                         {remoteStream && (
                             <div className='' >
-                                <video ref={remoteVideoRef} autoPlay
+                                <video ref={remoteVideoRef}
+                                    controls={false} autoPlay
                                     className="w-full h-full object-cover rounded-lg"
                                 ></video>
                             </div>
@@ -160,6 +162,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                                     ref={localVideoRef}
                                     autoPlay
                                     muted
+                                    controls={false} 
                                     className="rounded-lg shadow-md absolute bottom-1 right-1 w-[20%] h-auto shadow-slate-300 sm:hover:cursor-pointer hover:shadow-green-500"
                                     draggable={true}
                                     onDragStart={(e) => handleDragStart(e)}
