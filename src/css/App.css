@@ -1,0 +1,128 @@
+/* const colorObj={
+    outGoing:"#00a884"
+    incoming:#848488,
+    backDeeper:#0a1014,
+    background:#0c1317,
+    primary:3b4a54
+    rgb(0,168,132)
+    avatarborder:#aebac1
+    avatarbg-#111b21
+202c33
+header color- 233138
+111b21
+
+3b3b3b
+} */
+
+.singleuser {
+    @apply bg-[#111b21] hover:bg-[#202c33] hover:bg-opacity-80 text-white sm:cursor-pointer border-b border-gray-800
+}
+
+.username {
+    @apply text-[#e9deef] line-clamp-1
+}
+
+.lastmsg {
+    @apply text-[#8696a0] line-clamp-1
+}
+
+.time {
+    @apply text-[#8696a0] line-clamp-1 text-[0.81rem]
+}
+
+.header-bg {
+    @apply bg-[#202c33]
+}
+
+.profile {
+    @apply bg-[#111b21] w-full h-screen
+}
+
+.profileheader {
+    @apply bg-[#202c33] px-4 py-[0.4rem] flex justify-between items-center text-[#8696a0]
+}
+
+.profileinput {
+    @apply bg-transparent w-full p-2 text-sm text-white font-[450] text-[1rem] border-b-2 border-[#008069] outline-none opacity-50 focus:border-[#008069]
+}
+
+.icons {
+    @apply text-[#e9deef] hover:bg-[#111b21] sm:cursor-pointer text-xl p-3 sm:p-4 rounded-full
+}
+
+.unreadmessage {
+    @apply bg-[#02a698] rounded-full h-6 w-6 flex items-center justify-center text-white shadow-md
+}
+
+.dropdown {
+    @apply bg-[#202c33] absolute w-48 rounded-md shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
+}
+
+.msgOptions {
+    @apply transition-all duration-300 rounded-sm delay-75 ease-in-out origin-top-right w-32 z-10 bg-[#202c33] absolute sm:block hidden shadow-md ring-1 ring-black focus:outline-none ring-opacity-5
+}
+
+.options {
+    @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2
+}
+
+.notification {
+    @apply text-[#8696a0] text-[14px] m-auto rounded-md shadow-lg px-2 py-1 bg-[#202c33] w-fit text-center
+}
+
+.attachedFiles {
+    @apply fixed transition-all ease-in-out duration-200 delay-100 z-10 bottom-16 mt-2 origin-bottom-left rounded-lg bg-[#233138] text-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none
+}
+
+/* full screen image modal */
+.fullscreen-overlay {
+    @apply transition-all duration-300 delay-75 scale-0 absolute top-0 left-0 w-full h-full z-10 bg-black bg-opacity-80;
+}
+
+.active {
+    @apply transition-all ease-out scale-100
+}
+
+.fullscreen-image {
+    @apply max-w-[90%] max-h-[90%] object-contain
+}
+
+.fullscreen-modal {
+    @apply  flex flex-col items-center justify-center h-full relative
+}
+
+/* Close button */
+.close-button {
+    @apply absolute top-[10px] right-[10px] sm:cursor-pointer text-white text-2xl;
+}
+
+/* Previous and Next buttons */
+.prev-button,
+.next-button {
+    @apply absolute top-1/2 transform -translate-y-1/2 sm:cursor-pointer text-white text-2xl;
+}
+
+.prev-button {
+    @apply left-[10px];
+}
+
+.next-button {
+    @apply right-[10px];
+}
+
+/* Thumbnail images */
+.thumbnail {
+    @apply max-w-[100px] m-[5px];
+}
+
+/* skeliton modal */
+.skeleton-profile {
+    @apply w-[50px] h-[50px] bg-[#cacaca] rounded-[50%];
+}
+
+.skeleton {
+    @apply h-[20px] rounded-[4px] bg-[#cacaca];
+}
+
+
+
