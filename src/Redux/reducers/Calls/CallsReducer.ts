@@ -74,10 +74,12 @@ interface AppState {
     activePin: boolean;
     errors: any;
     callStarted: boolean;
+    isCalling: boolean;
 
 }
 const initialState: AppState = {
     callStarted: false,
+    isCalling: false,
     liveCalls: [],
     recentCalls: [],
     isError: false,
@@ -91,6 +93,9 @@ const callsSlice = createSlice({
     name: 'authSlice',
     initialState,
     reducers: {
+        setIsLoading: (state, action) => {
+            state.isLoading = action.payload
+        },
         setActivePin: (state, action) => {
             state.activePin = action.payload
         },
@@ -99,6 +104,10 @@ const callsSlice = createSlice({
         },
         setCallStart: (state, action) => {
             state.callStarted = action.payload
+        },
+        setIsCalling: (state, action) => {
+            state.isCalling = action.payload
+            state.isLoading = false
         }
     },
     extraReducers: (builder) => {
@@ -180,5 +189,5 @@ const callsSlice = createSlice({
     }
 })
 
-export const { setActivePin, setErrors, setCallStart } = callsSlice.actions
+export const { setIsLoading, setIsCalling, setActivePin, setErrors, setCallStart } = callsSlice.actions
 export default callsSlice.reducer

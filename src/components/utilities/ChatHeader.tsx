@@ -6,13 +6,12 @@ import { AppDispatch, RootState } from "../../Redux/store"
 import { FaCircleChevronDown, FaCircleUser } from "react-icons/fa6"
 import { useEffect, useState } from "react"
 import { setCurrentGrpOrUser, toggleContactInfo } from "../../Redux/reducers/msg/MsgReducer"
-import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
 import { Link } from "react-router-dom"
 import useCloseDropDown from "../reuse/CloseDropDown"
 
-const ChatHeader = () => {
+const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
   const [grpUsers, setGrpUsers] = useState("")
   const dispatch: AppDispatch = useDispatch()
 
@@ -49,7 +48,7 @@ const ChatHeader = () => {
     dispatch(toggleContactInfo(true))
   }
   const handleStartCall = () => {
-    dispatch(setStartCall({ userId: friends[currentUserIndex]?._id, call: true }))
+    handleSendOffer()
   }
   return (
     <div className="h-16 gap-2 sm:gap-5 py-3 px-1 flex justify-between items-center bg-[#202c33] ">

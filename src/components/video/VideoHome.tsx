@@ -52,7 +52,7 @@ const VideoHome = () => {
                         </section>
                     </section>
                     :
-                    <VideoCall />
+                    <VideoCall endCall={() => { }} localStream={null} remoteStream={null} />
             }
 
         </>
