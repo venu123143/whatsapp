@@ -22,11 +22,14 @@ export const SocketContext = createContext<Socket>({} as Socket);
 
 const pcConfig = {
   iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },  // Keep the existing Google STUN server
-    { urls: 'stun:stun1.l.google.com:19302' },  // Alternate Google STUN server
-    { urls: 'stun:stun.sipgate.net:3478' },    // SIPGATE STUN server
-    { urls: 'stun:stun.services.mozilla.com:3478' }, // Mozilla STUN server
-  ],
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun.l.stundata.com:3478' },
+    { urls: 'stun2.l.google.com:19302' },
+    { urls: 'stun4.l.google.com:19302' },
+    { urls: 'stun.twilio.com:3478' },
+    { urls: 'stun.xirsys.com' },
+  ]
 };
 const cssOverride: CSSProperties = {
 }
@@ -50,6 +53,7 @@ const Home = () => {
 
   const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
+  console.log("iceCandidate", iceCandidate);
 
   useGetAllMsgs(socket, user as UserState)
   useRecieveMessage(socket, users, lstMsg, setLstMsg, friends, currentUserIndex)
@@ -79,6 +83,8 @@ const Home = () => {
         setIceCandidate(data.candidate)
       });
       callSocket.on('ice-candiate-answer', async (data) => {
+        console.log("ice-candiate-answer", data.candidate);
+
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
@@ -99,6 +105,8 @@ const Home = () => {
     };
   }, [callSocket])
 
+  console.log("peerConnection", peerConnectionRef.current);
+  console.log("localstream", localStream, "remotestream", remoteStream);
 
   const handleSendOffer = useCallback(async () => {
     try {
