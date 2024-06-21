@@ -25,8 +25,6 @@ const pcConfig = {
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun.l.stundata.com:3478' },
-    { urls: 'stun2.l.google.com:19302' },
-    { urls: 'stun4.l.google.com:19302' },
     { urls: 'stun.twilio.com:3478' },
     { urls: 'stun.xirsys.com' },
   ]
