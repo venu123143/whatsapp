@@ -1,3 +1,4 @@
+
 import { useEffect, createContext, useContext, useState, useRef, useCallback, CSSProperties } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
@@ -25,7 +26,8 @@ const pcConfig = {
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun.l.stundata.com:3478' }
-  ]
+  ],
+  iceCandidatePoolSize: 10
 };
 const cssOverride: CSSProperties = {
 }
@@ -43,7 +45,6 @@ const Home = () => {
   const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
 
-  // const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null)
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
@@ -100,9 +101,6 @@ const Home = () => {
       }
     };
   }, [callSocket])
-
-  console.log("peerConnection", peerConnectionRef.current);
-  console.log("localstream", localStream, "remotestream", remoteStream);
 
   const handleSendOffer = useCallback(async () => {
     try {
@@ -184,6 +182,7 @@ const Home = () => {
       toast.error("Peer connection is null", { position: "top-left" })
     }
   }, [])
+
   const handleEndCall = () => {
     if (localStream) {
       localStream.getTracks().forEach(track => track.stop());
@@ -197,6 +196,10 @@ const Home = () => {
     }
 
     if (peerConnectionRef.current) {
+      peerConnectionRef.current.ontrack = null;
+      peerConnectionRef.current.onicecandidate = null;
+      peerConnectionRef.current.oniceconnectionstatechange = null;
+      peerConnectionRef.current.onicecandidateerror = null;
       peerConnectionRef.current.close();
       peerConnectionRef.current = null;
     }
@@ -204,12 +207,50 @@ const Home = () => {
     setIceCandidate(null);
     dispatch(setIsCalling(false));
   }
+
+  useEffect(() => {
+    const peerConnection = peerConnectionRef.current;
+    if (peerConnection) {
+      peerConnection.oniceconnectionstatechange = (event) => {
+        console.log(event);
+        switch (peerConnection.iceConnectionState) {
+          case "checking":
+            console.log("Connecting...");
+            toast.info('Connecting...', { position: 'top-left' });
+
+            break;
+          case "connected":
+            console.log("Connection established.");
+            toast.success('Connection established.', { position: 'top-left' });
+            clearTimeout(connectionTimeout); // Clear timeout if connected
+            break;
+          case "failed":
+            console.log("Connection failed, attempting restart...");
+            peerConnection.restartIce();
+            break;
+        }
+      };
+      peerConnection.onicecandidateerror = (event) => {
+        toast.success(`ICE candidate error:${event}`, { position: 'top-left' });
+        console.error('ICE candidate error:', event);
+      };
+    }
+  }, []);
+
+  const connectionTimeout = setTimeout(() => {
+    if (peerConnectionRef.current && peerConnectionRef.current.iceConnectionState !== 'connected') {
+      console.error('Connection timeout');
+      handleEndCall();
+      toast.error("Connection timeout. Please try again.", { position: "top-left" });
+    }
+  }, 30000);
+
   const rejectCall = () => {
     setOffer(null);
     setIceCandidate(null);
     dispatch(setStartCall({ userId: null, call: false }))
-
   }
+
   return (
     <>
       <SocketContext.Provider value={socket} >

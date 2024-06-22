@@ -13,7 +13,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
     const [isVideoMuted, setIsVideoMuted] = useState(false);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [viewType, setViewType] = useState('grid');
-
+ 
     // const waveformCanvasRef = useRef(null);
 
     const [isDragging, setIsDragging] = useState(false);
@@ -220,7 +220,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                 >
                     {isAudioMuted ?
                         <MdOutlineMicOff size={28} />
-                        :
+                        :  
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-7 w-7"
