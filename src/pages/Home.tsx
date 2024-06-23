@@ -81,12 +81,16 @@ const Home = () => {
       });
       callSocket.on('ice-candiate-answer', async (data) => {
         console.log("ice-candiate-answer", data.candidate);
-
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
         dispatch(setStartCall({ userId: data.from, call: true }))
         setOffer(data.offer)
+      });
+      callSocket.on('stop-call', async (data) => {
+        console.log(data, "stop call");
+        dispatch(setStartCall({ userId: data.from, call: false }))
+        setOffer(null)
       });
       callSocket.on('call-answer', async (data) => {
         await handleAnswer(data.answer)
@@ -240,6 +244,7 @@ const Home = () => {
   const connectionTimeout = setTimeout(() => {
     if (peerConnectionRef.current && peerConnectionRef.current.iceConnectionState !== 'connected') {
       console.error('Connection timeout');
+      callSocket!.emit('stop-call', { to: friends[currentUserIndex].socket_id });
       handleEndCall();
       toast.error("Connection timeout. Please try again.", { position: "top-left" });
     }
