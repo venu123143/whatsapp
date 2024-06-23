@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { FaVideoSlash, FaDesktop, FaPhoneSlash } from 'react-icons/fa';
+import { FaDesktop, FaPhoneSlash } from 'react-icons/fa';
 import { IoShareOutline } from 'react-icons/io5';
 // import { drawWaveform, getAudioContext, getUserMedia } from './UseVideoCustom';
 import { MdOutlineMicOff } from "react-icons/md";
 import { GoScreenFull } from "react-icons/go";
 import { LuMessageSquare } from "react-icons/lu";
 import { GoDeviceCameraVideo } from "react-icons/go";
-import { FcNoVideo } from "react-icons/fc";
 import { LiaVideoSlashSolid } from "react-icons/lia";
 
 const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaStream | null, remoteStream: MediaStream | null, endCall: () => void }) => {
