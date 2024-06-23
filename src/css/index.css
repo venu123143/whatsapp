@@ -347,7 +347,7 @@ h3 {
 
 /* video call css */
 
-.video-call-container {
+/* .video-call-container {
 	background-color: #1a1a1a;
 	color: #fff;
 	height: 100vh;
@@ -356,13 +356,13 @@ h3 {
 	align-items: center;
 	justify-content: center;
 	padding: 2rem;
-  }
-  
+  } */
+/*   
   .view-type-buttons {
 	margin-bottom: 1rem;
-  }
-  
-  .view-type-button {
+  } */
+
+/* .view-type-button {
 	background-color: #111b21;
 	color: #fff;
 	padding: 0.5rem 1rem;
@@ -370,24 +370,24 @@ h3 {
 	font-size: 0.875rem;
 	font-weight: 500;
 	transition: background-color 0.2s ease-in-out;
-  }
-  
-  .view-type-button:hover {
+}
+
+.view-type-button:hover {
 	background-color: #202c33;
-  }
-  
-  .view-type-button.active {
+}
+
+.view-type-button.active {
 	background-color: #00a884;
-  }
-  
-  .video-grid {
+} */
+
+/* .video-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 1rem;
 	width: 100%;
 	height: 100%;
-  }
- 
+  } */
+/*  
   .video-grid video {
 	width: 100%;
 	height: 100%;
@@ -457,4 +457,4 @@ h3 {
 	background-color: #f0f0f0;
 	border-radius: 0.5rem;
 	box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
-  }
+  } */

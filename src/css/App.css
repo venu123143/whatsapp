@@ -88,7 +88,7 @@ header color- 233138
 }
 
 .fullscreen-modal {
-    @apply  flex flex-col items-center justify-center h-full relative
+    @apply flex flex-col items-center justify-center h-full relative
 }
 
 /* Close button */
@@ -125,4 +125,17 @@ header color- 233138
 }
 
 
+/* video call mode button */
+.view-type-button {
+    @apply bg-gray-900 min-w-[100px] text-white py-2 px-4 rounded-lg text-sm font-medium transition-all ease-in-out duration-200;
+}
 
+.view-type-button:hover {
+    @apply bg-gray-800;
+}
+
+.view-type-button.active {
+    @apply bg-[#00a884]
+}
+
+/* video call mode button end*/

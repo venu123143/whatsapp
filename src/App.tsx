@@ -12,9 +12,7 @@ import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "./Redux/store";
 import createSocket from "./Redux/reducers/utils/socket/SocketConnection";
-// import VideoCall from "./components/video/VideoCall";
-// import sujiBday from "./assets/Suji--B_day Surprise.mp4"
-// import Priests from "./assets/Untitled 48_720p.mp4"
+
 export const CallsContext = createContext<Socket>({} as Socket);
 
 const App = () => {

@@ -5,6 +5,9 @@ import { IoShareOutline } from 'react-icons/io5';
 import { MdOutlineMicOff } from "react-icons/md";
 import { GoScreenFull } from "react-icons/go";
 import { LuMessageSquare } from "react-icons/lu";
+import { GoDeviceCameraVideo } from "react-icons/go";
+import { FcNoVideo } from "react-icons/fc";
+import { LiaVideoSlashSolid } from "react-icons/lia";
 
 const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaStream | null, remoteStream: MediaStream | null, endCall: () => void }) => {
     const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -13,7 +16,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
     const [isVideoMuted, setIsVideoMuted] = useState(false);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [viewType, setViewType] = useState('grid');
- 
+
     // const waveformCanvasRef = useRef(null);
 
     const [isDragging, setIsDragging] = useState(false);
@@ -90,9 +93,6 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
         // Implement screen sharing logic here
     };
 
-    // const endCall = () => {
-    //     // Implement end call logic here
-    // };
     const toggleFullScreen = () => {
         if (remoteVideoRef.current) {
             if (document.fullscreenElement) {
@@ -110,36 +110,38 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
             <div className="absolute top-4 left-[50%] -translate-x-[50%] gap-5 z-10 justify-center items-center flex">
                 <button
                     onClick={() => setViewType('grid')}
-                    className={`view-type-button ${viewType === 'grid' ? 'active' : ''}`}
-                >
+                    className={`view-type-button flex-grow ${viewType === 'grid' ? 'active' : ''}`}>
                     Grid View
                 </button>
                 <button
                     onClick={() => setViewType('popup')}
-                    className={`view-type-button ${viewType === 'popup' ? 'active' : ''}`}
+                    className={`view-type-button min-w-[110px] ${viewType === 'popup' ? 'active' : ''}`}
                 >
                     Popup View
                 </button>
             </div>
 
             {viewType === 'grid' ? (
-                <div className="grid bg-black grid-cols-2 gap-2 w-full h-full ">
-                    <div className='relative overflow-hidden rounded aspect-w-16 aspect-h-9'>
+                <div className="flex flex-col md:grid md:grid-cols-2 md:gap-2 w-full h-full">
+                    <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
                         {remoteStream && (
-                            <video ref={remoteVideoRef}
+                            <video
+                                ref={remoteVideoRef}
                                 controls={false}
-                                className='absolute inset-0 w-full h-full object-cover shadow-gray-400 shadow-lg'
+                                className="absolute inset-0 w-full h-full object-cover shadow-lg"
                                 autoPlay
                             ></video>
                         )}
                     </div>
-                    <div className='relative overflow-hidden rounded aspect-w-16 aspect-h-9'>
+                    <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
                         {localStream && (
-                            <video ref={localVideoRef} muted controls={false} 
-                                className='absolute inset-0 w-full h-full object-cover shadow-lg'
+                            <video
+                                ref={localVideoRef}
+                                muted
+                                controls={false}
+                                className="absolute inset-0 w-full h-full object-cover shadow-lg"
                                 autoPlay
-                            >
-                            </video>
+                            ></video>
                         )}
                     </div>
                 </div>
@@ -150,7 +152,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                             <div className='' >
                                 <video ref={remoteVideoRef}
                                     controls={false} autoPlay
-                                    className="w-full h-full object-cover rounded-lg"
+                                    className="md:h-full h-screen w-full rounded-lg"
                                 ></video>
                             </div>
                         )}
@@ -162,8 +164,8 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                                     ref={localVideoRef}
                                     autoPlay
                                     muted
-                                    controls={false} 
-                                    className="rounded-lg shadow-md absolute bottom-1 right-1 w-[20%] h-auto shadow-slate-300 sm:hover:cursor-pointer hover:shadow-green-500"
+                                    controls={false}
+                                    className="rounded-lg shadow-md absolute bottom-1 right-1 w-[40%] md:w-[20%] h-auto shadow-slate-300 md:hover:cursor-pointer hover:shadow-green-500"
                                     draggable={true}
                                     onDragStart={(e) => handleDragStart(e)}
                                     onDragEnd={handleDragEnd}
@@ -175,7 +177,7 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                 </div>
             )}
             <div onClick={toggleFullScreen} className='absolute right-6  top-5 cursor-pointer shadow-lg '>
-                <GoScreenFull className='text-gray-500 hover:text-white font-[450]' size={30} />
+                <GoScreenFull className='text-black hover:text-white font-[450]' size={30} />
             </div>
             <div className=" absolute bottom-4 left-2 flex space-x-2">
                 <span className="bg-green-500 p-2 rounded-full">
@@ -185,42 +187,25 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                 <span className="bg-gray-700 p-2 rounded-full">
                 </span>
             </div>
-            <div className=" absolute space-x-4 gap-4 bottom-4 left-[50%] -translate-x-[50%] ">
+            <div className="absolute flex flex-row sm:w-auto space-x-4 bottom-4 left-1/2 transform -translate-x-1/2">
                 <button
-                    className={`bg-gray-700 hover:bg-gray-600 hover:shadow-lg rounded-full p-2 ${isVideoMuted ? 'text-green-500' : 'text-green-500'
-                        }`}
+                    className={`icons bg-black text-green-500`}
                     onClick={toggleVideo}
                 >
                     {
                         isVideoMuted ?
-                            <FaVideoSlash size={28} className='font-Rubik font-bold text-lg ' />
+                            <LiaVideoSlashSolid size={28} />
                             :
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-7 w-7"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                                />
-                            </svg>
-
+                            <GoDeviceCameraVideo size={28} />
                     }
-
                 </button>
                 <button
-                    className={`bg-gray-700 cursor-pointer hover:shadow-lg hover:bg-gray-600 rounded-full p-2 ${isAudioMuted ? 'text-green-500' : 'text-green-500'
-                        }`}
+                    className={`icons bg-black text-green-500`}
                     onClick={toggleAudio}
                 >
                     {isAudioMuted ?
                         <MdOutlineMicOff size={28} />
-                        :  
+                        :
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-7 w-7"
@@ -238,23 +223,22 @@ const VideoCall = ({ localStream, remoteStream, endCall }: { localStream: MediaS
                     }
                 </button>
                 <button
-                    className={`bg-gray-700 hover:bg-gray-600 hover:shadow-lg rounded-full p-2 ${isScreenSharing ? 'text-green-500' : ''
-                        }`}
+                    className={`icons bg-black text-green-500`}
                     onClick={toggleScreenShare}>
                     {
                         isScreenSharing ? <FaDesktop className='text-green-500' size={28} />
                             :
                             <IoShareOutline className='text-green-500' size={28} />
-
                     }
                 </button>
-                <button onClick={endCall} className="control-button end-call">
-                    <FaPhoneSlash size={28} />
+                <button onClick={endCall} className=" bg-black icons ">
+                    <FaPhoneSlash size={28} className="text-red-500" />
                 </button>
-                <button className='p-2 bg-gray-700 hover:bg-gray-600 rounded-full'>
-                    <LuMessageSquare size={25} title='chat' className=' text-green-500' />
+                <button className="icons bg-black">
+                    <LuMessageSquare size={25} title='chat' className='text-green-500' />
                 </button>
             </div>
+
         </div >
     );
 };
