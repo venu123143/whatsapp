@@ -3,6 +3,15 @@ export const getStream = async () => {
     return stream
 };
 
+export const stopStream = (stream: MediaStream) => {
+    if (stream) {
+        stream.getTracks().forEach(track => {
+            track.stop();
+            stream.removeTrack(track);
+        });
+    }
+};
+
 export const getAudioContext = () => {
     return new Promise((resolve, reject) => {
         const AudioContext = window.AudioContext;

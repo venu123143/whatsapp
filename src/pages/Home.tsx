@@ -12,7 +12,7 @@ import DefaultComp from '../components/utilities/DefaultComp'
 import ShowFullImg from '../components/utilities/ShowFullImg'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
 import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
-import { getStream } from '../components/video/UseVideoCustom'
+import { getStream, stopStream } from '../components/video/UseVideoCustom'
 import { setIsCalling, setIsLoading } from '../Redux/reducers/Calls/CallsReducer'
 import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
@@ -25,7 +25,10 @@ const pcConfig = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun.l.stundata.com:3478' }
+    { urls: 'stun:stun.l.stundata.com:3478' },
+    { urls: 'stun:openrelay.metered.ca:80' },
+    { urls: 'stun:openrelay.metered.ca:443' },
+    { urls: 'stun:openrelay.metered.ca:5349' },
   ],
   iceCandidatePoolSize: 10
 };
@@ -50,7 +53,6 @@ const Home = () => {
 
   const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
-  console.log("iceCandidate", iceCandidate);
 
   useGetAllMsgs(socket, user as UserState)
   useRecieveMessage(socket, users, lstMsg, setLstMsg, friends, currentUserIndex)
@@ -80,7 +82,6 @@ const Home = () => {
         setIceCandidate(data.candidate)
       });
       callSocket.on('ice-candiate-answer', async (data) => {
-        console.log("ice-candiate-answer", data.candidate);
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
@@ -102,6 +103,7 @@ const Home = () => {
         callSocket.off('ice-candidate-answer');
         callSocket.off('call-offer');
         callSocket.off('call-answer');
+        callSocket.off('stop-call');
       }
     };
   }, [callSocket])
@@ -112,7 +114,7 @@ const Home = () => {
       const stream = await getStream()
       setLocalStream(stream);
       const peerConnection = new RTCPeerConnection(pcConfig);
-      peerConnectionRef.current = peerConnection;  // Set the ref
+      peerConnectionRef.current = peerConnection;
 
       stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
 
@@ -174,7 +176,7 @@ const Home = () => {
     if (peerConnection) {
       await peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
     } else {
-      toast.error("Peer connection is null", { position: "top-left" })
+      toast.error("Peer connection is null 1", { position: "top-left" })
     }
   }, [])
 
@@ -183,22 +185,22 @@ const Home = () => {
     if (peerConnection) {
       peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
     } else {
-      toast.error("Peer connection is null", { position: "top-left" })
+      toast.error("Peer connection is null 2", { position: "top-left" })
     }
   }, [])
 
   const handleEndCall = () => {
     if (localStream) {
-      localStream.getTracks().forEach(track => track.stop());
+      stopStream(localStream as MediaStream)
       setLocalStream(null);
     }
 
     // Stop all tracks in the remote stream
     if (remoteStream) {
+      stopStream(remoteStream as MediaStream)
       remoteStream.getTracks().forEach(track => track.stop());
       setRemoteStream(null);
     }
-
     if (peerConnectionRef.current) {
       peerConnectionRef.current.ontrack = null;
       peerConnectionRef.current.onicecandidate = null;
@@ -215,36 +217,29 @@ const Home = () => {
   useEffect(() => {
     const peerConnection = peerConnectionRef.current;
     if (peerConnection) {
-      peerConnection.oniceconnectionstatechange = (event) => {
-        console.log(event);
+      peerConnection.oniceconnectionstatechange = () => {
+        console.log(peerConnection.iceConnectionState);
         switch (peerConnection.iceConnectionState) {
           case "checking":
             console.log("Connecting...");
-            toast.info('Connecting...', { position: 'top-left' });
-
             break;
           case "connected":
-            console.log("Connection established.");
-            toast.success('Connection established.', { position: 'top-left' });
             clearTimeout(connectionTimeout); // Clear timeout if connected
             break;
           case "failed":
-            console.log("Connection failed, attempting restart...");
             peerConnection.restartIce();
             break;
         }
       };
       peerConnection.onicecandidateerror = (event) => {
-        toast.success(`ICE candidate error:${event}`, { position: 'top-left' });
         console.error('ICE candidate error:', event);
       };
     }
-  }, []);
+  }, [peerConnectionRef.current]);
 
   const connectionTimeout = setTimeout(() => {
     if (peerConnectionRef.current && peerConnectionRef.current.iceConnectionState !== 'connected') {
-      console.error('Connection timeout');
-      callSocket!.emit('stop-call', { to: friends[currentUserIndex].socket_id });
+      callSocket!.emit('stop-call', { to: friends[currentUserIndex]?.socket_id });
       handleEndCall();
       toast.error("Connection timeout. Please try again.", { position: "top-left" });
     }
