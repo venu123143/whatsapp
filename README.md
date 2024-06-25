@@ -79,3 +79,4 @@ To run this project locally, you need to set some environment variables. Create 
 ```bash
 VITE_API_CLIENT_URL=http://localhost:5000/api
 VITE_API_SOCKET_URL=http://localhost:5000
+VITE_API_CALLS_URL=http://localhost:5000/calls
