@@ -10,6 +10,7 @@ You can check the hosted version of this project here [https://whatsapp-chat-imb
 - **Authentication**: User login with OTP for secure access.
 - **Chat Functionalities**: Group chats, individual chats, media sharing (photos, voice recordings), message replies, editing, and deletion.
 - **User Profiles**: Customizable profile pictures, names, and bios.
+- **Video Call**: One to One and Group video call feature is implemented using webrtc.
 - **Real-time Communication**: Enabled by Socket.io.
 - **State Management**: Managed with Redux and Redux Toolkit.
 - **Validation and Forms**: Utilizes Formik and Yup for form handling and validation.
@@ -23,6 +24,7 @@ You can check the hosted version of this project here [https://whatsapp-chat-imb
 - **Backend**: Node.js, Express.js, JWT Tokens
 - **Database**: MongoDB
 - **Real-time Communication**: Socket.io
+- **Video Call**: WebRTc
 - **State Management**: Redux with Redux Toolkit
 
 ## Libraries and Dependencies
