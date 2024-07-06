@@ -11,11 +11,13 @@ import { FaCircleChevronDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
 import { SocketContext } from "../../pages/Home";
+import { CallsContext } from "../../App";
 import useCloseDropDown from "../reuse/CloseDropDown";
 
 const ProfileHeader = () => {
     const dispatch: AppDispatch = useDispatch();
     const socket = useContext(SocketContext)
+    const callsocket = useContext(CallsContext)
 
     const { user } = useSelector((state: RootState) => state.auth)
     const { profileOpen } = useSelector((state: RootState) => state.utils);
@@ -27,6 +29,11 @@ const ProfileHeader = () => {
         if (socket.connected) {
             socket.disconnect()
         }
+        if (callsocket.connected) {
+            callsocket.disconnect();
+            callsocket.close()
+        }
+
     }
     const openProfile = () => {
         dispatch(handleProfileOpen(!profileOpen))

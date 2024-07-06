@@ -69,7 +69,6 @@ const Home = () => {
   }, [user, createGrp])
 
   useEffect(() => {
-    console.log(callSocket.connected);
     if (callSocket.connected) {
       callSocket.on('ice-candiate-offer', async (data) => {
         setIceCandidate(data.candidate)
@@ -99,7 +98,6 @@ const Home = () => {
       }
     };
   }, [callSocket])
-
   const handleSendOffer = useCallback(async () => {
     try {
       dispatch(setIsLoading(true))
