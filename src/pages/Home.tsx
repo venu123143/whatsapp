@@ -18,27 +18,18 @@ import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
 import { RingLoader } from 'react-spinners'
-
+import { pcConfig } from "../static/Static"
 export const SocketContext = createContext<Socket>({} as Socket);
 
-const pcConfig = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun.l.stundata.com:3478' },
-    { urls: 'stun:openrelay.metered.ca:80' },
-    { urls: 'stun:openrelay.metered.ca:443' },
-    { urls: 'stun:openrelay.metered.ca:5349' },
-  ],
-  iceCandidatePoolSize: 10
-};
+
+
 const cssOverride: CSSProperties = {
 }
 
 const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
-
+  const [callStarted, setCallStarted] = useState(false);
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
   const callSocket = useContext(CallsContext)
@@ -47,6 +38,8 @@ const Home = () => {
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
   const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+
+  const connectionTimeout = useRef<any>();
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
@@ -89,7 +82,6 @@ const Home = () => {
         setOffer(data.offer)
       });
       callSocket.on('stop-call', async (data) => {
-        console.log(data, "stop call");
         dispatch(setStartCall({ userId: data.from, call: false }))
         setOffer(null)
       });
@@ -98,7 +90,7 @@ const Home = () => {
       });
     }
     return () => {
-      if (socket.connected) {
+      if (callSocket.connected) {
         callSocket.off('ice-candidate-offer');
         callSocket.off('ice-candidate-answer');
         callSocket.off('call-offer');
@@ -111,29 +103,32 @@ const Home = () => {
   const handleSendOffer = useCallback(async () => {
     try {
       dispatch(setIsLoading(true))
+      setCallStarted(true);
+
       const stream = await getStream()
       setLocalStream(stream);
       const peerConnection = new RTCPeerConnection(pcConfig);
       peerConnectionRef.current = peerConnection;
 
-      stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
+      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
 
       peerConnection.ontrack = (event) => {
         setRemoteStream(event.streams[0]);
       }
       peerConnection.onicecandidate = (event) => {
         if (event.candidate) {
-          callSocket!.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+          callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
         }
       };
       // Create Offer
       const offer = await peerConnection.createOffer();
-      await peerConnectionRef?.current?.setLocalDescription(offer);
-      callSocket!.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
+      await peerConnection.setLocalDescription(offer);
+      callSocket.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
 
       dispatch(setIsCalling(true))
 
     } catch (error: any) {
+      setCallStarted(false);
       dispatch(setIsLoading(false))
       toast.error(error.message, { position: "top-left" })
     }
@@ -141,6 +136,7 @@ const Home = () => {
 
   const handleOffer = useCallback(async () => {
     try {
+      setCallStarted(true);
       dispatch(setIsLoading(true))
       const peerConnection = new RTCPeerConnection(pcConfig);
       peerConnectionRef.current = peerConnection;
@@ -166,6 +162,7 @@ const Home = () => {
       dispatch(setStartCall({ userId: friends[currentUserIndex]._id, call: false }))
 
     } catch (error: any) {
+      setCallStarted(false);
       dispatch(setIsLoading(false))
       toast.error(`⬆️ ${error.message}`, { position: "top-left" })
     }
@@ -183,7 +180,11 @@ const Home = () => {
   const handleICECandidate = useCallback((candidate: RTCIceCandidate) => {
     const peerConnection = peerConnectionRef.current
     if (peerConnection) {
-      peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+      peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).then(() => {
+        console.log('ICE candidate added successfully')
+      }).catch((error) => {
+        console.error('Error adding ICE candidate:', error)
+      })
     } else {
       toast.error("Peer connection is null 2", { position: "top-left" })
     }
@@ -198,7 +199,6 @@ const Home = () => {
     // Stop all tracks in the remote stream
     if (remoteStream) {
       stopStream(remoteStream as MediaStream)
-      remoteStream.getTracks().forEach(track => track.stop());
       setRemoteStream(null);
     }
     if (peerConnectionRef.current) {
@@ -218,13 +218,13 @@ const Home = () => {
     const peerConnection = peerConnectionRef.current;
     if (peerConnection) {
       peerConnection.oniceconnectionstatechange = () => {
-        console.log(peerConnection.iceConnectionState);
         switch (peerConnection.iceConnectionState) {
           case "checking":
             console.log("Connecting...");
             break;
           case "connected":
-            clearTimeout(connectionTimeout); // Clear timeout if connected
+            setCallStarted(false);
+            clearTimeout(connectionTimeout.current); // Clear timeout if connected
             break;
           case "failed":
             peerConnection.restartIce();
@@ -237,14 +237,24 @@ const Home = () => {
     }
   }, [peerConnectionRef.current]);
 
-  const connectionTimeout = setTimeout(() => {
-    if (peerConnectionRef.current && peerConnectionRef.current.iceConnectionState !== 'connected') {
-      callSocket!.emit('stop-call', { to: friends[currentUserIndex]?.socket_id });
-      handleEndCall();
-      toast.error("Connection timeout. Please try again.", { position: "top-left" });
-    }
-  }, 30000);
 
+  useEffect(() => {
+    if (callStarted) {
+      connectionTimeout.current = setTimeout(() => {
+        if (peerConnectionRef.current?.iceConnectionState !== 'connected') {
+          handleEndCall();
+          callSocket.emit('stop-call', { to: friends[currentUserIndex]?.socket_id });
+          toast.error("Connection timeout. Please try again.", { position: "top-left" });
+        }
+      }, 30000);
+    }
+
+    return () => {
+      if (connectionTimeout.current) {
+        clearTimeout(connectionTimeout.current);
+      }
+    };
+  }, [callStarted]);
   const rejectCall = () => {
     setOffer(null);
     setIceCandidate(null);
