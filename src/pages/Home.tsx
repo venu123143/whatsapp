@@ -126,6 +126,13 @@ const Home = () => {
       dispatch(setIsCalling(true))
 
     } catch (error: any) {
+      if (localStream) {
+        stopStream(localStream as MediaStream)
+        setLocalStream(null);
+      }
+      if (peerConnectionRef.current) {
+        peerConnectionRef?.current?.close()
+      }
       setCallStarted(false);
       dispatch(setIsLoading(false))
       toast.error(error.message, { position: "top-left" })
@@ -147,7 +154,7 @@ const Home = () => {
         setRemoteStream(event.streams[0])
       };
       await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
-      peerConnection!.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
+      peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
 
       // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       const stream = await getStream()
@@ -155,11 +162,18 @@ const Home = () => {
       stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
       const answer = await peerConnection.createAnswer();
       await peerConnectionRef.current?.setLocalDescription(answer);
-      callSocket!.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
+      callSocket.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
       dispatch(setIsCalling(true))
       dispatch(setStartCall({ userId: friends[currentUserIndex]._id, call: false }))
 
     } catch (error: any) {
+      if (localStream) {
+        stopStream(localStream as MediaStream)
+        setLocalStream(null);
+      }
+      if (peerConnectionRef.current) {
+        peerConnectionRef?.current?.close()
+      }
       setCallStarted(false);
       dispatch(setIsLoading(false))
       toast.error(`⬆️ ${error.message}`, { position: "top-left" })
@@ -171,7 +185,9 @@ const Home = () => {
     if (peerConnection) {
       await peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
     } else {
-      toast.error("Peer connection is null 1", { position: "top-left" })
+      console.log('peer connection itself null.');
+
+      // toast.error("Peer connection is null 1", { position: "top-left" })
     }
   }, [])
 
@@ -184,7 +200,8 @@ const Home = () => {
         console.error('Error adding ICE candidate:', error)
       })
     } else {
-      toast.error("Peer connection is null 2", { position: "top-left" })
+      // toast.error("Peer connection is null 2", { position: "top-left" })
+      console.log('peer connection itself null.');
     }
   }, [])
 

@@ -86,7 +86,7 @@ const Users = () => {
                   < UserSkeliton key={index} />
                 ))}
               </div>
-              : friends.length !== 0 ? <>
+              : friends.length === 0 ? <>
                 <div className=' flex justify-center items-center h-screen'>
                   <button onClick={() => dispatch(toggleContacts(true))} className='text-black font-Rubik shadow-white shadow-sm hover:scale-105  px-3 py-2 border rounded-sm bg-[#02a698] before:w-0  transition-all'>add contact</button>
                 </div>
