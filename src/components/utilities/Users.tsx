@@ -13,6 +13,7 @@ import { CommonProperties, handleSetStatus, setCurrentGrpOrUser } from '../../Re
 import { SocketContext } from "../../pages/Home"
 // import { ClipLoader } from 'react-spinners'
 import UserSkeliton from '../reuse/UserSkeliton'
+import { toggleContacts } from "../..//Redux/reducers/utils/Features";
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
@@ -80,26 +81,22 @@ const Users = () => {
         <div className={`${isLoading === true ? "mx-auto overflow-hidden no-scrollbar" : ""} overflow-y-auto custom-scrollbar`}>
           {
             users.length === 0 ?
-              // <ClipLoader
-              //   color="#36d7b7"
-              //   loading={isLoading}
-              //   aria-label="Loading Spinner"
-              //   speedMultiplier={.71}
-              //   data-testid="loader"
-              //   className=''
-              // />
               <div className=''>
                 {skeliton.map((_, index: number) => (
                   < UserSkeliton key={index} />
                 ))}
               </div>
-              :
-              friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
-                let call = each._id === startCall.userId && startCall.call === true
-                return (
-                  <UserCard key={index} startCall={call} value={each} handleOnClick={() => handleOnClick(each)} />
-                )
-              })}
+              : friends.length !== 0 ? <>
+                <div className=' flex justify-center items-center h-screen'>
+                  <button onClick={() => dispatch(toggleContacts(true))} className='text-black font-Rubik shadow-white shadow-sm hover:scale-105  px-3 py-2 border rounded-sm bg-[#02a698] before:w-0  transition-all'>add contact</button>
+                </div>
+              </> :
+                friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
+                  let call = each._id === startCall.userId && startCall.call === true
+                  return (
+                    <UserCard key={index} startCall={call} value={each} handleOnClick={() => handleOnClick(each)} />
+                  )
+                })}
         </div>
       </header>
 
