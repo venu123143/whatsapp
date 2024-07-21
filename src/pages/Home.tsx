@@ -174,7 +174,8 @@ const Home = () => {
       callSocket.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
       dispatch(setIsCalling(true))
       dispatch(setStartCall({ userId: friends[currentUserIndex]._id, call: false }))
-
+      incomingCallSound.current.pause();
+      incomingCallSound.current.currentTime = 0;
     } catch (error: any) {
       if (localStream) {
         stopStream(localStream as MediaStream)
@@ -183,6 +184,8 @@ const Home = () => {
       if (peerConnectionRef.current) {
         peerConnectionRef?.current?.close()
       }
+      incomingCallSound.current.pause();
+      incomingCallSound.current.currentTime = 0;
       setCallStarted(false);
       dispatch(setIsLoading(false))
       toast.error(`⬆️ ${error.message}`, { position: "top-left" })
