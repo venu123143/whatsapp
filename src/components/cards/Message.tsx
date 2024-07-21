@@ -10,7 +10,7 @@ import { FaCircleChevronDown } from "react-icons/fa6";
 import { ChatMessage, handleEditMsg, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
-const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {
+const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {    
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
     const [optionPosition, setOptionPosition] = useState('')
@@ -33,7 +33,7 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return message.message.split(urlRegex).map((part, index) => {
             if (part.match(urlRegex)) {
-                return <a key={index} href={part} target="_blank" className="text-[#53bded] hover:text-[#111b21] focus:text-[#0056b3] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
+                return <a key={index} href={part} target="_blank" className="text-[#0000EE] hover:text-[#2e3336] focus:text-[#551A8B] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
             } else {
                 return <span key={index}>{part}</span>;
             }

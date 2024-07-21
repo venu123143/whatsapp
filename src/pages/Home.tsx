@@ -305,7 +305,7 @@ const Home = () => {
                   <Users />
                 </section>
                 <section className={`md:col-span-7 md:static absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
-                  {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
+                  {currentUserIndex === null ? <DefaultComp /> : <Chat shouldFocus={true} rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
                 </section>
                 <div>
                   <ShowFullImg />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ChatHeader from './ChatHeader'
 import MessageBar from './MessageBar'
 import ChatPage from './ChatPage'
@@ -10,7 +10,7 @@ import ContactInfo from '../../pages/ContactInfo';
 import MsgRecoder from './MsgRecoder';
 
 
-const Chat = ({ handleSendOffer, handleOffer, rejectCall }: { handleSendOffer: () => void, handleOffer: () => void, rejectCall: () => void }) => {
+const Chat = ({ handleSendOffer, handleOffer, rejectCall, shouldFocus }: { handleSendOffer: () => void, handleOffer: () => void, rejectCall: () => void, shouldFocus: boolean }) => {
   const chatPageRef = useRef<HTMLDivElement | null>(null);
   const { friends, currentUserIndex, editMessage } = useSelector((state: RootState) => state.msg);
   const { isRecord } = useSelector((state: RootState) => state.features);
@@ -53,7 +53,7 @@ const Chat = ({ handleSendOffer, handleOffer, rejectCall }: { handleSendOffer: (
           <ChatPage rejectCall={rejectCall} handleOffer={handleOffer} scrollToMessage={scrollToMessage} />
         </div>
         {
-          isRecord === true ? <MsgRecoder /> : <MessageBar />
+          isRecord === false ? <MessageBar shouldFocus={shouldFocus} /> : <MsgRecoder />
         }
 
         <EditMsg message={editMessage} />
