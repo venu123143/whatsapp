@@ -14,7 +14,7 @@ import { handleSendMessage, ChatMessage, handleSetReply } from "../../Redux/redu
 import { SocketContext } from "../../pages/Home"
 import useCloseDropDown from "../reuse/CloseDropDown";
 import { toggleisRecord } from "../../Redux/reducers/utils/Features";
-const MessageBar = ({ shouldFocus }: { shouldFocus: boolean }) => {
+const MessageBar = () => {
   const dispatch: AppDispatch = useDispatch();
   const socket = useContext(SocketContext);
   const [showEmoji, setShowEmoji] = useCloseDropDown(false, '.emoji-picker-container');
@@ -83,7 +83,7 @@ const MessageBar = ({ shouldFocus }: { shouldFocus: boolean }) => {
           </div>
         )
       }
-      <form autoFocus={shouldFocus} className="w-full" onSubmit={onSubmit}>
+      <form autoFocus={true} className="w-full" onSubmit={onSubmit}>
         <div className="bg-[#202c33] text-white px-2   flex items-center gap-2 sm:gap-6 ">
           <>
             <div className="flex">
@@ -100,7 +100,7 @@ const MessageBar = ({ shouldFocus }: { shouldFocus: boolean }) => {
               </div>
             </div>
             <div className=" w-full rounded-lg py-2 flex items-center">
-              <input autoFocus={shouldFocus} type="text" placeholder="Type a message"
+              <input  type="text" placeholder="Type a message"
                 className="bg-[#111b21] text-white w-full font-sans focus:outline-none h-10 px-5 py-4 rounded-lg"
                 onChange={handleSendMsgFunction} value={message} />
             </div>
