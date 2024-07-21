@@ -12,17 +12,16 @@ import DefaultComp from '../components/utilities/DefaultComp'
 import ShowFullImg from '../components/utilities/ShowFullImg'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
 import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
-import { getStream, stopStream } from '../components/video/UseVideoCustom'
-import { setIsCalling, setIsLoading } from '../Redux/reducers/Calls/CallsReducer'
+import { stopStream } from '../components/video/UseVideoCustom'
+import { setIsCalling } from '../Redux/reducers/Calls/CallsReducer'
 import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
 import { RingLoader } from 'react-spinners'
-import { pcConfig } from "../static/Static"
 import IncommingCall from "../static/incomming_call.wav"
+import useVideo from "../components/video/UseVideo"
+
 export const SocketContext = createContext<Socket>({} as Socket);
-
-
 
 const cssOverride: CSSProperties = {
 }
@@ -42,7 +41,6 @@ const Home = () => {
   const incomingCallSound = useRef(new Audio(IncommingCall));
 
   const connectionTimeout = useRef<any>();
-
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
@@ -51,6 +49,13 @@ const Home = () => {
 
   useGetAllMsgs(socket, user as UserState)
   useRecieveMessage(socket, users, lstMsg, setLstMsg, friends, currentUserIndex)
+  useEffect(() => {
+    if (user === null) {
+      navigate('/login')
+    } else {
+      dispatch(getAllGroups())
+    }
+  }, [user, createGrp])
 
   useEffect(() => {
     const initializeSocket = async () => {
@@ -62,13 +67,12 @@ const Home = () => {
     initializeSocket();
   }, [user]);
 
-  useEffect(() => {
-    if (user === null) {
-      navigate('/login')
-    } else {
-      dispatch(getAllGroups())
-    }
-  }, [user, createGrp])
+  const { handleSendOffer, handleOffer } = useVideo({
+    callSocket, friends, incomingCallSound,
+    currentUserIndex, setCallStarted, offer, iceCandidate,
+    localStream, setLocalStream, setRemoteStream, peerConnectionRef
+  })
+
 
   useEffect(() => {
     if (callSocket.connected) {
@@ -107,90 +111,7 @@ const Home = () => {
       }
     };
   }, [callSocket])
-  const handleSendOffer = useCallback(async () => {
-    try {
-      dispatch(setIsLoading(true))
-      setCallStarted(true);
 
-      const stream = await getStream()
-      setLocalStream(stream);
-      const peerConnection = new RTCPeerConnection(pcConfig);
-      peerConnectionRef.current = peerConnection;
-
-      stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-
-      peerConnection.ontrack = (event) => {
-        setRemoteStream(event.streams[0]);
-      }
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
-        }
-      };
-      // Create Offer
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      callSocket.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
-
-      dispatch(setIsCalling(true))
-
-    } catch (error: any) {
-      if (localStream) {
-        stopStream(localStream as MediaStream)
-        setLocalStream(null);
-      }
-      if (peerConnectionRef.current) {
-        peerConnectionRef?.current?.close()
-      }
-      setCallStarted(false);
-      dispatch(setIsLoading(false))
-      toast.error(error.message, { position: "top-left" })
-    }
-  }, [callSocket, friends, currentUserIndex, dispatch])
-
-  const handleOffer = useCallback(async () => {
-    try {
-      setCallStarted(true);
-      dispatch(setIsLoading(true))
-      const peerConnection = new RTCPeerConnection(pcConfig);
-      peerConnectionRef.current = peerConnection;
-      peerConnection.onicecandidate = (event) => {
-        if (event.candidate) {
-          callSocket.emit('ice-candidate-answer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
-        }
-      };
-      peerConnection.ontrack = (event) => {
-        setRemoteStream(event.streams[0])
-      };
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
-      peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
-
-      // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      const stream = await getStream()
-      setLocalStream(stream);
-      stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
-      const answer = await peerConnection.createAnswer();
-      await peerConnectionRef.current?.setLocalDescription(answer);
-      callSocket.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
-      dispatch(setIsCalling(true))
-      dispatch(setStartCall({ userId: friends[currentUserIndex]._id, call: false }))
-      incomingCallSound.current.pause();
-      incomingCallSound.current.currentTime = 0;
-    } catch (error: any) {
-      if (localStream) {
-        stopStream(localStream as MediaStream)
-        setLocalStream(null);
-      }
-      if (peerConnectionRef.current) {
-        peerConnectionRef?.current?.close()
-      }
-      incomingCallSound.current.pause();
-      incomingCallSound.current.currentTime = 0;
-      setCallStarted(false);
-      dispatch(setIsLoading(false))
-      toast.error(`⬆️ ${error.message}`, { position: "top-left" })
-    }
-  }, [callSocket, friends, currentUserIndex, offer, iceCandidate, dispatch])
 
   const handleAnswer = useCallback(async (answer: RTCSessionDescriptionInit) => {
     const peerConnection = peerConnectionRef.current
