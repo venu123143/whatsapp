@@ -1,5 +1,5 @@
 
-import { useEffect, createContext, useContext, useState, useRef, useCallback, CSSProperties } from 'react'
+import { useEffect, createContext, useContext, useState, useRef, CSSProperties } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -12,8 +12,6 @@ import DefaultComp from '../components/utilities/DefaultComp'
 import ShowFullImg from '../components/utilities/ShowFullImg'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
 import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
-import { stopStream } from '../components/video/UseVideoCustom'
-import { setIsCalling } from '../Redux/reducers/Calls/CallsReducer'
 import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
@@ -39,8 +37,6 @@ const Home = () => {
   const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const incomingCallSound = useRef(new Audio(IncommingCall));
-
-
 
   const connectionTimeout = useRef<any>();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
@@ -74,7 +70,6 @@ const Home = () => {
     currentUserIndex, setCallStarted, offer, iceCandidate, remoteStream,
     localStream, setLocalStream, setRemoteStream, peerConnectionRef
   })
-
 
   useEffect(() => {
     if (callSocket.connected) {
@@ -113,11 +108,6 @@ const Home = () => {
       }
     };
   }, [callSocket])
-
-
-
-
-
   useEffect(() => {
     const peerConnection = peerConnectionRef.current;
     if (peerConnection) {
