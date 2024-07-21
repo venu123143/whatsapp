@@ -19,6 +19,7 @@ import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
 import { RingLoader } from 'react-spinners'
 import { pcConfig } from "../static/Static"
+import IncommingCall from "../static/incomming_call.wav"
 export const SocketContext = createContext<Socket>({} as Socket);
 
 
@@ -38,6 +39,7 @@ const Home = () => {
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
   const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const incomingCallSound = useRef(new Audio(IncommingCall));
 
   const connectionTimeout = useRef<any>();
 
@@ -79,12 +81,19 @@ const Home = () => {
       callSocket.on('call-offer', async (data) => {
         dispatch(setStartCall({ userId: data.from, call: true }))
         setOffer(data.offer)
+        // Play the incoming call sound
+        incomingCallSound.current.loop = true;
+        incomingCallSound.current.play();
       });
       callSocket.on('stop-call', async (data) => {
         dispatch(setStartCall({ userId: data.from, call: false }))
+        incomingCallSound.current.pause();
+        incomingCallSound.current.currentTime = 0;
         setOffer(null)
       });
       callSocket.on('call-answer', async (data) => {
+        incomingCallSound.current.pause();
+        incomingCallSound.current.currentTime = 0;
         await handleAnswer(data.answer)
       });
     }
@@ -274,6 +283,8 @@ const Home = () => {
     setOffer(null);
     setIceCandidate(null);
     dispatch(setStartCall({ userId: null, call: false }))
+    incomingCallSound.current.pause();
+    incomingCallSound.current.currentTime = 0;
   }
 
   return (
