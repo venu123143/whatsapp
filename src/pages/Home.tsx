@@ -40,6 +40,8 @@ const Home = () => {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const incomingCallSound = useRef(new Audio(IncommingCall));
 
+
+
   const connectionTimeout = useRef<any>();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
@@ -66,10 +68,10 @@ const Home = () => {
     };
     initializeSocket();
   }, [user]);
-
-  const { handleSendOffer, handleOffer } = useVideo({
-    callSocket, friends, incomingCallSound,
-    currentUserIndex, setCallStarted, offer, iceCandidate,
+    
+  const { handleSendOffer, handleOffer, handleICECandidate, handleAnswer, handleEndCall } = useVideo({
+    callSocket, friends, incomingCallSound, setIceCandidate, setOffer,
+    currentUserIndex, setCallStarted, offer, iceCandidate, remoteStream,
     localStream, setLocalStream, setRemoteStream, peerConnectionRef
   })
 
@@ -113,54 +115,8 @@ const Home = () => {
   }, [callSocket])
 
 
-  const handleAnswer = useCallback(async (answer: RTCSessionDescriptionInit) => {
-    const peerConnection = peerConnectionRef.current
-    if (peerConnection) {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer))
-    } else {
-      console.log('peer connection itself null.');
 
-      // toast.error("Peer connection is null 1", { position: "top-left" })
-    }
-  }, [])
 
-  const handleICECandidate = useCallback((candidate: RTCIceCandidate) => {
-    const peerConnection = peerConnectionRef.current
-    if (peerConnection) {
-      peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).then(() => {
-        console.log('ICE candidate added successfully')
-      }).catch((error) => {
-        console.error('Error adding ICE candidate:', error)
-      })
-    } else {
-      // toast.error("Peer connection is null 2", { position: "top-left" })
-      console.log('peer connection itself null.');
-    }
-  }, [])
-
-  const handleEndCall = () => {
-    if (localStream) {
-      stopStream(localStream as MediaStream)
-      setLocalStream(null);
-    }
-
-    // Stop all tracks in the remote stream
-    if (remoteStream) {
-      stopStream(remoteStream as MediaStream)
-      setRemoteStream(null);
-    }
-    if (peerConnectionRef.current) {
-      peerConnectionRef.current.ontrack = null;
-      peerConnectionRef.current.onicecandidate = null;
-      peerConnectionRef.current.oniceconnectionstatechange = null;
-      peerConnectionRef.current.onicecandidateerror = null;
-      peerConnectionRef.current.close();
-      peerConnectionRef.current = null;
-    }
-    setOffer(null);
-    setIceCandidate(null);
-    dispatch(setIsCalling(false));
-  }
 
   useEffect(() => {
     const peerConnection = peerConnectionRef.current;
