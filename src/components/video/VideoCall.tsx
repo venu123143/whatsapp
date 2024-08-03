@@ -109,10 +109,10 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
             {viewType === 'grid' ? (
                 <div className="flex flex-col md:grid md:grid-cols-2 md:gap-2 w-full h-full">
                     <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
-                        {renderVideoOrPlaceholder(localStream, false, false)}
+                        {renderVideoOrPlaceholder(remoteStream, false, false)}
                     </div>
                     <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
-                        {renderVideoOrPlaceholder(remoteStream, true, true)}
+                        {renderVideoOrPlaceholder(localStream, true, true)}
                     </div>
                 </div>
             ) : (
