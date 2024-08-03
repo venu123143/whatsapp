@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import Draggable from 'react-draggable';
 
@@ -109,10 +109,10 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
             {viewType === 'grid' ? (
                 <div className="flex flex-col md:grid md:grid-cols-2 md:gap-2 w-full h-full">
                     <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
-                        {renderVideoOrPlaceholder(remoteStream, false, false)}
+                        {renderVideoOrPlaceholder(localStream, false, false)}
                     </div>
                     <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
-                        {renderVideoOrPlaceholder(localStream, true, true)}
+                        {renderVideoOrPlaceholder(remoteStream, true, true)}
                     </div>
                 </div>
             ) : (
