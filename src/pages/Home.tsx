@@ -18,7 +18,7 @@ import VideoCall from '../components/video/VideoCall'
 import { RingLoader } from 'react-spinners'
 import IncommingCall from "../static/incomming_call.wav"
 import useVideo from "../components/video/UseVideo"
-
+import { Message } from "../components/interfaces/CallInterface"
 export const SocketContext = createContext<Socket>({} as Socket);
 
 const cssOverride: CSSProperties = {
@@ -41,6 +41,8 @@ const Home = () => {
   const connectionTimeout = useRef<any>();
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+  const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null)
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
@@ -64,11 +66,25 @@ const Home = () => {
     };
     initializeSocket();
   }, [user]);
-    
+
+  const handleDataChannelOpen = () => {
+    console.log('Data channel is open');
+  };
+
+  const handleDataChannelMessage = (event: MessageEvent) => {
+    const message = event.data;
+    console.log('Received message:', event.data);
+    setMessages(prev => [...prev, { sender: 'remote', content: message }]);
+  };
+
+  const handleDataChannelClose = () => {
+    toast.error('Data channel is closed', { position: 'top-left' })
+  };
+
   const { handleSendOffer, handleOffer, handleICECandidate, handleAnswer, handleEndCall } = useVideo({
-    callSocket, friends, incomingCallSound, setIceCandidate, setOffer,
-    currentUserIndex, setCallStarted, offer, iceCandidate, remoteStream,
-    localStream, setLocalStream, setRemoteStream, peerConnectionRef
+    callSocket, friends, incomingCallSound, setIceCandidate, setOffer, handleDataChannelMessage,
+    currentUserIndex, setCallStarted, offer, iceCandidate, remoteStream, handleDataChannelOpen,
+    localStream, setLocalStream, setRemoteStream, peerConnectionRef, setDataChannel, handleDataChannelClose
   })
 
   useEffect(() => {
@@ -108,6 +124,10 @@ const Home = () => {
       }
     };
   }, [callSocket])
+
+
+  // In your peer connection setup (e.g., in handleSendOffer or handleOffer)
+
   useEffect(() => {
     const peerConnection = peerConnectionRef.current;
     if (peerConnection) {
@@ -126,12 +146,20 @@ const Home = () => {
         }
       };
       peerConnection.onicecandidateerror = (event) => {
-        console.error('ICE candidate error:', event);
+        console.error('ICE candidate error:',  event);
       };
     }
   }, [peerConnectionRef.current]);
 
-
+  const sendMessage = (message: string) => {
+    if (dataChannel && dataChannel.readyState === "open") {
+      dataChannel.send(message);
+      setMessages(prev => [...prev, { sender: 'local', content: message }]);
+      // Update your UI to display the sent message
+    } else {
+      toast.error('Data channel is not open', { position: 'top-left' })
+    }
+  };
   useEffect(() => {
     if (callStarted) {
       connectionTimeout.current = setTimeout(() => {
@@ -163,7 +191,8 @@ const Home = () => {
         {
           isCalling ?
             <>
-              <VideoCall endCall={handleEndCall} localStream={localStream as MediaStream} remoteStream={remoteStream as MediaStream} />
+              <VideoCall sendMessage={sendMessage} messages={messages}
+                endCall={handleEndCall} localStream={localStream as MediaStream} remoteStream={remoteStream as MediaStream} />
             </>
             :
             (

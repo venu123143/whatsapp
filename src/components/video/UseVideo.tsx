@@ -23,11 +23,16 @@ interface UseVideoParams {
     remoteStream: MediaStream | null;
     setOffer: React.Dispatch<SetStateAction<RTCSessionDescriptionInit | null>>;
     setIceCandidate: React.Dispatch<SetStateAction<RTCIceCandidate | null>>;
-    peerConnectionRef: React.MutableRefObject<RTCPeerConnection | null>
+    peerConnectionRef: React.MutableRefObject<RTCPeerConnection | null>;
+    setDataChannel: React.Dispatch<React.SetStateAction<RTCDataChannel | null>>
+    handleDataChannelMessage: (event: MessageEvent) => void
+    handleDataChannelOpen: () => void
+    handleDataChannelClose: () => void
+    // (event: MessageEvent) => void
 }
 
-const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incomingCallSound, remoteStream, setIceCandidate,
-    offer, setOffer, iceCandidate, setLocalStream, localStream, setRemoteStream, peerConnectionRef }: UseVideoParams) => {
+const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incomingCallSound, remoteStream, setIceCandidate, handleDataChannelClose, setDataChannel,
+    offer, setOffer, iceCandidate, setLocalStream, localStream, setRemoteStream, peerConnectionRef, handleDataChannelMessage, handleDataChannelOpen, }: UseVideoParams) => {
     const dispatch: AppDispatch = useDispatch()
     const handleSendOffer = useCallback(async () => {
         try {
@@ -49,6 +54,12 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
                     callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
                 }
             };
+            const dataChannel = peerConnection.createDataChannel("chat");
+            dataChannel.onopen = handleDataChannelOpen;
+            dataChannel.onmessage = handleDataChannelMessage;
+            dataChannel.onclose = handleDataChannelClose;
+
+            setDataChannel(dataChannel);
             // Create Offer
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
@@ -83,6 +94,15 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
             };
             peerConnection.ontrack = (event) => {
                 setRemoteStream(event.streams[0])
+            };
+
+            peerConnection.ondatachannel = (event) => {
+                const dataChannel = event.channel;
+                dataChannel.onopen = handleDataChannelOpen;
+                dataChannel.onmessage = handleDataChannelMessage;
+                dataChannel.onclose = handleDataChannelClose;
+
+                setDataChannel(dataChannel); // Store the data channel
             };
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
             peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));

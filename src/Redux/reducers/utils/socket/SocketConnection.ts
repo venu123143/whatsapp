@@ -22,6 +22,12 @@ const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
             console.error(`Connection error after ${duration.toFixed(2)} ms:`, error);
             reject(error);
         });
+        socket.on('disconnect', (reason) => {
+            console.warn(`Socket disconnected: ${reason}`);
+        });
+        socket.on('close', (reason) => {
+            console.warn(`Socket closed: ${reason}`);
+        });
         socket.connect();
     });
 };

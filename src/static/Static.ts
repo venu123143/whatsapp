@@ -34,6 +34,86 @@ export const backgroundImages = ["https://bsmedia.business-standard.com/_media/b
   "https://images.unsplash.com/photo-1636751364472-12bfad09b451?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 ]
 
+export const Dummy = [
+  {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "local",
+    content: "message 2 dofh suio hfous fius yfiusf"
+  }, {
+    sender: "remote",
+    content: "message 3"
+  }, {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "remote",
+    content: "message 2 sfsuyf uiwf ouwey f98wey f98wefouweoufhsdoufh9uwyf9we y9898w 9s8f 9usf9u s9uf ha"
+  }, {
+    sender: "remote",
+    content: "message 3 sf oiuosf iweouwe 9ywe9u mwpeoum9ywn9yn9rn3q-987c98nq9enc9nr09wn9rw9ncr9ncn    9w r9nw9rn9w7nry97wynr7"
+  },
+  {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "local",
+    content: "message 2 dofh suio hfous fius yfiusf"
+  }, {
+    sender: "remote",
+    content: "message 3"
+  }, {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "remote",
+    content: "message 2 sfsuyf uiwf ouwey f98wey f98wefouweoufhsdoufh9uwyf9we y9898w 9s8f 9usf9u s9uf ha"
+  }, {
+    sender: "remote",
+    content: "message 3 sf oiuosf iweouwe 9ywe9u mwpeoum9ywn9yn9rn3q-987c98nq9enc9nr09wn9rw9ncr9ncn    9w r9nw9rn9w7nry97wynr7"
+  },
+  {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "local",
+    content: "message 2 dofh suio hfous fius yfiusf"
+  }, {
+    sender: "remote",
+    content: "message 3"
+  }, {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "remote",
+    content: "message 2 sfsuyf uiwf ouwey f98wey f98wefouweoufhsdoufh9uwyf9we y9898w 9s8f 9usf9u s9uf ha"
+  }, {
+    sender: "remote",
+    content: "message 3 sf oiuosf iweouwe 9ywe9u mwpeoum9ywn9yn9rn3q-987c98nq9enc9nr09wn9rw9ncr9ncn    9w r9nw9rn9w7nry97wynr7"
+  },
+  {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "local",
+    content: "message 2 dofh suio hfous fius yfiusf"
+  }, {
+    sender: "remote",
+    content: "message 3"
+  }, {
+    sender: "local",
+    content: "message 1"
+  }, {
+    sender: "remote",
+    content: "message 2 sfsuyf uiwf ouwey f98wey f98wefouweoufhsdoufh9uwyf9we y9898w 9s8f 9usf9u s9uf ha"
+  }, {
+    sender: "remote",
+    content: "message 3 sf oiuosf iweouwe 9ywe9u mwpeoum9ywn9yn9rn3q-987c98nq9enc9nr09wn9rw9ncr9ncn    9w r9nw9rn9w7nry97wynr7"
+  },
+
+]
+
 const additionalStuns = [{ urls: 'stun:s1.taraba.net:3478' }, { urls: 'stun:numb.viagenie.ca:3478' },
 
 { urls: 'stun:s2.taraba.net:3478' },

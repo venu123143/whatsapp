@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import Draggable from 'react-draggable';
 
@@ -11,23 +11,52 @@ import { LuMessageSquare } from "react-icons/lu";
 import { GoDeviceCameraVideo } from "react-icons/go";
 import { LiaVideoSlashSolid } from "react-icons/lia";
 import { PiUserLight } from 'react-icons/pi';
+import CallChat from './CallChat';
+import { Message } from '../interfaces/CallInterface';
 
 interface VideoCallProps {
     localStream: MediaStream | null;
     remoteStream: MediaStream | null;
     endCall: () => void;
+    sendMessage?: (message: string) => void; // New prop for sending messages
+    messages?: { sender: 'local' | 'remote', content: string }[]; // New prop for messages
 }
 
-const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCall }) => {
+const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCall, sendMessage, messages }) => {
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const chatRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const [isDragging, setIsDragging] = useState(false);
+
     const [isAudioMuted, setIsAudioMuted] = useState(false);
     const [isVideoMuted, setIsVideoMuted] = useState(false);
     const [isScreenSharing, setIsScreenSharing] = useState(false);
     const [viewType, setViewType] = useState<'grid' | 'popup'>('grid');
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [currentMessage, setCurrentMessage] = useState('');
 
-    const containerRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (chatRef.current && !chatRef.current.contains(event.target as Node)) {
+                setIsChatOpen(false);
+            }
+        };
 
-    const [isDragging, setIsDragging] = useState(false);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleSendMessage = () => {
+        if (currentMessage.trim() !== "" && sendMessage) {
+            sendMessage(currentMessage);
+            setCurrentMessage('');
+        }
+    };
+
+
     const toggleAudio = () => {
         if (localStream) {
             const audioTrack = localStream.getAudioTracks()[0];
@@ -87,9 +116,9 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
             );
         }
     };
-
+    const background = new Array(10).fill(0)
     return (
-        <div ref={containerRef} className="bg-[#000] overflow-hidden h-screen w-screen">
+        <div ref={containerRef} className="overflow-hidden scroll-smooth custom-scrollbar relative h-screen w-screen">
             <div className="absolute top-4 left-[50%] -translate-x-[50%] gap-5 z-10 justify-center items-center flex">
                 <button
                     onClick={() => setViewType('grid')}
@@ -104,9 +133,13 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
                     Popup View
                 </button>
             </div>
+            <div className="absolute top-0 left-0 area">
+                <ul className="circles">
+                    {background.map((_, index) => <li key={index}></li>)}
+                </ul>
+            </div>
 
-
-            {viewType === 'grid' ? (
+            {viewType === 'grid' && (
                 <div className="flex flex-col md:grid md:grid-cols-2 md:gap-2 w-full h-full">
                     <div className="relative flex-1 h-1/2 md:h-auto overflow-hidden rounded">
                         {renderVideoOrPlaceholder(remoteStream, false, false)}
@@ -115,7 +148,8 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
                         {renderVideoOrPlaceholder(localStream, true, true)}
                     </div>
                 </div>
-            ) : (
+            )}
+            {viewType === 'popup' && (
                 <div className="relative w-full h-full">
                     <div className="">
                         {renderVideoOrPlaceholder(remoteStream, false, false)}
@@ -130,7 +164,15 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
                                 transition-all duration-300 ease-in-out
                                 ${isDragging ? 'scale-110 shadow-lg shadow-green-500' : 'shadow-slate-300'}
                                 cursor-move`}>
-                            {renderVideoOrPlaceholder(localStream, true, true)}
+                            {localStream && (
+                                <ReactPlayer
+                                    url={localStream}
+                                    playing
+                                    muted
+                                    width="100%"
+                                    height="100%"
+                                />
+                            )}
                         </div>
                     </Draggable>
                 </div>
@@ -175,10 +217,13 @@ const VideoCall: React.FC<VideoCallProps> = ({ localStream, remoteStream, endCal
                 <button onClick={endCall} className="bg-black icons">
                     <FaPhoneSlash size={28} className="text-red-500" />
                 </button>
-                <button className="icons bg-black">
+                <button onClick={() => setIsChatOpen(!isChatOpen)}
+                    className="icons bg-black">
                     <LuMessageSquare size={25} title="chat" className="text-green-500" />
                 </button>
             </div>
+
+            <CallChat chatRef={chatRef} isChatOpen={isChatOpen} messages={messages as Message[]} currentMessage={currentMessage} handleSendMessage={handleSendMessage} setCurrentMessage={setCurrentMessage} />
         </div>
     );
 };
