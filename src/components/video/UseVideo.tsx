@@ -147,7 +147,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
 
     const handleICECandidate = useCallback((candidate: RTCIceCandidate) => {
         const peerConnection = peerConnectionRef.current
-        if (peerConnection) {
+        if (peerConnection && candidate.candidate) {
             peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).then(() => {
                 console.log('ICE candidate added successfully')
             }).catch((error) => {

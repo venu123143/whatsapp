@@ -78,7 +78,7 @@ const Home = () => {
   };
 
   const handleDataChannelClose = () => {
-    toast.error('Data channel is closed', { position: 'top-left' })
+    console.log('Data channel is closed');
   };
 
   const { handleSendOffer, handleOffer, handleICECandidate, handleAnswer, handleEndCall } = useVideo({
@@ -146,7 +146,7 @@ const Home = () => {
         }
       };
       peerConnection.onicecandidateerror = (event) => {
-        console.error('ICE candidate error:',  event);
+        console.error('ICE candidate error:', event);
       };
     }
   }, [peerConnectionRef.current]);
