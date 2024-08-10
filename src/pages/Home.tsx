@@ -45,6 +45,7 @@ const Home = () => {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
   const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null)
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isFrontCamera, setIsFrontCamera] = useState(true); // Track the current camera
 
   const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
@@ -185,7 +186,28 @@ const Home = () => {
     incomingCallSound.current.pause();
     incomingCallSound.current.currentTime = 0;
   }
+  const handleCameraFlip = async () => {
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
 
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: isFrontCamera ? 'environment' : 'user' },
+        audio: true,
+      });
+
+      // Replace the local stream with the new one
+      if (peerConnectionRef.current) {
+        const senders = peerConnectionRef.current.getSenders();
+        const videoSender = senders.find(sender => sender.track?.kind === 'video');
+        if (videoSender) {
+          videoSender.replaceTrack(newStream.getVideoTracks()[0]);
+        }
+      }
+
+      setLocalStream(newStream);
+      setIsFrontCamera(!isFrontCamera); // Toggle camera state
+    }
+  };
 
 
   return (
@@ -194,7 +216,7 @@ const Home = () => {
         {
           isCalling ?
             <>
-              <VideoCall sendMessage={sendMessage} messages={messages}
+              <VideoCall sendMessage={sendMessage} messages={messages} isFrontCamera={isFrontCamera} handleCameraFlip={handleCameraFlip} setIsFrontCamera={setIsFrontCamera}
                 endCall={handleEndCall} localStream={localStream as MediaStream} remoteStream={remoteStream as MediaStream} />
             </>
             :

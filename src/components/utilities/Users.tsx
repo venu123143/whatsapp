@@ -56,6 +56,7 @@ const Users = () => {
     return isNameMatched || isMobileMatched;
   };
   const skeliton = new Array(20).fill(0)
+  console.log(friends);
 
   return (
     <>

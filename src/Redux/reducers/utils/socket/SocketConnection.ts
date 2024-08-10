@@ -3,6 +3,7 @@ import { UserState } from "../../Auth/AuthReducer";
 
 const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
     const startTime = performance.now();  // Start time
+    console.log(url);
 
     return new Promise<Socket>((resolve, reject) => {
         const socket = io(url, {
@@ -13,7 +14,7 @@ const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
         socket.on('connect', () => {
             const endTime = performance.now();  // End time
             const duration = endTime - startTime;  // Calculate duration
-            console.log(`Socket connected successfully in ${duration.toFixed(2)} ms.`);
+            console.log(`${url.includes("calls") ? "call " : "chat "} connected successfully in ${duration.toFixed(2)} ms.`);
             resolve(socket);
         });
         socket.on('connect_error', (error) => {
