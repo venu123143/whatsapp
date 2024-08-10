@@ -147,7 +147,7 @@ const Home = () => {
         }
       };
       peerConnection.onicecandidateerror = (event) => {
-        // console.error('ICE candidate error:', event);
+        console.error('ICE candidate error:', event);
       };
     }
   }, [peerConnectionRef.current]);
