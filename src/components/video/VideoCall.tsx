@@ -29,7 +29,6 @@ const VideoCall: React.FC<VideoCallProps> =
         const [isChatOpen, setIsChatOpen] = useState(false);
         const chatRef = useRef<HTMLDivElement>(null);
         const containerRef = useRef<HTMLDivElement>(null);
-
         const [isDragging, setIsDragging] = useState(false);
 
         const [isAudioMuted, setIsAudioMuted] = useState(false);
@@ -52,7 +51,17 @@ const VideoCall: React.FC<VideoCallProps> =
         }, []);
 
 
-
+        useEffect(() => {
+            if (localStream) {
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    // Update the video track constraints based on isFrontCamera
+                    videoTrack.applyConstraints({
+                        facingMode: isFrontCamera ? 'user' : 'environment'
+                    });
+                }
+            }
+        }, [isFrontCamera, viewType, localStream]);
 
         const handleSendMessage = () => {
             if (currentMessage.trim() !== "" && sendMessage) {
@@ -105,6 +114,7 @@ const VideoCall: React.FC<VideoCallProps> =
             if (stream && (!isLocal || !isVideoMuted)) {
                 return (
                     <ReactPlayer
+                        key={`${viewType}-${isFrontCamera}`} // Add this key prop
                         url={stream}
                         playing
                         muted={isMuted}
