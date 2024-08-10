@@ -27,11 +27,11 @@ const ContactsList = () => {
     const [searchInput, setSearchInput] = useState("");
 
     useEffect(() => {
-        dispatch(getAllUsers()).then(() => {
-            if (!user) {
-                navigate('/login')
-            }
-        })
+        if (user) {
+            dispatch(getAllUsers())
+        } else {
+            navigate('/login')
+        }
     }, [])
 
     let groupedByInitial: Record<string, any[]> = {};

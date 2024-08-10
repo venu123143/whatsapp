@@ -50,6 +50,8 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
                 setRemoteStream(event.streams[0]);
             }
             peerConnection.onicecandidate = (event) => {
+                console.log(event.candidate);
+                
                 if (event.candidate) {
                     callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
                 }
@@ -105,7 +107,11 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
                 setDataChannel(dataChannel); // Store the data channel
             };
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
+            // if (iceCandidate) {
+            console.log(iceCandidate);
+            
             peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
+            // }
 
             // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             const stream = await getStream()
@@ -141,7 +147,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
         } else {
             console.log('peer connection itself null.');
 
-            // toast.error("Peer connection is null 1", { position: "top-left" })
+            toast.error("Peer connection is null 1", { position: "top-left" })
         }
     }, [])
 
@@ -154,8 +160,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
                 console.error('Error adding ICE candidate:', error)
             })
         } else {
-            // toast.error("Peer connection is null 2", { position: "top-left" })
-            console.log('peer connection itself null.');
+            toast.error(`😔 peer connection itself null`, { position: "top-left" })
         }
     }, [])
 

@@ -24,10 +24,12 @@ export const SocketContext = createContext<Socket>({} as Socket);
 const cssOverride: CSSProperties = {
 }
 
+
+
 const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
-  const [callStarted, setCallStarted] = useState(false);
+  const [callStarted, setCallStarted] = useState(false); // incomming-call
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
   const callSocket = useContext(CallsContext)
@@ -73,7 +75,6 @@ const Home = () => {
 
   const handleDataChannelMessage = (event: MessageEvent) => {
     const message = event.data;
-    console.log('Received message:', event.data);
     setMessages(prev => [...prev, { sender: 'remote', content: message }]);
   };
 
@@ -89,10 +90,10 @@ const Home = () => {
 
   useEffect(() => {
     if (callSocket.connected) {
-      callSocket.on('ice-candiate-offer', async (data) => {
+      callSocket.on('ice-candidate-offer', (data) => {
         setIceCandidate(data.candidate)
       });
-      callSocket.on('ice-candiate-answer', async (data) => {
+      callSocket.on('ice-candidate-answer', async (data) => {
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
@@ -146,7 +147,7 @@ const Home = () => {
         }
       };
       peerConnection.onicecandidateerror = (event) => {
-        console.error('ICE candidate error:', event);
+        // console.error('ICE candidate error:', event);
       };
     }
   }, [peerConnectionRef.current]);
@@ -184,6 +185,8 @@ const Home = () => {
     incomingCallSound.current.pause();
     incomingCallSound.current.currentTime = 0;
   }
+
+
 
   return (
     <>
