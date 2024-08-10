@@ -4,7 +4,7 @@ import ReactPlayer from 'react-player';
 import Draggable from 'react-draggable';
 import { MdFlipCameraAndroid } from "react-icons/md";
 
-import { FaDesktop, FaPhoneSlash } from 'react-icons/fa';
+import { FaPhoneSlash } from 'react-icons/fa';
 import { MdOutlineMicOff } from "react-icons/md";
 import { GoScreenFull } from "react-icons/go";
 import { LuMessageSquare } from "react-icons/lu";
@@ -20,13 +20,12 @@ interface VideoCallProps {
     endCall: () => void;
     sendMessage?: (message: string) => void; // New prop for sending messages
     messages?: { sender: 'local' | 'remote', content: string }[]; // New prop for messages
-    setIsFrontCamera: React.Dispatch<React.SetStateAction<boolean>>;
-    isFrontCamera: boolean;
-    handleCameraFlip: () => void
+    isFrontCamera?: boolean;
+    handleCameraFlip?: () => void
 }
 
 const VideoCall: React.FC<VideoCallProps> =
-    ({ localStream, remoteStream, endCall, sendMessage, messages, isFrontCamera, handleCameraFlip, setIsFrontCamera }) => {
+    ({ localStream, remoteStream, endCall, sendMessage, messages, isFrontCamera, handleCameraFlip }) => {
         const [isChatOpen, setIsChatOpen] = useState(false);
         const chatRef = useRef<HTMLDivElement>(null);
         const containerRef = useRef<HTMLDivElement>(null);

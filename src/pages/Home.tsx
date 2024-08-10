@@ -216,7 +216,7 @@ const Home = () => {
         {
           isCalling ?
             <>
-              <VideoCall sendMessage={sendMessage} messages={messages} isFrontCamera={isFrontCamera} handleCameraFlip={handleCameraFlip} setIsFrontCamera={setIsFrontCamera}
+              <VideoCall sendMessage={sendMessage} messages={messages} isFrontCamera={isFrontCamera} handleCameraFlip={handleCameraFlip}
                 endCall={handleEndCall} localStream={localStream as MediaStream} remoteStream={remoteStream as MediaStream} />
             </>
             :
