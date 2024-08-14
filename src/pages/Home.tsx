@@ -72,6 +72,7 @@ const Home = () => {
 
   const handleDataChannelOpen = () => {
     console.log('Data channel is open');
+    setMessages([])
   };
 
   const handleDataChannelMessage = (event: MessageEvent) => {
@@ -81,6 +82,7 @@ const Home = () => {
 
   const handleDataChannelClose = () => {
     console.log('Data channel is closed');
+    setMessages([])
   };
 
   const { handleSendOffer, handleOffer, handleICECandidate, handleAnswer, handleEndCall } = useVideo({

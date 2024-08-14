@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import Draggable from 'react-draggable';
 import { MdFlipCameraAndroid } from "react-icons/md";
+import { FaRegStopCircle } from "react-icons/fa";
 
 import { FaPhoneSlash } from 'react-icons/fa';
 import { MdOutlineMicOff } from "react-icons/md";
@@ -13,6 +14,7 @@ import { LiaVideoSlashSolid } from "react-icons/lia";
 import { PiUserLight } from 'react-icons/pi';
 import CallChat from './CallChat';
 import { Message } from '../interfaces/CallInterface';
+import { BsRecordCircle } from "react-icons/bs";
 
 interface VideoCallProps {
     localStream: MediaStream | null;
@@ -36,6 +38,10 @@ const VideoCall: React.FC<VideoCallProps> =
         const [viewType, setViewType] = useState<'grid' | 'popup'>('grid');
         const [isFullscreen, setIsFullscreen] = useState(false);
         const [currentMessage, setCurrentMessage] = useState('');
+
+        const [isRecStarted, setIsRecStarted] = useState(false);
+        const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+        const recordedChunksRef = useRef<Blob[]>([]);
 
         useEffect(() => {
             const handleClickOutside = (event: MouseEvent) => {
@@ -62,6 +68,40 @@ const VideoCall: React.FC<VideoCallProps> =
                 }
             }
         }, [isFrontCamera, viewType, localStream]);
+
+        const startRecording = () => {
+            if (localStream && remoteStream) {
+                const combinedStream = new MediaStream();
+
+                localStream.getTracks().forEach(track => combinedStream.addTrack(track));
+                remoteStream.getTracks().forEach(track => combinedStream.addTrack(track));
+
+                mediaRecorderRef.current = new MediaRecorder(combinedStream);
+                mediaRecorderRef.current.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        recordedChunksRef.current.push(event.data);
+                    }
+                };
+
+                mediaRecorderRef.current.start();
+            }
+        };
+        const stopRecording = () => {
+            if (mediaRecorderRef.current) {
+                mediaRecorderRef.current.stop();
+
+                const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'recording.webm';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                recordedChunksRef.current = [];
+            }
+        };
 
         const handleSendMessage = () => {
             if (currentMessage.trim() !== "" && sendMessage) {
@@ -91,10 +131,14 @@ const VideoCall: React.FC<VideoCallProps> =
             }
         };
 
-        // const toggleScreenShare = () => {
-        //     setIsScreenSharing(!isScreenSharing);
-        //     // Implement screen sharing logic here
-        // };
+        const handleRecord = () => {
+            setIsRecStarted(!isRecStarted)
+            if (isRecStarted) {
+                stopRecording()
+            } else {
+                startRecording()
+            }
+        };
 
         const toggleFullScreen = () => {
             if (!containerRef.current) return;
@@ -147,7 +191,19 @@ const VideoCall: React.FC<VideoCallProps> =
                     >
                         Popup View
                     </button>
+                    <button onClick={handleRecord}>
+                        {
+                            isRecStarted ? <FaRegStopCircle className='text-white hover:text-red-400 transition-all' size={28} /> :
+                                <BsRecordCircle className='text-white transition-all hover:text-green-500' size={28} />
+                        }
+                    </button>
                 </div>
+                {isRecStarted && <div className="absolute flex justify-center items-center text-white font-Rubik z-10 top-5 left-5 rsor-pointer shadow-lg recording-container">
+                    <div className="recording-indicator">
+                        <div className="pulse"></div>
+                    </div>
+                    <span>REC</span>
+                </div>}
                 <div className="absolute top-0 left-0 area">
                     <ul className="circles">
                         {background.map((_, index) => <li key={index}></li>)}
@@ -230,7 +286,7 @@ const VideoCall: React.FC<VideoCallProps> =
                     </button>
                     <button onClick={() => setIsChatOpen(!isChatOpen)}
                         className="icons bg-black">
-                        <LuMessageSquare size={25} title="chat" className="text-green-500" />
+                        <LuMessageSquare size={28} title="chat" className="text-green-500" />
                     </button>
                 </div>
 

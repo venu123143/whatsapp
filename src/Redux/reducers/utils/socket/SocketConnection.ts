@@ -3,8 +3,6 @@ import { UserState } from "../../Auth/AuthReducer";
 
 const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
     const startTime = performance.now();  // Start time
-    console.log(url);
-
     return new Promise<Socket>((resolve, reject) => {
         const socket = io(url, {
             autoConnect: false,
