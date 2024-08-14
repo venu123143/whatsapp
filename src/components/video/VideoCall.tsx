@@ -76,33 +76,41 @@ const VideoCall: React.FC<VideoCallProps> =
                 localStream.getTracks().forEach(track => combinedStream.addTrack(track));
                 remoteStream.getTracks().forEach(track => combinedStream.addTrack(track));
 
-                mediaRecorderRef.current = new MediaRecorder(combinedStream);
+                mediaRecorderRef.current = new MediaRecorder(combinedStream, {
+                    mimeType: 'video/webm;codecs=vp8,opus'
+                });
+
                 mediaRecorderRef.current.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
+                    if (event.data && event.data.size > 0) {
                         recordedChunksRef.current.push(event.data);
                     }
                 };
 
-                mediaRecorderRef.current.start();
+                mediaRecorderRef.current.start(1000); // Start recording, and dump data every 1 second
+                setIsRecStarted(true);
             }
         };
         const stopRecording = () => {
-            if (mediaRecorderRef.current) {
+            if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
                 mediaRecorderRef.current.stop();
-
-                const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = 'recording.webm';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                recordedChunksRef.current = [];
+                mediaRecorderRef.current.onstop = () => {
+                    const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'recording.webm';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 100);
+                    recordedChunksRef.current = [];
+                    setIsRecStarted(false);
+                };
             }
         };
-
         const handleSendMessage = () => {
             if (currentMessage.trim() !== "" && sendMessage) {
                 sendMessage(currentMessage);
