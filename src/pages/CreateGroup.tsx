@@ -10,7 +10,7 @@ import { useState } from "react";
 import { ClipLoader } from "react-spinners";
 import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
-import { SocketContext } from "../pages/Home"
+import { SocketContext } from "../App";
 
 const CreateGroup = () => {
     // const { user } = useSelector((state: RootState) => state.auth)

@@ -11,7 +11,7 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 import { RxCross2 } from "react-icons/rx";
 import { FaMicrophone } from "react-icons/fa6";
 import { handleSendMessage, ChatMessage, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
-import { SocketContext } from "../../pages/Home"
+import { SocketContext } from "../../App";
 import useCloseDropDown from "../reuse/CloseDropDown";
 import { toggleisRecord } from "../../Redux/reducers/utils/Features";
 const MessageBar = () => {

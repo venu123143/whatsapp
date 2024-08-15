@@ -38,8 +38,6 @@ export const useRecieveMessage = (socket: Socket, users: CommonProperties[], lst
         if (socket.connected) {
             socket.on("recieve_message", (data: ChatMessage) => {
                 const findUserIndex = friends.length > 0 ? friends.findIndex((friend: any) => friend.socket_id === lstMsg.recieverId) : -1
-                // console.log(findUserIndex, currentUserIndex);
-
                 if (findUserIndex > 0 && findUserIndex !== currentUserIndex) {
                     incomingMsgSound.current.play();
                 }

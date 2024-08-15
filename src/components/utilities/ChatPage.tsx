@@ -15,7 +15,7 @@ import ImageComp from "./ImageComp";
 import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import { formatDate } from "../cards/ReUseFunc"
-import { SocketContext } from "../../pages/Home"
+import { SocketContext } from "../../App";
 import { recieveColors } from "../../static/Static";
 import Audio from "./Audio";
 import IncomingCall from "../cards/IncommingCall";
@@ -76,7 +76,6 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
 
       reader.onloadend = () => {
         const base64data = reader.result?.toString();
-        console.log("base64data");
 
         const serializedValues: ChatMessage = {
           message: 'image',
@@ -96,9 +95,7 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
       };
     };
 
-    imagesArray.forEach((image, index) => {
-      console.log(index, "foreach");
-
+    imagesArray.forEach((image) => {
       handleImageUpload(image);
     });
 

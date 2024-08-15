@@ -15,6 +15,7 @@ import { PiUserLight } from 'react-icons/pi';
 import CallChat from './CallChat';
 import { Message } from '../interfaces/CallInterface';
 import { BsRecordCircle } from "react-icons/bs";
+import { toast } from 'react-toastify';
 
 interface VideoCallProps {
     localStream: MediaStream | null;
@@ -69,27 +70,47 @@ const VideoCall: React.FC<VideoCallProps> =
             }
         }, [isFrontCamera, viewType, localStream]);
 
-        const startRecording = () => {
-            if (localStream && remoteStream) {
-                const combinedStream = new MediaStream();
-
-                remoteStream.getTracks().forEach(track => combinedStream.addTrack(track));
-                localStream.getTracks().forEach(track => combinedStream.addTrack(track));
+        const startRecording = async () => {
+            try {
+                // Request screen capture
+                const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: true,
+                    audio: true
+                });
+                // Get system audio
+                const audioStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                // Combine screen and audio streams
+                const combinedStream = new MediaStream([
+                    ...screenStream.getVideoTracks(),
+                    ...audioStream.getAudioTracks()
+                ]);
 
                 mediaRecorderRef.current = new MediaRecorder(combinedStream, {
                     mimeType: 'video/webm;codecs=vp8,opus'
                 });
-
                 mediaRecorderRef.current.ondataavailable = (event) => {
                     if (event.data && event.data.size > 0) {
                         recordedChunksRef.current.push(event.data);
                     }
                 };
-
-                mediaRecorderRef.current.start(1000); // Start recording, and dump data every 1 second
+                mediaRecorderRef.current.start(1000);
                 setIsRecStarted(true);
+                // // Stop recording when screen share is stopped
+                // screenStream.getVideoTracks()[0].onended = () => {
+                //     stopRecording();
+                // };
+            } catch (error: any) {
+                toast.error(`start record ${error.message}`, { position: "top-left" })
             }
+
         };
+
         const stopRecording = () => {
             if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
                 mediaRecorderRef.current.stop();
@@ -99,7 +120,7 @@ const VideoCall: React.FC<VideoCallProps> =
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = 'recording.webm';
+                    a.download = `recording_${Date.now()}.webm`;
                     document.body.appendChild(a);
                     a.click();
                     setTimeout(() => {

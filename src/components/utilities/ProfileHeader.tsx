@@ -10,8 +10,7 @@ import { useContext } from "react";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
-import { SocketContext } from "../../pages/Home";
-import { CallsContext } from "../../App";
+import { SocketContext, CallsContext } from "../../App";
 import useCloseDropDown from "../reuse/CloseDropDown";
 
 const ProfileHeader = () => {

@@ -10,7 +10,7 @@ import { toggleisRecord } from '../../Redux/reducers/utils/Features';
 // import ammayeSannaga from "../../static/Ammaye sannaga.ogg"
 import { toast } from 'react-toastify';
 import { ChatMessage, handleSendMessage } from '../../Redux/reducers/msg/MsgReducer';
-import { SocketContext } from "../../pages/Home"
+import { SocketContext } from "../../App";
 
 const MsgRecoder = () => {
 

@@ -10,7 +10,7 @@ import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
 import { CommonProperties, handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
-import { SocketContext } from "../../pages/Home"
+import { SocketContext } from "../../App"
 // import { ClipLoader } from 'react-spinners'
 import UserSkeliton from '../reuse/UserSkeliton'
 import { toggleContacts } from "../..//Redux/reducers/utils/Features";
@@ -56,8 +56,6 @@ const Users = () => {
     return isNameMatched || isMobileMatched;
   };
   const skeliton = new Array(20).fill(0)
-  console.log(friends);
-
   return (
     <>
       <header className=' w-full h-screen flex flex-col bg-[#111b21]'>

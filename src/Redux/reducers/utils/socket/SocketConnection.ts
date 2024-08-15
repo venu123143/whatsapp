@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { UserState } from "../../Auth/AuthReducer";
+import { toast } from "react-toastify";
 
 const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
     const startTime = performance.now();  // Start time
@@ -12,7 +13,7 @@ const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
         socket.on('connect', () => {
             const endTime = performance.now();  // End time
             const duration = endTime - startTime;  // Calculate duration
-            console.log(`${url.includes("calls") ? "call " : "chat "} connected successfully in ${duration.toFixed(2)} ms.`);
+            toast.success(`${url.includes("calls") ? "call " : "chat "} connected successfully in ${duration.toFixed(2)} ms.`, { position: 'top-center' })
             resolve(socket);
         });
         socket.on('connect_error', (error) => {

@@ -1,13 +1,11 @@
 
-import { useEffect, createContext, useContext, useState, useRef, CSSProperties } from 'react'
+import { useEffect, useContext, useState, useRef, CSSProperties } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
 import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
-import { Socket } from 'socket.io-client'
-import createSocket from '../Redux/reducers/utils/socket/SocketConnection'
 import DefaultComp from '../components/utilities/DefaultComp'
 import ShowFullImg from '../components/utilities/ShowFullImg'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
@@ -19,8 +17,7 @@ import { RingLoader } from 'react-spinners'
 import IncommingCall from "../static/incomming_call.wav"
 import useVideo from "../components/video/UseVideo"
 import { Message } from "../components/interfaces/CallInterface"
-export const SocketContext = createContext<Socket>({} as Socket);
-
+import { SocketContext } from "../App"
 const cssOverride: CSSProperties = {
 }
 
@@ -33,7 +30,9 @@ const Home = () => {
   const { profileOpen } = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
   const callSocket = useContext(CallsContext)
-  const [socket, setSocket] = useState({} as Socket)
+  const socket = useContext(SocketContext)
+
+  // const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
   const [lstMsg, setLstMsg] = useState<any>(null)
@@ -60,15 +59,15 @@ const Home = () => {
     }
   }, [user, createGrp])
 
-  useEffect(() => {
-    const initializeSocket = async () => {
-      if (user !== null && !socket.connected) {
-        const socket = await createSocket(user, import.meta.env.VITE_API_SOCKET_URL as string);
-        setSocket(socket)
-      }
-    };
-    initializeSocket();
-  }, [user]);
+  // useEffect(() => {
+  //   const initializeSocket = async () => {
+  //     if (user !== null && !socket.connected) {
+  //       const socket = await createSocket(user, import.meta.env.VITE_API_SOCKET_URL as string);
+  //       setSocket(socket)
+  //     }
+  //   };
+  //   initializeSocket();
+  // }, [user]);
 
   const handleDataChannelOpen = () => {
     console.log('Data channel is open');
@@ -214,40 +213,38 @@ const Home = () => {
 
   return (
     <>
-      <SocketContext.Provider value={socket} >
-        {
-          isCalling ?
-            <>
-              <VideoCall sendMessage={sendMessage} messages={messages} isFrontCamera={isFrontCamera} handleCameraFlip={handleCameraFlip}
-                endCall={handleEndCall} localStream={localStream as MediaStream} remoteStream={remoteStream as MediaStream} />
-            </>
-            :
-            (
-              <main className='overflow-hidden relative h-screen md:grid grid-cols-10 '>
-                <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
-                  <Users />
-                </section>
-                <section className={`md:col-span-7 md:static absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
-                  {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
-                </section>
-                <div>
-                  <ShowFullImg />
-                </div>
-                <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
-                  <RingLoader
-                    color="#36d7b7"
-                    size={500}
-                    cssOverride={cssOverride}
-                    loading={true}
-                    aria-label="Loading Spinner"
-                    speedMultiplier={.51}
-                    data-testid="loader"
-                  />
-                </div>
-              </main >
-            )
-        }
-      </SocketContext.Provider >
+      {
+        isCalling ?
+          <>
+            <VideoCall sendMessage={sendMessage} messages={messages} isFrontCamera={isFrontCamera} handleCameraFlip={handleCameraFlip}
+              endCall={handleEndCall} localStream={localStream as MediaStream} remoteStream={remoteStream as MediaStream} />
+          </>
+          :
+          (
+            <main className='overflow-hidden relative h-screen md:grid grid-cols-10 '>
+              <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
+                <Users />
+              </section>
+              <section className={`md:col-span-7 md:static absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
+                {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
+              </section>
+              <div>
+                <ShowFullImg />
+              </div>
+              <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
+                <RingLoader
+                  color="#36d7b7"
+                  size={500}
+                  cssOverride={cssOverride}
+                  loading={true}
+                  aria-label="Loading Spinner"
+                  speedMultiplier={.51}
+                  data-testid="loader"
+                />
+              </div>
+            </main >
+          )
+      }
     </>
   )
 }
