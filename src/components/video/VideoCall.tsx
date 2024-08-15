@@ -73,8 +73,8 @@ const VideoCall: React.FC<VideoCallProps> =
             if (localStream && remoteStream) {
                 const combinedStream = new MediaStream();
 
-                localStream.getTracks().forEach(track => combinedStream.addTrack(track));
                 remoteStream.getTracks().forEach(track => combinedStream.addTrack(track));
+                localStream.getTracks().forEach(track => combinedStream.addTrack(track));
 
                 mediaRecorderRef.current = new MediaRecorder(combinedStream, {
                     mimeType: 'video/webm;codecs=vp8,opus'
