@@ -79,7 +79,7 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
       <div className={`${message.right === true
         ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
         : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
-        } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-1 py-1 `} >
+        } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  px-1 py-1 `} >
         <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
         <div className={`flex justify-center items-center gap-4 ${message.right === true ? "flex-row" : "flex-row-reverse"} `}>
           <div className="sm:cursor-pointer">
@@ -102,7 +102,7 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
                 <FaPlay title="play Record" size={25} />
               </button>
             )}
-            <div id='waveform' ref={waveRef} className='w-[140px]' />
+            <div id='waveform' ref={waveRef} className='w-[140px] z-0' />
           </div>
 
         </div>

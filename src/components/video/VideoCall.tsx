@@ -102,9 +102,9 @@ const VideoCall: React.FC<VideoCallProps> =
                 mediaRecorderRef.current.start(1000);
                 setIsRecStarted(true);
                 // // Stop recording when screen share is stopped
-                // screenStream.getVideoTracks()[0].onended = () => {
-                //     stopRecording();
-                // };
+                screenStream.getVideoTracks()[0].onended = () => {
+                    stopRecording();
+                };
             } catch (error: any) {
                 toast.error(`start record ${error.message}`, { position: "top-left" })
             }

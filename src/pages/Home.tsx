@@ -59,16 +59,6 @@ const Home = () => {
     }
   }, [user, createGrp])
 
-  // useEffect(() => {
-  //   const initializeSocket = async () => {
-  //     if (user !== null && !socket.connected) {
-  //       const socket = await createSocket(user, import.meta.env.VITE_API_SOCKET_URL as string);
-  //       setSocket(socket)
-  //     }
-  //   };
-  //   initializeSocket();
-  // }, [user]);
-
   const handleDataChannelOpen = () => {
     console.log('Data channel is open');
     setMessages([])
@@ -89,7 +79,7 @@ const Home = () => {
     currentUserIndex, setCallStarted, offer, iceCandidate, remoteStream, handleDataChannelOpen,
     localStream, setLocalStream, setRemoteStream, peerConnectionRef, setDataChannel, handleDataChannelClose
   })
-
+ 
   useEffect(() => {
     if (callSocket.connected) {
       callSocket.on('ice-candidate-offer', (data) => {

@@ -114,17 +114,17 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
           </div>
         )
       }
-      <div className=" sm:px-16 sm:py-5 px-5 py-5">
+      <div className=" sm:px-16 space-y-3 sm:py-5 px-5 py-5">
         {chats && chats.map((message: any, index: number) =>
           <div key={index}>
             {isFirstMessageOfDay(message, index > 0 ? chats[index - 1] : null) ? (
               <div className="flex justify-center items-center">
-                <div className="text-center text-[.81rem] mb-3 bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
+                <div className="text-center text-[.81rem] bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
                   {formatDate(message.date)}
                 </div>
               </div>
             ) : null}
-            {message.msgType === "notification" ? <p className="notification mb-5">{message.message}</p> : null}
+            {message.msgType === "notification" ? <p className="notification">{message.message}</p> : null}
             {message.msgType === "text" ?
               <Message
                 key={index}
