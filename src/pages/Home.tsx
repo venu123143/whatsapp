@@ -21,8 +21,6 @@ import { SocketContext } from "../App"
 const cssOverride: CSSProperties = {
 }
 
-
-
 const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
@@ -72,6 +70,7 @@ const Home = () => {
   const handleDataChannelClose = () => {
     console.log('Data channel is closed');
     setMessages([])
+    // setRemoteStream(null)
   };
 
   const { handleSendOffer, handleOffer, handleICECandidate, handleAnswer, handleEndCall } = useVideo({
@@ -79,7 +78,7 @@ const Home = () => {
     currentUserIndex, setCallStarted, offer, iceCandidate, remoteStream, handleDataChannelOpen,
     localStream, setLocalStream, setRemoteStream, peerConnectionRef, setDataChannel, handleDataChannelClose
   })
- 
+
   useEffect(() => {
     if (callSocket.connected) {
       callSocket.on('ice-candidate-offer', (data) => {

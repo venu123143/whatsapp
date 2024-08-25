@@ -184,21 +184,23 @@ const VideoCall: React.FC<VideoCallProps> =
             setIsFullscreen(!isFullscreen);
         };
         const renderVideoOrPlaceholder = (stream: MediaStream | null, isMuted: boolean, isLocal: boolean) => {
+            console.log(stream, "isLocal", isLocal);
+            
             if (stream && (!isLocal || !isVideoMuted)) {
                 return (
                     <ReactPlayer
-                        key={`${viewType}-${isFrontCamera}`} // Add this key prop
+                        key={`${viewType}-${isFrontCamera}`}
                         url={stream}
                         playing
                         muted={isMuted}
                         width="100%"
                         height="100%"
-                        style={{ position: 'absolute', top: 0, left: 0 }}
+                        style={{ position: 'absolute', top: 0, left: 0, transform: isFrontCamera ? "scaleX(-1)" : "scaleX(1)" }}
                     />
                 );
             } else {
                 return (
-                    <div className="flex items-center justify-center w-full h-full bg-gray-800">
+                    <div onDoubleClick={toggleFullScreen} className="flex items-center justify-center w-full h-full bg-gray-800">
                         <PiUserLight size={180} className="text-gray-400 hover:text-gray-300 transition-colors duration-300" />
                     </div>
                 );
@@ -222,8 +224,8 @@ const VideoCall: React.FC<VideoCallProps> =
                     </button>
                     <button onClick={handleRecord}>
                         {
-                            isRecStarted ? <FaRegStopCircle className='text-white hover:text-red-400 transition-all' size={28} /> :
-                                <BsRecordCircle className='text-white transition-all hover:text-green-500' size={28} />
+                            isRecStarted ? <FaRegStopCircle title='Stop recording' className='text-white hover:text-red-400 transition-all' size={28} /> :
+                                <BsRecordCircle title='Start recording' className='text-white transition-all hover:text-green-500' size={28} />
                         }
                     </button>
                 </div>
@@ -233,7 +235,7 @@ const VideoCall: React.FC<VideoCallProps> =
                     </div>
                     <span>REC</span>
                 </div>}
-                <div className="absolute top-0 left-0 area">
+                <div  className="absolute top-0 left-0 area">
                     <ul className="circles">
                         {background.map((_, index) => <li key={index}></li>)}
                     </ul>
@@ -266,6 +268,7 @@ const VideoCall: React.FC<VideoCallProps> =
                                 cursor-move`}>
                                 {localStream && (
                                     <ReactPlayer
+                                        style={{ transform: isFrontCamera ? "scaleX(-1)" : "scaleX(1)" }}
                                         url={localStream}
                                         playing
                                         muted
@@ -278,18 +281,18 @@ const VideoCall: React.FC<VideoCallProps> =
                     </div>
                 )}
 
-                <div onClick={toggleFullScreen} className="absolute right-6 top-5 cursor-pointer shadow-lg">
-                    <GoScreenFull className="text-white font-[450]" size={30} />
+                <div onClick={toggleFullScreen} className="absolute right-6 sm:top-5 top-12 cursor-pointer shadow-lg">
+                    <GoScreenFull title='Fullscreen' className="text-white font-[450]" size={30} />
                 </div>
 
                 {/* Control buttons */}
                 <div className="absolute flex flex-row sm:w-auto space-x-4 bottom-4 left-1/2 transform -translate-x-1/2">
                     <button className={`icons bg-black text-green-500`} onClick={toggleVideo}>
-                        {isVideoMuted ? <LiaVideoSlashSolid size={28} /> : <GoDeviceCameraVideo size={28} />}
+                        {isVideoMuted ? <LiaVideoSlashSolid size={28} title='Show video' /> : <GoDeviceCameraVideo title='Stop video' size={28} />}
                     </button>
                     <button className={`icons bg-black text-green-500`} onClick={toggleAudio}>
                         {isAudioMuted ? (
-                            <MdOutlineMicOff size={28} />
+                            <MdOutlineMicOff title='Unmute audio' size={28} />
                         ) : (
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -308,10 +311,10 @@ const VideoCall: React.FC<VideoCallProps> =
                         )}
                     </button>
                     <button className={`icons bg-black text-green-500`} onClick={handleCameraFlip}>
-                        <MdFlipCameraAndroid className={`${isFrontCamera ? "rotate-180" : ""} duration-150 text-green-500 transition-all `} size={28} />
+                        <MdFlipCameraAndroid title='Flip camera' className={`${isFrontCamera ? "rotate-180" : ""} duration-150 text-green-500 transition-all `} size={28} />
                     </button>
                     <button onClick={endCall} className="bg-black icons">
-                        <FaPhoneSlash size={28} className="text-red-500" />
+                        <FaPhoneSlash title='End call' size={28} className="text-red-500" />
                     </button>
                     <button onClick={() => setIsChatOpen(!isChatOpen)}
                         className="icons bg-black">
