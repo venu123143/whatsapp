@@ -18,6 +18,16 @@ export const formatDate = (inputDate: string) => {
     if (daysSinceMessage < 7) {
         return messageDate.toLocaleDateString('en-US', { weekday: 'long' });
     }
+
+    // Check if the date is in the current year
+    if (today.getFullYear() === messageDate.getFullYear()) {
+        return messageDate.toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'short',
+        });
+    }
+
+    // Return full date (including year) for dates in other years
     return messageDate.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',

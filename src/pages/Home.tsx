@@ -7,7 +7,6 @@ import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
 import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 import DefaultComp from '../components/utilities/DefaultComp'
-import ShowFullImg from '../components/utilities/ShowFullImg'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
 import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
 import { toast } from 'react-toastify'
@@ -18,6 +17,9 @@ import IncommingCall from "../static/incomming_call.wav"
 import useVideo from "../components/video/UseVideo"
 import { Message } from "../components/interfaces/CallInterface"
 import { SocketContext } from "../App"
+import ImageModal from '../components/reuse/ImgModel'
+import { setIsFullscreen } from '../Redux/reducers/utils/Features';
+
 const cssOverride: CSSProperties = {
 }
 
@@ -33,6 +35,7 @@ const Home = () => {
   // const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
+  const { currentImage } = useSelector((state: RootState) => state.features);
   const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const incomingCallSound = useRef(new Audio(IncommingCall));
@@ -199,6 +202,9 @@ const Home = () => {
     }
   };
 
+  const closeModal = () => {
+    dispatch(setIsFullscreen(false))
+  };
 
   return (
     <>
@@ -218,7 +224,10 @@ const Home = () => {
                 {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
               </section>
               <div>
-                <ShowFullImg />
+                <ImageModal
+                  imageUrl={currentImage}
+                  onClose={closeModal}
+                />
               </div>
               <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
                 <RingLoader
