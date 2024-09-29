@@ -7,13 +7,12 @@ import { formatTime, convertBlobToBase64 } from '../../static/Static';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 import { toggleisRecord } from '../../Redux/reducers/utils/Features';
-// import ammayeSannaga from "../../static/Ammaye sannaga.ogg"
 import { toast } from 'react-toastify';
 import { ChatMessage, handleSendMessage } from '../../Redux/reducers/msg/MsgReducer';
 import { SocketContext } from "../../App";
+import WaveformVisualizer from './WaveForm';
 
 const MsgRecoder = () => {
-
     const { friends, currentUserIndex } = useSelector((state: RootState) => state.msg);
     const { user } = useSelector((state: RootState) => state.auth)
     const socket = useContext(SocketContext);
@@ -24,17 +23,14 @@ const MsgRecoder = () => {
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [recordingTime, setRecordingTime] = useState(0);
     const waveRef = useRef<HTMLDivElement | null>(null);
-    const recordingRef = useRef<HTMLDivElement | null>(null);
+    const [showWaveform, setShowWaveform] = useState(false);
 
     const [isRecording, setIsRecording] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
+    const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
 
     const wavesurferObj = useWaveSurfer(waveRef);
-    // const recordingWave = useWaveSurfer(recordingRef, true);
-    // const getDuration = wavesurferObj?.getDuration().toPrecision()
-    // const roundedDuration = Math.floor(parseFloat(wavesurferObj?.getDuration().toString() as string)); 
-    // console.log(roundedDuration);
 
     useEffect(() => {
         if (fileUrl && wavesurferObj) {
@@ -46,17 +42,18 @@ const MsgRecoder = () => {
         wavesurferObj?.on('audioprocess', () => {
             setCurrentPlaybackTime(wavesurferObj.getCurrentTime());
         });
-
-    }, [fileUrl, wavesurferObj]);
+    }, [fileUrl, isRecording, wavesurferObj]);
 
     useEffect(() => {
         handleStartRecording()
     }, [])
+
     const handleStartRecording = async () => {
         try {
             setIsRecording(true);
             setRecordingTime(0);
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            setAudioStream(stream);
             const recorder = new MediaRecorder(stream);
             const chunks: BlobPart[] = [];
             recorder.ondataavailable = (event) => {
@@ -67,6 +64,8 @@ const MsgRecoder = () => {
                 setBlobData(blob)
                 const audioUrl = URL.createObjectURL(blob);
                 setFileUrl(audioUrl);
+                stream.getTracks().forEach(track => track.stop());
+                setAudioStream(null);
             };
             recorder.start();
             setMediaRecorder(recorder);
@@ -76,45 +75,48 @@ const MsgRecoder = () => {
     };
 
     useEffect(() => {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            setTimeout(() => {
-                setRecordingTime(recordingTime + 1)
-            }, 1000)
+        let timer: any
+        if (isRecording) {
+            timer = setInterval(() => {
+                setRecordingTime(prevTime => prevTime + 1);
+            }, 1000);
         }
-    }, [recordingTime, mediaRecorder])
+        return () => clearInterval(timer);
+    }, [isRecording]);
 
-    // Function to stop recording
     const handleStopRecording = () => {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            setIsRecording(false)
-            wavesurferObj?.stop()
+            setIsRecording(false);
+            wavesurferObj?.stop();
             mediaRecorder.stop();
+            setShowWaveform(true); // Show waveform when recording stops
         }
-        // Your logic to stop recording
     };
 
-    // Function to play recording
     const handlePlayRecording = () => {
-        setIsPlaying(true)
-        wavesurferObj?.play()
-        // Your logic to play recording
+        setIsPlaying(true);
+        wavesurferObj?.play();
     };
 
-    // Function to pause recording
     const handlePauseRecording = () => {
-        setIsPlaying(false)
-        wavesurferObj?.pause()
-        // Your logic to pause recording
+        setIsPlaying(false);
+        wavesurferObj?.pause();
     };
 
-    // Function to send recording
     const sendRecording = async () => {
+        if (isRecording) {
+            await handleStopRecording();
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        if (!blobData) {
+            toast.error("No recording to send");
+            return;
+        }
+
         dispatch(toggleisRecord(false));
-        setIsRecording(false)
-        wavesurferObj?.stop();
-        mediaRecorder?.stop();
-        const base64 = await convertBlobToBase64(blobData as Blob)
-        const audio = { profile: user?.profile, audio: base64 }
+        const base64 = await convertBlobToBase64(blobData);
+        const audio = { profile: user?.profile, audio: base64 };
         const serializedValues: ChatMessage = {
             message: 'audio',
             date: new Date().toISOString(),
@@ -127,15 +129,22 @@ const MsgRecoder = () => {
             seen: false
         };
         dispatch(handleSendMessage(serializedValues));
-        socket.emit("send_message", serializedValues)
+        socket.emit("send_message", serializedValues);
+
+        // Reset state after sending
+        setFileUrl(null);
+        setBlobData(null);
+        setRecordingTime(0);
+        setCurrentPlaybackTime(0);
     };
 
-    // Function to close the recorder
     const closeRecorder = () => {
-        // Your logic to close the recorder
         dispatch(toggleisRecord(false));
-        wavesurferObj?.stop();
-        mediaRecorder?.stop();
+        handleStopRecording();
+        setFileUrl(null);
+        setBlobData(null);
+        setRecordingTime(0);
+        setCurrentPlaybackTime(0);
     };
 
     return (
@@ -144,16 +153,15 @@ const MsgRecoder = () => {
                 <MdDelete title="delete" size={25} className="group-hover:text-[#e9edef]" />
             </button>
 
-            <div className='w-[250px] bg-[#111b21] rounded-full px-2 '>
-                <div className='w-full'>
+            <div className=''>
+                <div className={`${showWaveform ? "flex" : "block"}  w-[300px] bg-[#111b21] gap-2 rounded-full px-4 `}>
                     {
                         isRecording ? (
-                            <div className='flex justify-center gap-3 items-center '>
+                            <div id="recording" className='flex justify-center gap-3 items-center'>
                                 <div className='font-Rubik text-sm'>
                                     {formatTime(recordingTime)}
                                 </div>
-                                {/* <h1 className='font-[450] text-[1rem]'>recording...</h1> */}
-                                <div id='recording' ref={recordingRef} className='w-full' />
+                                <WaveformVisualizer isRecording={isRecording} stream={audioStream} />
                             </div>
                         ) : (
                             <div className=' flex justify-center gap-3 items-center  '>
@@ -166,15 +174,16 @@ const MsgRecoder = () => {
                                         <FaPlay title="play Record" />
                                     </button>
                                 )}
-                                <div id='waveform' ref={waveRef} className='w-full' />
                                 <div className='font-Rubik text-sm'>
                                     {formatTime(currentPlaybackTime)}
                                 </div>
                             </div>
-
                         )
+
                     }
+                    <div id='waveform' ref={waveRef} className={`w-full ${showWaveform ? 'block' : 'hidden'}`} />
                 </div>
+
             </div>
             {
                 isRecording ? (
@@ -187,10 +196,9 @@ const MsgRecoder = () => {
                     </button>
                 )
             }
-            <button onClick={sendRecording} className="icons  p-3 bg-[#00a884]" type="submit" >
+            <button onClick={sendRecording} className="icons p-3 bg-[#00a884]" type="submit" >
                 <MdSend title="send" />
             </button>
-
         </div>
     );
 };
