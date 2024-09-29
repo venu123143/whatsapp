@@ -87,19 +87,19 @@ const ImageModal: React.FC<ImageModalProps> = ({ imageUrl, onClose }) => {
                 } transition-all ease-in-out inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50`}
             onClick={handleOverlayClick}
         >
-            <button
-                className="prev-button hover:bg-gray-600 rounded-full transform -translate-y-1/2 text-white text-2xl p-2"
-                onClick={prevImage}
-            >
-                <FaArrowLeft title='left (left arrow)' />
-            </button>
             <Draggable position={position} onDrag={handleDrag}>
-                <div className="max-w-3xl my-auto w-full mx-4 cursor-move">
+                <div className="max-w-3xl w-full cursor-move">
                     <img src={imageUrl} alt="Selected" className="max-h-screen w-full object-contain" />
                 </div>
             </Draggable>
             <button
-                className="next-button hover:bg-gray-600 rounded-full transform -translate-y-1/2 text-white text-2xl p-2"
+                className="prev-button bg-black hover:bg-gray-600 rounded-full transform -translate-y-1/2 text-white text-2xl p-2"
+                onClick={prevImage}
+            >
+                <FaArrowLeft title='left (left arrow)' />
+            </button>
+            <button
+                className="next-button bg-black hover:bg-gray-600 rounded-full transform -translate-y-1/2 text-white text-2xl p-2"
                 onClick={nextImage}
             >
                 <FaArrowRight title='right (right arrow)' />
