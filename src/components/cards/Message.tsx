@@ -3,32 +3,19 @@ import { AiOutlineDown } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { AppDispatch, RootState } from "../../Redux/store";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { ChatMessage, handleEditMsg, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 
-const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {    
+const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
-    const [optionPosition, setOptionPosition] = useState('')
     const messageRef = useRef<HTMLDivElement>(null);
     const dispatch: AppDispatch = useDispatch()
 
-    useEffect(() => {
-        if (messageRef.current) {
-            const { top } = messageRef.current.getBoundingClientRect();
-            const screenHeight = window.innerHeight;
-            const isMessageAtTop = top <= screenHeight / 2;
-            if (isMessageAtTop) {
-                setOptionPosition('bottom')
-            } else {
-                setOptionPosition('top');
-            }
-        }
-    }, []);
     function renderMessageWithLinks(message: ChatMessage) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return message.message.split(urlRegex).map((part, index) => {
@@ -106,16 +93,17 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
                         <AiOutlineDown size={15} />
                     </span>
                 </span>
-                <div    
-                    className={`${optionPosition === 'bottom' ? message.right === true ? "top-12 right-0" : "-right-52 top-5" : message.right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
-                    ${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
+                <div style={message.right === true ? { top: 0, right: 50 } : { top: 0, left: 100 }}
+                    className={`${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                     msgOptions `}>
                     <div className="" >
                         <button onClick={handleTagReply} className="options" role="menuitem" id="menu-item-1">
                             <span>reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>
-                        <button onClick={editMessage} className="options" role="menuitem" id="menu-item-0">edit</button>
+                        {message.right === true &&
+                            <button onClick={editMessage} className="options" role="menuitem" id="menu-item-0">edit</button>
+                        }
                         <Link to="#" className="options">delete Me</Link>
                         <Link to="#" className="options">delete All</Link>
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>
