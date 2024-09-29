@@ -184,8 +184,7 @@ const VideoCall: React.FC<VideoCallProps> =
             setIsFullscreen(!isFullscreen);
         };
         const renderVideoOrPlaceholder = (stream: MediaStream | null, isMuted: boolean, isLocal: boolean) => {
-            console.log(stream, "isLocal", isLocal);
-            
+
             if (stream && (!isLocal || !isVideoMuted)) {
                 return (
                     <ReactPlayer
@@ -224,8 +223,8 @@ const VideoCall: React.FC<VideoCallProps> =
                     </button>
                     <button onClick={handleRecord}>
                         {
-                            isRecStarted ? <FaRegStopCircle title='Stop recording' className='text-white hover:text-red-400 transition-all' size={28} /> :
-                                <BsRecordCircle title='Start recording' className='text-white transition-all hover:text-green-500' size={28} />
+                            isRecStarted ? <FaRegStopCircle title='Stop recording' className='text-white hidden md:block hover:text-red-400 transition-all' size={28} /> :
+                                <BsRecordCircle title='Start recording' className='text-white hidden md:block transition-all hover:text-green-500' size={28} />
                         }
                     </button>
                 </div>
@@ -235,7 +234,7 @@ const VideoCall: React.FC<VideoCallProps> =
                     </div>
                     <span>REC</span>
                 </div>}
-                <div  className="absolute top-0 left-0 area">
+                <div className="absolute top-0 left-0 area">
                     <ul className="circles">
                         {background.map((_, index) => <li key={index}></li>)}
                     </ul>
@@ -262,8 +261,7 @@ const VideoCall: React.FC<VideoCallProps> =
                             onStop={() => setIsDragging(false)}
                         >
                             <div
-                                className={`rounded-lg rounded-s-sm shadow-md absolute bottom-1 right-1 w-[40%] md:w-[20%] h-auto 
-                                transition-all duration-300 ease-in-out
+                                className={`rounded-lg rounded-s-sm shadow-md absolute bottom-1 right-1 w-[40%] md:w-[20%] h-auto
                                 ${isDragging ? 'scale-110 shadow-lg shadow-green-500' : 'shadow-slate-300'}
                                 cursor-move`}>
                                 {localStream && (
@@ -281,7 +279,7 @@ const VideoCall: React.FC<VideoCallProps> =
                     </div>
                 )}
 
-                <div onClick={toggleFullScreen} className="absolute right-6 sm:top-5 top-12 cursor-pointer shadow-lg">
+                <div onClick={toggleFullScreen} className="absolute right-6 top-5 cursor-pointer shadow-lg">
                     <GoScreenFull title='Fullscreen' className="text-white font-[450]" size={30} />
                 </div>
 

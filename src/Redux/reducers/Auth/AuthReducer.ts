@@ -22,7 +22,7 @@ export const upateUser = createAsyncThunk('authSlice/upateUser', async (data: { 
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // localStorage.removeItem("token")
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -59,7 +59,7 @@ export const VerifyOtp = createAsyncThunk('authSlice/Verifyotp', async (data: { 
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // localStorage.removeItem("token")
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })

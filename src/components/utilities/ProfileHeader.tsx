@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
 import { SocketContext, CallsContext } from "../../App";
 import useCloseDropDown from "../reuse/CloseDropDown";
+import { handleSetAllUsersChat } from "../../Redux/reducers/msg/MsgReducer";
 
 const ProfileHeader = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -24,6 +25,7 @@ const ProfileHeader = () => {
 
     const handleLogout = () => {
         dispatch(logout())
+        dispatch(handleSetAllUsersChat([]))
         setDropdown(false)
         if (socket.connected) {
             socket.disconnect()
