@@ -88,7 +88,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ imageUrl, onClose }) => {
             onClick={handleOverlayClick}
         >
             <Draggable position={position} onDrag={handleDrag}>
-                <div className="max-w-3xl w-full cursor-move">
+                <div className="max-w-3xl w-fit cursor-move">
                     <img src={imageUrl} alt="Selected" className="max-h-screen w-full object-contain" />
                 </div>
             </Draggable>
