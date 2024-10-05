@@ -12,7 +12,7 @@ import {
   setShowAttachFiles,
 } from "../../Redux/reducers/utils/utilReducer";
 import ImageComp from "./ImageComp";
-import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
+import {  handleSendMessage, IMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../App";
@@ -27,8 +27,9 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const { user, startCall } = useSelector((state: RootState) => state.auth)
   const [colors, setColors] = useState<string[]>([])
-  const chats = friends[currentUserIndex]?.chat
-  const currChatImages = friends[currentUserIndex] && friends[currentUserIndex]?.chat.filter((msg: any) => msg?.msgType === "image")
+  const chats = friends[currentUserIndex]?.messages
+  // const curt = friends[currentUserIndex]
+  const currChatImages = friends[currentUserIndex] && friends[currentUserIndex]?.messages.filter((msg: any) => msg?.msgType === "image")
 
   const getRandomColors = (count: number): string[] => {
     const colors = Object.keys(recieveColors);
@@ -54,11 +55,11 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
 
   useEffect(() => {
     if (socket.connected && currentUserIndex !== null) {
-      const unread = friends[currentUserIndex].chat.filter((msg: any) => msg.seen === false && msg.right === false)
-      if (unread.length > 0 && friends[currentUserIndex].socket_id === unread[0].senderId) {
+      const unread = friends[currentUserIndex].messages.filter((msg: any) => msg.seen === false && msg.right === false)
+      if (unread.length > 0 && friends[currentUserIndex].room_id === unread[0].room_id) {
         socket.emit("update_seen", unread)
       }
-      const colors = getRandomColors(friends[currentUserIndex]?.chat?.length)
+      const colors = getRandomColors(friends[currentUserIndex]?.messages?.length)
       setColors(colors)
     }
   }, [currentUserIndex])
@@ -77,21 +78,27 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
       reader.onloadend = () => {
         const base64data = reader.result?.toString();
 
-        const serializedValues: ChatMessage = {
+        const serializedValues: IMessage = {
           message: 'image',
+          conn_type: friends[currentUserIndex].conn_type as "group" | "onetoone",
           date: new Date().toISOString(),
-          right: true,
+          isMyMsg: true,
           msgType: 'image',
-          senderId: user?.socket_id as string,
-          conn_type: "onetoone",
-          recieverId: friends[currentUserIndex].socket_id,
+          room_id: friends[currentUserIndex].room_id,
           file: base64data,
-          seen: false
+          seen: false,
+          send: false,
+          replyFor: null,
+          sender: {
+            id: user?._id as any,
+            mobile: user?.mobile as any,
+            name: user?.name
+          }
         };
-
+        socket.emit("send_message", serializedValues, (ack: any) => {
+          dispatch(handleSendMessage(ack));
+        });
         dispatch(handleSendMessage(serializedValues));
-        socket.emit("send_message", serializedValues);
-
       };
     };
 
@@ -116,7 +123,7 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
       }
       <div className=" sm:px-16 space-y-3 sm:py-5 px-5 py-5">
         {chats && chats.map((message: any, index: number) =>
-          <div key={index}>
+          <div key={message._id ? message._id : index}>
             {isFirstMessageOfDay(message, index > 0 ? chats[index - 1] : null) ? (
               <div className="flex justify-center items-center">
                 <div className="text-center text-[.81rem] bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
@@ -127,15 +134,14 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
             {message.msgType === "notification" ? <p className="notification">{message.message}</p> : null}
             {message.msgType === "text" ?
               <Message
-                key={index}
+                key={message._id ? message._id : index}
                 message={message}
                 color={colors[index] as string}
                 scrollToMessage={scrollToMessage}
                 index={index}
               />
               : null}
-            {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)}
-              date={message.date} right={message.right} image={message.file} seen={message.seen} />
+            {message.msgType === "image" ? <ImageComp key={index} onClick={() => handleShowBigImg(message)} message={message} />
               : null}
             {message.msgType === "audio" ? <Audio key={index}
               onClick={() => handleShowBigImg(message)}

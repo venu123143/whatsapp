@@ -11,16 +11,18 @@ import { ClipLoader } from "react-spinners";
 import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
 import { SocketContext } from "../App";
+import { toast } from "react-toastify";
 
 const CreateGroup = () => {
     // const { user } = useSelector((state: RootState) => state.auth)
     const socket = useContext(SocketContext)
     const [groupImage, setGroupImage] = useState<File | null>(null);
     const dispatch: AppDispatch = useDispatch();
-    const { createGrp, selectedUsersToGroup, isLoading, isSuccess, singleGroup } = useSelector((state: RootState) => state.msg);
+    const { createGrp, selectedUsersToGroup } = useSelector((state: RootState) => state.msg);
     const [groupName, setGroupName] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
     // const [profile, setProfile] = useState("")
-    const formData = new FormData()
+    // const formData = new FormData()
 
     const handleCreateGroup = () => {
         if (groupName.trim() === "") {
@@ -28,28 +30,40 @@ const CreateGroup = () => {
         } else if (selectedUsersToGroup.length <= 0) {
             window.alert("select atleast one user to create group.")
         } else {
-            formData.append('name', groupName.trim())
-            formData.append('users', JSON.stringify(selectedUsersToGroup))
-            if (groupImage !== null) {
-                formData.append('images', groupImage)
+            setIsLoading(true)
+            const ConnectionInfo = {
+                conn_name: groupName.trim(),
+                profile: groupImage
             }
+            if (socket.connected) {
+                socket.emit("create_connection", selectedUsersToGroup, "group", ConnectionInfo, (ack: any) => {
+                    console.log(ack);
 
-            dispatch(createGroup(formData)).then(() => {
-                if (isSuccess) {
-                    setGroupName("")
-                    setGroupImage(null)
-                }
-            })
-            dispatch(toggleCreateContact(false))
-            dispatch(handleProfileOpen(true))
-            dispatch(toggleContacts(false))
+                    if (ack.error) {
+                        setIsLoading(false)
+                        toast.error(ack.error, { position: "top-left" })
+                        return
+                    }
+                    if (ack.success) {
+                        setIsLoading(false)
+                        toast.success(ack.success, { position: "top-left" })
+                        setGroupName("")
+                        setGroupImage(null)
+                        dispatch(toggleCreateGroup(false))
+                        dispatch(toggleCreateContact(false))
+                        dispatch(handleProfileOpen(true))
+                        dispatch(toggleContacts(false))
+                        return
+                    }
+                });
+            }
         }
     }
-    useEffect(() => {
-        if (singleGroup !== null && socket.connected) {
-            socket.emit("create_group", singleGroup)
-        }
-    }, [singleGroup, socket])
+    // useEffect(() => {
+    //     if (singleGroup !== null && socket.connected) {
+    //         socket.emit("create_group", singleGroup)
+    //     }
+    // }, [singleGroup, socket])
 
     // Function to handle image selection
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -8,7 +8,7 @@ import { MdBlock } from "react-icons/md";
 import { FaThumbsDown } from "react-icons/fa";
 import UserCard from '../components/cards/UserCard';
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
-import { setCurrentGrpOrUser, toggleContactInfo } from "../Redux/reducers/msg/MsgReducer";
+import { ChatUser, ConnectionResult, setCurrentGrpOrUser, toggleContactInfo } from "../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
 import { maskPhoneNumber } from "../components/cards/ReUseFunc"
@@ -19,9 +19,11 @@ const ContactInfo = () => {
     const closeContact = () => {
         dispatch(toggleContactInfo(false))
     }
-    let onClickUser = (user: UserState) => {
-        const friendIndex = friends.findIndex(f => f.socket_id === user.socket_id);
-        if (friendIndex !== -1) {
+    
+    let onClickUser = (user: ChatUser) => {
+        
+        const friendIndex = friends.map((friend) => friend.users?.includes(user))
+        if (friendIndex) {
             dispatch(setCurrentGrpOrUser(friendIndex))
         } else {
             dispatch(handleProfileOpen(true))
@@ -51,8 +53,8 @@ const ContactInfo = () => {
                         }
                     </div>
                     <div>
-                        <h3 className='text-[#d1d7db] font-Rubik tracking-wider text-[1.2rem] text-center'> {friends[currentUserIndex]?.users?.length! > 0 ? friends[currentUserIndex].name : `${maskPhoneNumber(friends[currentUserIndex].mobile as string)}`}</h3>
-                        <p className='text-center text-[#667181] font-Rubik'>~ {friends[currentUserIndex]?.users?.length! > 0 ? `Group ${friends[currentUserIndex]?.users?.length} members` : friends[currentUserIndex]?.name}</p>
+                        <h3 className='text-[#d1d7db] font-Rubik tracking-wider text-[1.2rem] text-center'> {Number(friends[currentUserIndex]?.display_name) ? maskPhoneNumber(friends[currentUserIndex]?.display_name as string) : friends[currentUserIndex]?.display_name}</h3>
+                        <p className='text-center text-[#667181] font-Rubik'>~ {friends[currentUserIndex]?.conn_type === "group" ? `Group ${friends[currentUserIndex]?.users?.length} members` : friends[currentUserIndex]?.display_name}</p>
                     </div>
                 </div>
                 <div className='p-4 px-8 bg-[#111b21] '>
@@ -62,7 +64,7 @@ const ContactInfo = () => {
                 <div className=''>
                     {
                         friends[currentUserIndex].users && friends[currentUserIndex].users?.slice().reverse().map((user, index) => {
-                            let admin = friends[currentUserIndex] && friends[currentUserIndex]?.admins!.some(admin => admin.socket_id === user.socket_id);
+                            let admin = friends[currentUserIndex] && friends[currentUserIndex]?.admins!.some(admin => admin === user._id);
                             return (
                                 <UserCard key={index} value={user} contacts={true} isAdmin={admin} handleOnClick={() => onClickUser(user)} />
                             )
@@ -76,11 +78,11 @@ const ContactInfo = () => {
                     </div>
                     <div className='text-red-600 hover:bg-[#0c1317] px-7 py-2 sm:cursor-pointer font-Rubik font-[450] gap-5 flex justify- items-center text-[1rem]'>
                         <MdBlock size={20} />
-                        <h3>Block {friends[currentUserIndex]?.name?.split(' ')[0]}</h3>
+                        <h3>Block {friends[currentUserIndex]?.display_name?.split(' ')[0]}</h3>
                     </div>
                     <div className='text-red-600 hover:bg-[#0c1317] px-7 py-2 sm:cursor-pointer font-Rubik font-[450] gap-5 flex justify- items-center text-[1rem]'>
                         <FaThumbsDown size={20} />
-                        <h3>Report {friends[currentUserIndex]?.name?.split(' ')[0]}</h3>
+                        <h3>Report {friends[currentUserIndex]?.display_name?.split(' ')[0]}</h3>
                     </div>
                 </div>
             </div>

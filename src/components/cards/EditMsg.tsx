@@ -5,13 +5,16 @@ import { BiCheckDouble } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features"
 import { AppDispatch, RootState } from "../../Redux/store";
-import { ChatMessage, updateChatMesssage } from "../../Redux/reducers/msg/MsgReducer";
+import { ChatMessage, updateChatMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { useEffect, useState } from "react";
+import { ClipLoader } from "react-spinners"
+
 import { SocketContext } from "../../App";
 const EditMsg = ({ message }: { message: ChatMessage }) => {
     const dispatch: AppDispatch = useDispatch()
     const socket = useContext(SocketContext);
     const [msg, setMsg] = useState(message?.message)
+    const [isLoading, setIsLoading] = useState(false)
     useEffect(() => {
         setMsg(message?.message)
     }, [message?.message])
@@ -21,16 +24,23 @@ const EditMsg = ({ message }: { message: ChatMessage }) => {
         setMsg(e.target.value)
     }
     const handleUpdateMsg = (e: React.FormEvent<HTMLFormElement>) => {
+
         e.preventDefault()
+        setIsLoading(true)
         if (socket.connected) {
-            socket.emit("edit_message", { ...message, message: msg })
-            dispatch(toggleEditMessage(false))
+            socket.emit("edit_message", { ...message, message: msg }, (ack: any) => {
+                setIsLoading(false)
+                dispatch(updateChatMessage(ack))
+                dispatch(toggleEditMessage(false))
+            })
         }
     }
     useEffect(() => {
         if (socket.connected) {
             socket.on("update_msg", (chat: any) => {
-                dispatch(updateChatMesssage(chat))
+                dispatch(updateChatMessage(chat))
+                setIsLoading(false)
+                dispatch(toggleEditMessage(false))
             })
             return () => {
                 socket.off("update_msg");
@@ -38,10 +48,9 @@ const EditMsg = ({ message }: { message: ChatMessage }) => {
         }
     }, [socket])
     return (
-        <div className="bg-opacity-50 bg-black ">
+        <>
             <div
-                className={`absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 ${editmsg === true ? "scale-100 transition-all delay-75 duration-300" : "scale-0 transition-all delay-75 duration-300"
-                    }  `}>
+                className={`fixed z-10 top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 transition-all delay-75 duration-150 ${editmsg === true ? "scale-100 " : "scale-0  "}  `}>
                 <div className="min-w-[150px] w-[550px] backImg bg-black shadow-md shadow-black">
                     <div className="bg-[#202c33] flex justify-start items-center h-[50px] gap-1 w-full" >
                         <div className="icons" onClick={() => dispatch(toggleEditMessage(false))}>
@@ -73,18 +82,32 @@ const EditMsg = ({ message }: { message: ChatMessage }) => {
                             />
                         </div>
                         <div className="flex w-10 items-center justify-center">
-                            <button className="flex gap-3" type="submit">
-                                <AiOutlineCheck
-                                    className="text-panel-header-icon cursor-pointer w-9 h-9 p-1 bg-[#008069] rounded-full text-white text-xl"
-                                    title="send"
-                                />
-                            </button>
+                            {
+                                isLoading === true ?
+                                    <ClipLoader
+                                        color="#36d7b7"
+                                        loading={isLoading}
+                                        aria-label="Loading Spinner"
+                                        speedMultiplier={.71}
+                                        data-testid="loader"
+                                    />
+                                    :
+                                    <button className="flex gap-3" type="submit">
+                                        <AiOutlineCheck
+                                            className="text-panel-header-icon cursor-pointer w-9 h-9 p-1 bg-[#008069] rounded-full text-white text-xl"
+                                            title="send"
+                                        />
+                                    </button>
+                            }
+
                         </div>
 
                     </form>
                 </div>
             </div>
-        </div >
+            <div className={` ${editmsg === true ? "transition-all delay-75  bg-opacity-50 w-screen fixed h-screen bg-black" : null} `}>
+            </div >
+        </ >
     );
 };
 

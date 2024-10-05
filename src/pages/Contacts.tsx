@@ -9,16 +9,17 @@ import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Fea
 import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
-import { getAllUsers } from "../Redux/reducers/msg/MsgReducer";
+import { CommonProperties, ConnectionResult, getAllUsers } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "../App";
 import UserSkeliton from "../components/reuse/UserSkeliton";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 const ContactsList = () => {
     const dispatch: AppDispatch = useDispatch();
     const navigate = useNavigate()
 
-    
+
     // const { chatArray } = useSelector((store: RootState) => store.auth);
     const { contacts, createContact } = useSelector((state: RootState) => state.features);
     const { user } = useSelector((state: RootState) => state.auth);
@@ -50,19 +51,22 @@ const ContactsList = () => {
         dispatch(toggleCreateContact(!createContact))
     }
 
-    const handleSearch = (user: any) => {
+    const handleSearch = (user: CommonProperties) => {
         const searchQuery = searchInput.toLowerCase();
-
         const isNameMatched = user.name !== undefined ? user.name.toLowerCase().includes(searchQuery) : null
         const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
-
         return isNameMatched || isMobileMatched;
     };
 
 
-    const addFriend = (user: UserState) => {
+    const createConnection = (user: UserState) => {
         if (socket.connected) {
-            socket.emit("add_friend", user);
+            socket.emit("create_connection", [user._id], "onetoone", null, (ack: any) => {
+                if (ack.error) {
+                    toast.error(ack.error, { position: "top-left" })
+                    return
+                }
+            });
         }
         dispatch(toggleContacts(false))
         setSearchInput("")
@@ -128,7 +132,7 @@ const ContactsList = () => {
                                                     {initialLetter}
                                                 </div>
                                                 {filteredUsers.map((user: any, idx: number) => (
-                                                    <SingleChat key={idx} value={user} contacts={true} handleOnClick={() => addFriend(user)} />
+                                                    <SingleChat key={idx} value={user} contacts={true} handleOnClick={() => createConnection(user)} />
                                                 ))}
                                             </div>
                                         );

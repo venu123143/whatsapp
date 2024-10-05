@@ -5,13 +5,13 @@ import { useDispatch } from "react-redux";
 import { getStream, stopStream } from "./UseVideoCustom";
 import { pcConfig } from "../../static/Static"
 import { toast } from 'react-toastify'
-import { CommonProperties } from "../../Redux/reducers/msg/MsgReducer";
+import { CommonProperties, ConnectionResult } from "../../Redux/reducers/msg/MsgReducer";
 import { Socket } from "socket.io-client";
 import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer";
 
 interface UseVideoParams {
     callSocket: Socket<any>;
-    friends: CommonProperties[];
+    friends: ConnectionResult[];
     currentUserIndex: number;
     setCallStarted: React.Dispatch<SetStateAction<boolean>>;
     incomingCallSound: React.MutableRefObject<HTMLAudioElement>;
@@ -53,7 +53,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
                 console.log(event.candidate);
                 
                 if (event.candidate) {
-                    callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+                    callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].room_id });
                 }
             };
             const dataChannel = peerConnection.createDataChannel("chat");
@@ -65,7 +65,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
             // Create Offer
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            callSocket.emit('call-offer', { offer, to: friends[currentUserIndex].socket_id });
+            callSocket.emit('call-offer', { offer, to: friends[currentUserIndex].room_id });
 
             dispatch(setIsCalling(true))
 
@@ -91,7 +91,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
             peerConnectionRef.current = peerConnection;
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
-                    callSocket.emit('ice-candidate-answer', { candidate: event.candidate, to: friends[currentUserIndex].socket_id });
+                    callSocket.emit('ice-candidate-answer', { candidate: event.candidate, to: friends[currentUserIndex].room_id });
                 }
             };
             peerConnection.ontrack = (event) => {
@@ -119,7 +119,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
             stream.getTracks().forEach(track => peerConnectionRef?.current?.addTrack(track, stream));
             const answer = await peerConnection.createAnswer();
             await peerConnectionRef.current?.setLocalDescription(answer);
-            callSocket.emit('call-answer', { answer, to: friends[currentUserIndex].socket_id });
+            callSocket.emit('call-answer', { answer, to: friends[currentUserIndex].room_id });
             dispatch(setIsCalling(true))
             dispatch(setStartCall({ userId: friends[currentUserIndex]._id, call: false }))
             incomingCallSound.current.pause();

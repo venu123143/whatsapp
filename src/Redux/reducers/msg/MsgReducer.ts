@@ -4,9 +4,55 @@ import { toast } from "react-toastify";
 import msgService from "./MsgService";
 import { UserState } from "../Auth/AuthReducer";
 // import { dummyMessages } from "../../../static/Static"
+type connType = "onetoone" | "group";
+interface ReplyFor {
+    id: string
+    name: string | null;
+    message: string
+}
 
+export interface ChatUser {
+    _id: string;
+    name?: string
+    display_name: string
+    phoneNumber: string
+}
+export interface IMessage {
+    _id?: string;
+    room_id: string;
+    message: string;
+    date: string;
+    msgType: "text" | "audio" | "file" | "image";
+    conn_type: connType;
+    seen: boolean;
+    send: boolean;
+    isMyMsg: boolean;
+    sender: {
+        id: string;
+        name?: string;
+        mobile: string;
+        profile?: string;
+    };
+    replyFor: ReplyFor | null;
+    file?: string | null;
+}
 
 // const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
+export interface ConnectionResult {
+    _id: string;
+    room_id: string;
+    conn_type: string;
+    messages: IMessage[];
+    lastMessage: IMessage;
+    display_name: string;
+    profile: string;
+    about: string | null;
+    admins: string[];
+    users: ChatUser[] | null;
+    online_status: boolean;
+    unreadCount: number;
+}
+
 
 export interface AppState {
     currentUserIndex: any;
@@ -15,7 +61,7 @@ export interface AppState {
     screen: boolean;
     users: CommonProperties[];
     groups: IGroup[];
-    friends: CommonProperties[];
+    friends: ConnectionResult[];
     singleGroup: IGroup | null;
     isError: boolean;
     isLoading: boolean;
@@ -78,12 +124,13 @@ const initialState: AppState = {
     isRecord: false
 };
 export interface ChatMessage {
+    _id?: string
+    room_id?: string;
     message: string;
     date: string;
     right: boolean;
     msgType: string;
     senderId: string
-    recieverId: string;
     conn_type: string;
     seen: boolean;
     file?: any
@@ -169,45 +216,67 @@ const msgSlice = createSlice({
         setCurrentLoading: (state, action) => {
             state.isCurrentLoading = action.payload;
         },
-        handleSendMessage: (state, action: PayloadAction<ChatMessage>) => {
-            // state.friends[state.currentUserIndex].chat.push(action.payload)
-            // state.friends[state.currentUserIndex].lastMessage = action.payload
-            const updatedFriends = [...state.friends];
-            const updatedChat = [...updatedFriends[state.currentUserIndex].chat, action.payload];
-            updatedFriends[state.currentUserIndex] = {
-                ...updatedFriends[state.currentUserIndex],
-                chat: updatedChat,
-                lastMessage: action.payload
-            };
+        handleSendMessage: (state, action: PayloadAction<IMessage>) => {
+            const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
 
-            state.friends = updatedFriends;
-            state.currentUserIndex = 0
-            state.friends.sort((a, b) => {
-                const lastMessageA = a.lastMessage;
-                const lastMessageB = b.lastMessage;
-                if (!lastMessageA && !lastMessageB) {
-                    return 0;
-                } else if (!lastMessageA) {
-                    return 1;
-                } else if (!lastMessageB) {
-                    return -1;
+            if (friend) {
+                const msgIdx = friend.messages.findIndex((msg: any) => new Date(msg.date).getTime() === new Date(action.payload.date).getTime());
+                if (msgIdx !== -1) {
+                    // Update the specific message within the `messages` array
+                    friend.messages[msgIdx] = action.payload;
+                    friend.lastMessage = action.payload;
                 } else {
-                    return new Date(lastMessageB.date).getTime() - new Date(lastMessageA.date).getTime();
+                    friend.messages.push(action.payload);
+                    friend.lastMessage = action.payload;
                 }
-            });
-        },
-        handleRecieveMessage: (state, action: PayloadAction<ChatMessage>) => {
-            let idx;
-            if (action.payload.conn_type === 'group') {
-                idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.recieverId.toString())
-            } else {
-                idx = state.friends.findIndex((friend) => friend.socket_id.toString() === action.payload.senderId.toString())
-                state.friends[idx].unreadCount += 1
-                state.friends[idx].lastMessage = action.payload
             }
+            // const copy = [...state.friends]
+            // const currentChat = copy.filter((friend: ConnectionResult) => friend.room_id === action.payload.room_id);
+            // if (currentChat.length > 0) {
+            //     if (action.payload.send) {
+            //         const messageIndex = currentChat[0].messages.findIndex(
+            //             (msg: any) => new Date(msg.date).getTime() === new Date(action.payload.date).getTime()
+            //         );
+            //         if (messageIndex !== -1) {
+            //             currentChat[0].messages[messageIndex] = action.payload;
+            //             currentChat[0].lastMessage = action.payload;
+            //         }
+            //     } else {
+            //         currentChat[0].messages.push(action.payload);
+            //         currentChat[0].lastMessage = action.payload;
+            //     }
+            // }
 
-            state.friends[idx].chat.push(action.payload)
+            // const remainingChat = state.friends.filter((friend: any) => friend.room_id !== action.payload.room_id);
+            // const updatedFriends = [...currentChat, ...remainingChat];
+            // state.friends = updatedFriends;
+            state.friends.sort((a, b) => {
+                const lastMessageA = a.lastMessage;
+                const lastMessageB = b.lastMessage;
+                if (!lastMessageA && !lastMessageB) {
+                    return 0;
+                } else if (!lastMessageA) {
+                    return 1;
+                } else if (!lastMessageB) {
+                    return -1;
+                } else {
+                    return new Date(lastMessageB.date).getTime() - new Date(lastMessageA.date).getTime();
+                }
+            });
+            state.currentUserIndex = 0
+        },
+        handleRecieveMessage: (state, action: PayloadAction<IMessage>) => {
+            const friend = state.friends.filter((friend) => friend.room_id === action.payload.room_id)[0]
+            const remainingChat = state.friends.filter((friend: any) => friend.room_id !== action.payload.room_id);
 
+            friend.messages = [...friend.messages, action.payload];
+            friend.lastMessage = action.payload;
+            if (state.friends[state.currentUserIndex] !== friend) {
+                friend.unreadCount += 1;
+            }
+            const updatedFriends = [friend, ...remainingChat];
+            state.friends = updatedFriends
+            // Sort friends by the most recent last message date
             state.friends.sort((a, b) => {
                 const lastMessageA = a.lastMessage;
                 const lastMessageB = b.lastMessage;
@@ -222,44 +291,45 @@ const msgSlice = createSlice({
                 }
             });
         },
+
         makeUnreadCountZero: (state) => {
             state.friends[state.currentUserIndex].unreadCount = 0
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
-            const { recieverId, date } = action.payload;
-            const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
-            if (friend) {
-                // Update the seen status of the message in the friend's chat
-                friend.chat.forEach((msg: any, index: number) => {
-                    if (msg.date === date) {
-                        friend.chat[index] = action.payload
-                    }
-                });
-                friend.unreadCount = 0
-            }
+            // const { recieverId, date } = action.payload;
+            // const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
+            // if (friend) {
+            //     // Update the seen status of the message in the friend's chat
+            //     friend.chat.forEach((msg: any, index: number) => {
+            //         if (msg.date === date) {
+            //             friend.chat[index] = action.payload
+            //         }
+            //     });
+            //     friend.unreadCount = 0
+            // }
         },
         handleSetFriends: (state, action) => {
-            let isUserOrGrpAlreadyExists;
-            if (action.payload.users && action.payload.users.length > 0) {
-                isUserOrGrpAlreadyExists = state.friends.some(user => user.socket_id?.toString() === action.payload.socket_id.toString());
-            } else {
-                isUserOrGrpAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
-            }
-            if (!isUserOrGrpAlreadyExists) {
-                state.friends.unshift(action.payload)
-            }
-            state.isLoading = false
+            // let isUserOrGrpAlreadyExists;
+            // if (action.payload.users && action.payload.users.length > 0) {
+            //     isUserOrGrpAlreadyExists = state.friends.some(user => user.socket_id?.toString() === action.payload.socket_id.toString());
+            // } else {
+            //     isUserOrGrpAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
+            // }
+            // if (!isUserOrGrpAlreadyExists) {
+            //     state.friends.unshift(action.payload)
+            // }
+            // state.isLoading = false
         },
         handleSetStatus: (state, action) => {
-            const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
-            if (friend) {
-                friend.online_status = action.payload?.status
-            }
+            // const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
+            // if (friend) {
+            //     friend.online_status = action.payload?.status
+            // }
         },
-        updateLastMessage: (state, action) => {
-            const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
+        updateLastMessage: (state, action: PayloadAction<ChatMessage>) => {
+            const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
             if (friend) {
-                friend.lastMessage = action.payload
+                //     friend.lastMessage = action.payload
             }
         },
         handleSetAllUsersChat: (state, action) => {
@@ -271,10 +341,14 @@ const msgSlice = createSlice({
         handleEditMsg: (state, action) => {
             state.editMessage = action.payload
         },
-        updateChatMesssage: (state, action) => {
-            const friend = state.friends.find(frnd => frnd.socket_id === action.payload[0].recieverId);
+        updateChatMessage: (state, action: PayloadAction<IMessage>) => {
+            const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
             if (friend) {
-                friend.chat = action.payload
+                const msgIdx = friend.messages.findIndex(msg => msg._id === action.payload?._id);
+                if (msgIdx !== -1) {
+                    // Update the specific message within the `messages` array
+                    friend.messages[msgIdx] = action.payload;
+                }
             }
         }
     },
@@ -373,5 +447,5 @@ const msgSlice = createSlice({
 
 export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat, handleSetReply, handleEditMsg,
     updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
-    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser, updateChatMesssage, toggleContactInfo } = msgSlice.actions
+    storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser, updateChatMessage, toggleContactInfo } = msgSlice.actions
 export default msgSlice.reducer

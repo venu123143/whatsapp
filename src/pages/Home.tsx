@@ -19,6 +19,7 @@ import { Message } from "../components/interfaces/CallInterface"
 import { SocketContext } from "../App"
 import ImageModal from '../components/reuse/ImgModel'
 import { setIsFullscreen } from '../Redux/reducers/utils/Features';
+import EditMsg from '../components/cards/EditMsg'
 
 const cssOverride: CSSProperties = {
 }
@@ -33,7 +34,7 @@ const Home = () => {
   const socket = useContext(SocketContext)
 
   // const [socket, setSocket] = useState({} as Socket)
-  const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
+  const { createGrp, currentUserIndex, friends, users, editMessage } = useSelector((state: RootState) => state.msg);
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
   const { currentImage } = useSelector((state: RootState) => state.features);
   const [lstMsg, setLstMsg] = useState<any>(null)
@@ -160,7 +161,7 @@ const Home = () => {
       connectionTimeout.current = setTimeout(() => {
         if (peerConnectionRef.current?.iceConnectionState !== 'connected') {
           handleEndCall();
-          callSocket.emit('stop-call', { to: friends[currentUserIndex]?.socket_id });
+          callSocket.emit('stop-call', { to: friends[currentUserIndex]?.room_id });
           toast.error("Connection timeout. Please try again.", { position: "top-left" });
         }
       }, 30000);
@@ -229,6 +230,8 @@ const Home = () => {
                   onClose={closeModal}
                 />
               </div>
+              <EditMsg message={editMessage} />
+
               <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
                 <RingLoader
                   color="#36d7b7"

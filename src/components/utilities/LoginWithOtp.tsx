@@ -26,7 +26,6 @@ const LoginWithOtp = () => {
     const dispatch: AppDispatch = useDispatch()
     const [err, setErr] = useState("")
     const [color, setColor] = useState("")
-    console.log(isLoading, "isLoading");
 
     const override: CSSProperties = {
         display: "block",

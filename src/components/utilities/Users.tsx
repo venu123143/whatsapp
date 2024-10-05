@@ -9,7 +9,7 @@ import CreateContact from './CreateContact'
 import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
-import { CommonProperties, handleSetStatus, setCurrentGrpOrUser } from '../../Redux/reducers/msg/MsgReducer'
+import { CommonProperties, handleSetStatus, setCurrentGrpOrUser, ConnectionResult } from '../../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../../App"
 // import { ClipLoader } from 'react-spinners'
 import UserSkeliton from '../reuse/UserSkeliton'
@@ -21,18 +21,19 @@ const Users = () => {
   const { user, startCall } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
-  const handleOnClick = async (friend: CommonProperties) => {
+  const handleOnClick = async (friend: ConnectionResult) => {
+
     const friendIndex = friends.findIndex((f) => f === friend);
     if (friendIndex !== -1) {
       dispatch(setCurrentGrpOrUser(friendIndex))
     }
-    const data = {
-      senderId: user?.socket_id,
-      recieverId: friends[friendIndex].socket_id
-    }
-    if (socket.connected) {
-      socket.emit('online_status', data)
-    }
+    // const data = {
+    //   senderId: user?.socket_id,
+    //   recieverId: friends[friendIndex].socket_id
+    // }
+    // if (socket.connected) {
+    //   socket.emit('online_status', data)
+    // }
 
   }
 
@@ -49,10 +50,10 @@ const Users = () => {
     }
   }, [socket])
 
-  const handleSearch = (user: any) => {
+  const handleSearch = (user: ConnectionResult) => {
     const searchQuery = chatSearchValue.toLowerCase();
-    const isNameMatched = user.name !== undefined ? user.name.toLowerCase().includes(searchQuery) : null
-    const isMobileMatched = user.mobile && user.mobile.toLowerCase().includes(searchQuery);
+    const isNameMatched = user.display_name !== undefined ? user.display_name.toLowerCase().includes(searchQuery) : null
+    const isMobileMatched = user.display_name && user.display_name.toLowerCase().includes(searchQuery);
     return isNameMatched || isMobileMatched;
   };
   const skeliton = new Array(20).fill(0)
@@ -90,7 +91,7 @@ const Users = () => {
                   <button onClick={() => dispatch(toggleContacts(true))} className='text-black font-Rubik shadow-white shadow-sm hover:scale-105  px-3 py-2 border rounded-sm bg-[#02a698] before:w-0  transition-all'>add contact</button>
                 </div>
               </> :
-                friends.filter(handleSearch).map((each: CommonProperties, index: number) => {
+                friends.filter(handleSearch).map((each: ConnectionResult, index: number) => {
                   let call = each._id === startCall.userId && startCall.call === true
                   return (
                     <UserCard key={index} startCall={call} value={each} handleOnClick={() => handleOnClick(each)} />

@@ -7,16 +7,18 @@ import React, { useRef } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
 import { FaCircleChevronDown } from "react-icons/fa6";
-import { ChatMessage, handleEditMsg, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
+import { ChatMessage, handleEditMsg, handleSetReply, IMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
+import { LuTimer } from "react-icons/lu";
 
-const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {
+const Message = ({ message, color, scrollToMessage, index }: { message: IMessage, color: string, scrollToMessage: any, index: number }) => {
+
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
     const messageRef = useRef<HTMLDivElement>(null);
     const dispatch: AppDispatch = useDispatch()
 
-    function renderMessageWithLinks(message: ChatMessage) {
+    function renderMessageWithLinks(message: IMessage) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return message.message.split(urlRegex).map((part, index) => {
             if (part.match(urlRegex)) {
@@ -36,23 +38,28 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
     }
     const editMessage = () => {
         dispatch(toggleEditMessage(true))
-        let users = message.conn_type === "group" ? friends[currentUserIndex].users : null
-        dispatch(handleEditMsg({ ...message, index: index, users }))
+        // let users = message.conn_type === "group" ? friends[currentUserIndex].users : null
+        dispatch(handleEditMsg({ ...message, index: index }))
+    }
+    const deleteMessage = () => {
+        dispatch(toggleEditMessage(true))
+        // let users = message.conn_type === "group" ? friends[currentUserIndex].users : null
+        // dispatch(handleEditMsg({ ...message, index: index, users }))
     }
 
     return (
-        <div ref={messageRef} id={`message-${message.date}`} className={`flex ${message.right === true ? null : "flex-row-reverse"} `}>
-            <div className={`${message.right === true
+        <div ref={messageRef} id={`message-${message._id ? message._id : index}`} className={`flex ${message.isMyMsg === true ? null : "flex-row-reverse"} `}>
+            <div className={`${message.isMyMsg === true
                 ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
                 : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
                 } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  px-1 py-1 `} >
 
-                <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
+                <h3 className={`${message.isMyMsg === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.sender.name ? message.sender.name : message.sender.mobile}</h3>
                 {
                     message.replyFor && (
-                        <a href="#" onClick={() => scrollToMessage(message.replyFor.date)} className={`${message.right === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-1 mb-1 rounded-lg font-[450] border-l-4`}>
-                            <p className={`${message.right === true ? "text-[#06cf9c]" : "text-[#53bdeb]"} text-[.91rem] font-semibold line-clamp-1`}>{message.replyFor?.senderName}</p>
-                            <p className={`${message.right === true ? "text-[#ffffff99]" : "text-slate-500 "}text-[.91rem]  line-clamp-1`}>{message.replyFor?.message}</p>
+                        <a href="#" onClick={() => scrollToMessage(message.replyFor?.id)} className={`${message.isMyMsg === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-1 mb-1 rounded-lg font-[450] border-l-4`}>
+                            <p className={`${message.isMyMsg === true ? "text-[#06cf9c]" : "text-[#53bdeb]"} text-[.91rem] font-semibold line-clamp-1`}>{message.replyFor?.name}</p>
+                            <p className={`${message.isMyMsg === true ? "text-[#ffffff99]" : "text-slate-500 "}text-[.91rem]  line-clamp-1`}>{message.replyFor?.message}</p>
                         </a>
                     )
                 }
@@ -66,34 +73,36 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
                             hour12: true,
                             minute: "numeric",
                         })}
-                        {message.seen === true ?
-                            <BiCheckDouble
-                                className={`${message.right === true ? "inline text-[#4FB6EC]" : "hidden"
-                                    }`}
-                                size={20}
-                            /> :
-                            friends[currentUserIndex]?.online_status === "true" ?
-                                <BiCheckDouble
-                                    className={`${message.right === true ? "inline text-[#ffffff99]" : "hidden"
+                        {
+                            message.send === false ?
+                                <LuTimer size={15} className={`${message.isMyMsg === true ? "inline text-[#ffffff99]" : "hidden"}`} />
+                                :
+                                message.seen === true ? <BiCheckDouble
+                                    className={`${message.isMyMsg === true ? "inline text-[#4FB6EC]" : "hidden"
                                         }`}
                                     size={20}
                                 /> :
-                                <BiCheck
-                                    className={`${message.right === true ? "inline text-[#f0f2f5]" : "hidden"
-                                        }`}
-                                    size={20}
-                                />
-
+                                    friends[currentUserIndex]?.online_status === true ?
+                                        <BiCheckDouble
+                                            className={`${message.isMyMsg === true ? "inline text-[#ffffff99]" : "hidden"
+                                                }`}
+                                            size={20}
+                                        /> :
+                                        <BiCheck
+                                            className={`${message.isMyMsg === true ? "inline text-[#f0f2f5]" : "hidden"
+                                                }`}
+                                            size={20}
+                                        />
                         }
                     </span>
-                    <span className={`${message.right === true ? "bg-[#008069] " : "bg-[#233138] "} 
+                    <span className={`${message.isMyMsg === true ? "bg-[#008069] " : "bg-[#233138] "} 
                     absolute top-0 right-2 group-hover:translate-y-0 translate-y-5 group-hover:visible invisible transition-all shadow-sm
                      shadow-black  p-1 rounded-b-full sm:cursor-pointer`}
                         onClick={handleToggleOptions}>
                         <AiOutlineDown size={15} />
                     </span>
                 </span>
-                <div style={message.right === true ? { top: 0, right: 50 } : { top: 0, left: 100 }}
+                <div style={message.isMyMsg === true ? { top: 0, right: 50 } : { top: 0, left: 100 }}
                     className={`${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                     msgOptions `}>
                     <div className="" >
@@ -101,10 +110,12 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
                             <span>reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>
-                        {message.right === true &&
+                        {message.isMyMsg === true &&
                             <button onClick={editMessage} className="options" role="menuitem" id="menu-item-0">edit</button>
                         }
-                        <Link to="#" className="options">delete Me</Link>
+                        {message.isMyMsg === true &&
+                            <button onClick={deleteMessage} className="options" role="menuitem" id="menu-item-0">Delete Me</button>
+                        }
                         <Link to="#" className="options">delete All</Link>
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>
                     </div>
@@ -118,7 +129,7 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
                 )}
             </div> */}
 
-            {message.right === true ? (
+            {message.isMyMsg === true ? (
                 <span>
                     <svg
                         className={`ml-auto text-[#008069]  block align-middle`}
