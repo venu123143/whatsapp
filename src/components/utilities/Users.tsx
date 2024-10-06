@@ -18,37 +18,24 @@ import { toggleContacts } from "../..//Redux/reducers/utils/Features";
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
   const { chatSearchValue, friends, users, isLoading } = useSelector((state: RootState) => state.msg)
-  const { user, startCall } = useSelector((state: RootState) => state.auth)
+  const { startCall, user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
   const handleOnClick = async (friend: ConnectionResult) => {
-
     const friendIndex = friends.findIndex((f) => f === friend);
     if (friendIndex !== -1) {
       dispatch(setCurrentGrpOrUser(friendIndex))
     }
-    // const data = {
-    //   senderId: user?.socket_id,
-    //   recieverId: friends[friendIndex].socket_id
-    // }
-    // if (socket.connected) {
-    //   socket.emit('online_status', data)
-    // }
-
-  }
-
-  useEffect(() => {
-    if (socket.connected) {
-      socket.on('user_status', (status) => {
-        dispatch(handleSetStatus(status))
-      })
-      return () => {
-        if (socket.connected) {
-          socket.off("user_status");
-        }
-      };
+    const data = {
+      room_id: friend.room_id,
+      user_id: friend.conn_type === "onetoone" ? friend.users?.filter((users) => users._id !== user?._id)[0] : null
     }
-  }, [socket])
+    if (socket.connected) {
+      socket.emit('online_status', data, (ack: any) => {
+        dispatch(handleSetStatus(ack))
+      })
+    }
+  }
 
   const handleSearch = (user: ConnectionResult) => {
     const searchQuery = chatSearchValue.toLowerCase();

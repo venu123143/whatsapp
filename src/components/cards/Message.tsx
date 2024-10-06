@@ -7,8 +7,8 @@ import React, { useRef } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
 import { FaCircleChevronDown } from "react-icons/fa6";
-import { ChatMessage, handleEditMsg, handleSetReply, IMessage } from "../../Redux/reducers/msg/MsgReducer";
-import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
+import { handleEditMsg, handleSetReply, IMessage } from "../../Redux/reducers/msg/MsgReducer";
+import { toggleDeleteMessage, toggleEditMessage } from "../../Redux/reducers/utils/Features";
 import { LuTimer } from "react-icons/lu";
 
 const Message = ({ message, color, scrollToMessage, index }: { message: IMessage, color: string, scrollToMessage: any, index: number }) => {
@@ -23,6 +23,8 @@ const Message = ({ message, color, scrollToMessage, index }: { message: IMessage
         return message.message.split(urlRegex).map((part, index) => {
             if (part.match(urlRegex)) {
                 return <a key={index} href={part} target="_blank" className="text-[#0000EE] hover:text-[#2e3336] focus:text-[#551A8B] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
+            } else if (part.includes("This message is deleted")) {
+                return <span className="deleted-msg-style" key={index}>{part}</span>;
             } else {
                 return <span key={index}>{part}</span>;
             }
@@ -42,7 +44,8 @@ const Message = ({ message, color, scrollToMessage, index }: { message: IMessage
         dispatch(handleEditMsg({ ...message, index: index }))
     }
     const deleteMessage = () => {
-        dispatch(toggleEditMessage(true))
+        dispatch(toggleDeleteMessage(true))
+        dispatch(handleEditMsg({ ...message, index: index }))
         // let users = message.conn_type === "group" ? friends[currentUserIndex].users : null
         // dispatch(handleEditMsg({ ...message, index: index, users }))
     }
@@ -57,13 +60,13 @@ const Message = ({ message, color, scrollToMessage, index }: { message: IMessage
                 <h3 className={`${message.isMyMsg === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.sender.name ? message.sender.name : message.sender.mobile}</h3>
                 {
                     message.replyFor && (
-                        <a href="#" onClick={() => scrollToMessage(message.replyFor?.id)} className={`${message.isMyMsg === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-1 mb-1 rounded-lg font-[450] border-l-4`}>
+                        <a href="#" onClick={() => scrollToMessage(message.replyFor?.id)} className={`${message.isMyMsg === true ? "bg-[#2e3f3a]  border-[#06cf9c]" : "bg-[#2e3f3a] border-[#53bdeb]"} max-w-sm flex flex-col bg-opacity-50 justify-center px-1 py-2 mb-1 rounded-lg font-[450] border-l-4`}>
                             <p className={`${message.isMyMsg === true ? "text-[#06cf9c]" : "text-[#53bdeb]"} text-[.91rem] font-semibold line-clamp-1`}>{message.replyFor?.name}</p>
                             <p className={`${message.isMyMsg === true ? "text-[#ffffff99]" : "text-slate-500 "}text-[.91rem]  line-clamp-1`}>{message.replyFor?.message}</p>
                         </a>
                     )
                 }
-                <span className={`"break-words ${message.replyFor !== null ? "px-1" : null} `}>
+                <span className={`" ${message.replyFor !== null ? "px-1" : null} `}>
                     {renderMessageWithLinks(message)}
                 </span>
                 <span className=" flex h-fit w-fit ml-auto items-end justify-end">

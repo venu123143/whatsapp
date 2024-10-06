@@ -48,7 +48,7 @@ export interface ConnectionResult {
     profile: string;
     about: string | null;
     admins: string[];
-    users: ChatUser[] | null;
+    users: ChatUser[];
     online_status: boolean;
     unreadCount: number;
 }
@@ -230,26 +230,6 @@ const msgSlice = createSlice({
                     friend.lastMessage = action.payload;
                 }
             }
-            // const copy = [...state.friends]
-            // const currentChat = copy.filter((friend: ConnectionResult) => friend.room_id === action.payload.room_id);
-            // if (currentChat.length > 0) {
-            //     if (action.payload.send) {
-            //         const messageIndex = currentChat[0].messages.findIndex(
-            //             (msg: any) => new Date(msg.date).getTime() === new Date(action.payload.date).getTime()
-            //         );
-            //         if (messageIndex !== -1) {
-            //             currentChat[0].messages[messageIndex] = action.payload;
-            //             currentChat[0].lastMessage = action.payload;
-            //         }
-            //     } else {
-            //         currentChat[0].messages.push(action.payload);
-            //         currentChat[0].lastMessage = action.payload;
-            //     }
-            // }
-
-            // const remainingChat = state.friends.filter((friend: any) => friend.room_id !== action.payload.room_id);
-            // const updatedFriends = [...currentChat, ...remainingChat];
-            // state.friends = updatedFriends;
             state.friends.sort((a, b) => {
                 const lastMessageA = a.lastMessage;
                 const lastMessageB = b.lastMessage;
@@ -268,6 +248,7 @@ const msgSlice = createSlice({
         handleRecieveMessage: (state, action: PayloadAction<IMessage>) => {
             const friend = state.friends.filter((friend) => friend.room_id === action.payload.room_id)[0]
             const remainingChat = state.friends.filter((friend: any) => friend.room_id !== action.payload.room_id);
+            const friendIdx = state.friends.findIndex(frnd => frnd.room_id === action.payload.room_id);
 
             friend.messages = [...friend.messages, action.payload];
             friend.lastMessage = action.payload;
@@ -290,6 +271,10 @@ const msgSlice = createSlice({
                     return new Date(lastMessageB.date).getTime() - new Date(lastMessageA.date).getTime();
                 }
             });
+
+            if (state.currentUserIndex === 0 && friendIdx !== 0) {
+                state.currentUserIndex = state.currentUserIndex + 1
+            }
         },
 
         makeUnreadCountZero: (state) => {
@@ -321,9 +306,12 @@ const msgSlice = createSlice({
             // state.isLoading = false
         },
         handleSetStatus: (state, action) => {
+            const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
+            if (friend) {
+                friend.online_status = action.payload?.online_status
+            }
             // const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
             // if (friend) {
-            //     friend.online_status = action.payload?.status
             // }
         },
         updateLastMessage: (state, action: PayloadAction<ChatMessage>) => {

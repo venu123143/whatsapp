@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -12,7 +12,7 @@ import {
   setShowAttachFiles,
 } from "../../Redux/reducers/utils/utilReducer";
 import ImageComp from "./ImageComp";
-import {  handleSendMessage, IMessage } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, IMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
 import { formatDate } from "../cards/ReUseFunc"
 import { SocketContext } from "../../App";
@@ -20,28 +20,31 @@ import { recieveColors } from "../../static/Static";
 import Audio from "./Audio";
 import IncomingCall from "../cards/IncommingCall";
 
+
+const getRandomColors = (count: number, recieveColors: Record<string, string>): string[] => {
+  const colors = Object.keys(recieveColors);
+  const result: string[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const randomColorIndex = Math.floor(Math.random() * colors.length);
+    result.push(recieveColors[colors[randomColorIndex]]);
+  }
+
+  return result;
+};
 const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessage: (messageId: string) => void, handleOffer: () => void, rejectCall: () => void }) => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const { user, startCall } = useSelector((state: RootState) => state.auth)
-  const [colors, setColors] = useState<string[]>([])
+  // const [colors, setColors] = useState<string[]>([])
   const chats = friends[currentUserIndex]?.messages
   // const curt = friends[currentUserIndex]
   const currChatImages = friends[currentUserIndex] && friends[currentUserIndex]?.messages.filter((msg: any) => msg?.msgType === "image")
 
-  const getRandomColors = (count: number): string[] => {
-    const colors = Object.keys(recieveColors);
-    const result: string[] = [];
+  const colors = useMemo(() => getRandomColors(friends[currentUserIndex]?.messages?.length, recieveColors), [friends[currentUserIndex]?.messages?.length, recieveColors]);
 
-    for (let i = 0; i < count; i++) {
-      const randomColorIndex = Math.floor(Math.random() * colors.length);
-      result.push(recieveColors[colors[randomColorIndex]]);
-    }
-
-    return result;
-  };
 
 
   const isFirstMessageOfDay = (currentMessage: any, previousMessage: any) => {
@@ -59,8 +62,6 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
       if (unread.length > 0 && friends[currentUserIndex].room_id === unread[0].room_id) {
         socket.emit("update_seen", unread)
       }
-      const colors = getRandomColors(friends[currentUserIndex]?.messages?.length)
-      setColors(colors)
     }
   }, [currentUserIndex])
 

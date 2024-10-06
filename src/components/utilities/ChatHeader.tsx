@@ -24,7 +24,7 @@ const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
   }
   useEffect(() => {
     // Check if 'users' array exists in currentUserorGroup
-    if (friends[currentUserIndex]?.users?.length! > 0) {
+    if (friends[currentUserIndex]?.conn_type === "group") {
       const usersString = friends[currentUserIndex]?.users ? getUsersString(friends[currentUserIndex]?.users) : "";
       setGrpUsers(usersString);
     } else {

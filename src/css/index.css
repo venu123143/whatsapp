@@ -519,4 +519,10 @@ h3 {
 	}
 }
 
-/* recording */
+/* deletedmsg */
+.deleted-msg-style {
+    color: #ffcc00; /* Customize the color for deleted messages */
+    font-style: italic;
+    text-decoration: line-through;
+    opacity: 0.7; /* Add transparency for a muted effect */
+}

@@ -1,4 +1,4 @@
-export const formatDate = (inputDate: Date) => {
+export const formatDate = (inputDate: string) => {
     const today = new Date();
     const messageDate = new Date(inputDate);
 
