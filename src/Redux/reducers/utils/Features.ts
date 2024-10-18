@@ -22,6 +22,7 @@ interface InitialState {
   currentImage: any;
   zoomLevel: number;
   isRecord: boolean;
+  images: any[];
   currentIndex: number | null;
 }
 
@@ -44,7 +45,8 @@ const initialState: InitialState = {
   isFullscreen: false,
   currentIndex: null,
   zoomLevel: 1,
-  isRecord: false
+  isRecord: false,
+  images: []
 };
 export const getAllUsers = createAsyncThunk("features/getAllUsers", async (_, thunkAPI) => {
   try {
@@ -103,6 +105,7 @@ export const FeatureSlice = createSlice({
       state.isFullscreen = action.payload.isFullscreen;
       state.zoomLevel = action.payload.zoomLevel;
       state.currentIndex = action.payload.currentIndex;
+      state.images = action.payload.images
     },
     setCurrentIndex: (state, action) => {
       state.currentIndex = action.payload

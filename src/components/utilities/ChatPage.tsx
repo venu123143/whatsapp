@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -14,27 +14,35 @@ import {
 import ImageComp from "./ImageComp";
 import { ChatMessage, handleSendMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../../Redux/reducers/utils/Features";
-import ShowFullImg from "./ShowFullImg";
 import { formatDate } from "../cards/ReUseFunc"
-import { SocketContext } from "../../pages/Home"
-import { recieveColors, ReceiveColors } from "../../static/Static";
+import { SocketContext } from "../../App";
+import { recieveColors } from "../../static/Static";
 import Audio from "./Audio";
+import IncomingCall from "../cards/IncommingCall";
 
-const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) => void }) => {
+const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessage: (messageId: string) => void, handleOffer: () => void, rejectCall: () => void }) => {
   const dispatch: AppDispatch = useDispatch()
   const socket = useContext(SocketContext);
   const { showAttachFiles, } = useSelector((state: RootState) => state.utils);
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
-  const { user } = useSelector((state: RootState) => state.auth)
-  const currChatImages = friends[currentUserIndex].chat.filter((msg: any) => msg?.msgType === "image")
+  const { user, startCall } = useSelector((state: RootState) => state.auth)
+  const [colors, setColors] = useState<string[]>([])
   const chats = friends[currentUserIndex]?.chat
+  const currChatImages = friends[currentUserIndex] && friends[currentUserIndex]?.chat.filter((msg: any) => msg?.msgType === "image")
 
-
-  const getRandomColor = () => {
+  const getRandomColors = (count: number): string[] => {
     const colors = Object.keys(recieveColors);
-    const randomColorIndex = Math.floor(Math.random() * colors.length);
-    return recieveColors[colors[randomColorIndex]] as keyof ReceiveColors
+    const result: string[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const randomColorIndex = Math.floor(Math.random() * colors.length);
+      result.push(recieveColors[colors[randomColorIndex]]);
+    }
+
+    return result;
   };
+
+
   const isFirstMessageOfDay = (currentMessage: any, previousMessage: any) => {
     if (!previousMessage) {
       return true;
@@ -50,6 +58,8 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
       if (unread.length > 0 && friends[currentUserIndex].socket_id === unread[0].senderId) {
         socket.emit("update_seen", unread)
       }
+      const colors = getRandomColors(friends[currentUserIndex]?.chat?.length)
+      setColors(colors)
     }
   }, [currentUserIndex])
 
@@ -66,7 +76,6 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
 
       reader.onloadend = () => {
         const base64data = reader.result?.toString();
-        console.log("base64data");
 
         const serializedValues: ChatMessage = {
           message: 'image',
@@ -86,38 +95,41 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
       };
     };
 
-    imagesArray.forEach((image, index) => {
-      console.log(index, "foreach");
-
+    imagesArray.forEach((image) => {
       handleImageUpload(image);
     });
 
   }
-
-
   const handleShowBigImg = (message: any) => {
     const clickedImageIndex = currChatImages.findIndex((img: any) => img.date === message.date);
-    dispatch(openfullScreen({ currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
+    dispatch(openfullScreen({ images: currChatImages, currentImage: message.file, isFullscreen: true, zoomLevel: 1, currentIndex: clickedImageIndex }))
   }
   // src={URL.createObjectURL(image)}
   return (
     <div className=" h-full ">
-      <div className=" sm:px-16 sm:py-5 px-5 py-5">
+      {
+        startCall.call && friends[currentUserIndex]._id === startCall.userId && (
+          <div className="absolute z-[1]  w-full p-2">
+            <IncomingCall acceptCall={handleOffer} rejectOnClick={rejectCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
+          </div>
+        )
+      }
+      <div className=" sm:px-16 space-y-3 sm:py-5 px-5 py-5">
         {chats && chats.map((message: any, index: number) =>
           <div key={index}>
             {isFirstMessageOfDay(message, index > 0 ? chats[index - 1] : null) ? (
               <div className="flex justify-center items-center">
-                <div className="text-center text-[.81rem] mb-3 bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
+                <div className="text-center text-[.81rem] bg-[#111b21] py-2 px-2 text-[#8696a0] rounded-lg uppercase">
                   {formatDate(message.date)}
                 </div>
               </div>
             ) : null}
-            {message.msgType === "notification" ? <p className="notification mb-5">{message.message}</p> : null}
+            {message.msgType === "notification" ? <p className="notification">{message.message}</p> : null}
             {message.msgType === "text" ?
               <Message
                 key={index}
                 message={message}
-                color={getRandomColor() as string}
+                color={colors[index] as string}
                 scrollToMessage={scrollToMessage}
                 index={index}
               />
@@ -127,11 +139,12 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
               : null}
             {message.msgType === "audio" ? <Audio key={index}
               onClick={() => handleShowBigImg(message)}
-              color={getRandomColor() as string}
+              color={colors[index] as string}
               message={message} />
               : null}
           </div>
         )}
+
         {/* files  */}
         <div aria-orientation="vertical" aria-labelledby="menu-button"
           className={`attachedFiles ${showAttachFiles === true ? "scale-x-100" : "scale-x-0"} `}
@@ -200,9 +213,6 @@ const ChatPage = ({ scrollToMessage }: { scrollToMessage: (messageId: string) =>
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <ShowFullImg images={currChatImages} />
       </div>
     </div>
   );

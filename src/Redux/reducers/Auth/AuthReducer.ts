@@ -22,7 +22,7 @@ export const upateUser = createAsyncThunk('authSlice/upateUser', async (data: { 
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // localStorage.removeItem("token")
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -53,13 +53,13 @@ export const sendOtp = createAsyncThunk('authSlice/sendOtp', async (mobile: stri
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
-export const VerifyOtp = createAsyncThunk('authSlice/Verifyotp', async (data: {  otp: string[] }, thunkAPI) => {
+export const VerifyOtp = createAsyncThunk('authSlice/Verifyotp', async (data: { otp: string[] }, thunkAPI) => {
     try {
         const res = await userService.verifyOtp(data.otp)
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // localStorage.removeItem("token")
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -67,6 +67,7 @@ export const VerifyOtp = createAsyncThunk('authSlice/Verifyotp', async (data: { 
 interface AppState {
     screen: boolean,
     user: UserState | null;
+    startCall: { userId: any, call: boolean };
     isError: boolean;
     isLoading: boolean;
     isProfileLoading: boolean;
@@ -78,6 +79,7 @@ interface AppState {
 const initialState: AppState = {
     screen: false,
     user: getUserFromLocalStorage,
+    startCall: { userId: null, call: false },
     isError: false,
     isLoading: false,
     isProfileLoading: false,
@@ -92,7 +94,10 @@ const authSlice = createSlice({
     reducers: {
         handleUser: (state, action) => {
             state.user = action.payload
-        }
+        },
+        setStartCall: (state, action) => {
+            state.startCall = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(logout.pending, (state) => {
@@ -192,5 +197,5 @@ const authSlice = createSlice({
 
 })
 
-export const { handleUser } = authSlice.actions
+export const { handleUser, setStartCall } = authSlice.actions
 export default authSlice.reducer

@@ -6,47 +6,40 @@ import { handleProfileOpen } from "../../Redux/reducers/utils/utilReducer"
 import { toggleContacts } from "../../Redux/reducers/utils/Features"
 import { FaRegUserCircle } from "react-icons/fa";
 import { logout } from "../../Redux/reducers/Auth/AuthReducer"
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { FaCircleChevronDown } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
-import { SocketContext } from "../../pages/Home";
+import { SocketContext, CallsContext } from "../../App";
+import useCloseDropDown from "../reuse/CloseDropDown";
+import { handleSetAllUsersChat } from "../../Redux/reducers/msg/MsgReducer";
 
 const ProfileHeader = () => {
     const dispatch: AppDispatch = useDispatch();
     const socket = useContext(SocketContext)
+    const callsocket = useContext(CallsContext)
 
     const { user } = useSelector((state: RootState) => state.auth)
     const { profileOpen } = useSelector((state: RootState) => state.utils);
-    const [dropdown, setDropdown] = useState(false)
+    const [dropdown, setDropdown] = useCloseDropDown(false, '.dropdown')
+
     const handleLogout = () => {
         dispatch(logout())
+        dispatch(handleSetAllUsersChat([]))
         setDropdown(false)
         if (socket.connected) {
             socket.disconnect()
         }
+        if (callsocket.connected) {
+            callsocket.disconnect();
+            callsocket.close()
+        }
+
     }
     const openProfile = () => {
         dispatch(handleProfileOpen(!profileOpen))
         setDropdown(false)
     }
-    // when click outside close the dropdown.
-    useEffect(() => {
-        const closeDropdown = (event: MouseEvent) => {
-            // Check if the clicked element is outside the dropdown
-            if (dropdown && !event.target || !(event.target as HTMLElement).closest('.dropdown')) {
-                setDropdown(false);
-            }
-        };
-
-        // Attach the event listener to the document body
-        document.body.addEventListener('click', closeDropdown);
-
-        // Cleanup the event listener on component unmount
-        return () => {
-            document.body.removeEventListener('click', closeDropdown);
-        };
-    }, [dropdown]);
 
     const handleDropdownClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         // Prevent the click event from reaching the document body
@@ -79,20 +72,17 @@ const ProfileHeader = () => {
                     </div>
                 </div>
                 {
-                    dropdown && (
-                        <div className="dropdown top-16 right-10 ">
-                            <div className="z-10" >
-                                <button onClick={openProfile} className="options " role="menuitem" id="menu-item-0">Profile</button>
-                                <button className="options" role="menuitem" id="menu-item-1">
-                                    <span>Theme</span>
-                                    <FaCircleChevronDown className="inline font-Rubik" />
-                                </button>
-                                <Link onClick={() => setDropdown(false)} to="#" className="options">Account settings</Link>
-
-                                <button onClick={handleLogout} className="options" role="menuitem" id="menu-item-0">Logout</button>
-                            </div>
+                    <div className={`${dropdown ? "scale-y-100 opacity-100  duration-200 shadow-lg rounded-sm delay-75 translate-x-0 no-scrollbar" : "scale-y-0 translate-x-0 duration-100 w-0 opacity-0"}  transition-all  ease-in-out origin-top-right  dropdown z-10 top-16 right-10 `}>
+                        <div className="" >
+                            <button onClick={openProfile} className="options " role="menuitem" id="menu-item-0">Profile</button>
+                            <button className="options" role="menuitem" id="menu-item-1">
+                                <span>Theme</span>
+                                <FaCircleChevronDown className="inline font-Rubik" />
+                            </button>
+                            <Link onClick={() => setDropdown(false)} to="#" className="options">Account settings</Link>
+                            <button onClick={handleLogout} className="options" role="menuitem" id="menu-item-0">Logout</button>
                         </div>
-                    )
+                    </div>
                 }
             </div>
         </section>

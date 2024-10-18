@@ -3,7 +3,7 @@ import { AiOutlineDown } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 // import { RootState } from "../../Redux/store";
 import { AppDispatch, RootState } from "../../Redux/store";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import useCloseDropDown from "../reuse/CloseDropDown"
 import { Link } from "react-router-dom";
 import { FaCircleChevronDown } from "react-icons/fa6";
@@ -13,27 +13,14 @@ import { toggleEditMessage } from "../../Redux/reducers/utils/Features";
 const Message = ({ message, color, scrollToMessage, index }: { message: ChatMessage, color: string, scrollToMessage: any, index: number }) => {
     const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg);
     const [options, setOptions] = useCloseDropDown(false, '.dropdown');
-    const [optionPosition, setOptionPosition] = useState('')
     const messageRef = useRef<HTMLDivElement>(null);
     const dispatch: AppDispatch = useDispatch()
 
-    useEffect(() => {
-        if (messageRef.current) {
-            const { top } = messageRef.current.getBoundingClientRect();
-            const screenHeight = window.innerHeight;
-            const isMessageAtTop = top <= screenHeight / 2;
-            if (isMessageAtTop) {
-                setOptionPosition('bottom')
-            } else {
-                setOptionPosition('top');
-            }
-        }
-    }, []);
     function renderMessageWithLinks(message: ChatMessage) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return message.message.split(urlRegex).map((part, index) => {
             if (part.match(urlRegex)) {
-                return <a key={index} href={part} target="_blank" className="text-[#53bded] hover:text-[#111b21] focus:text-[#0056b3] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
+                return <a key={index} href={part} target="_blank" className="text-[#0000EE] hover:text-[#2e3336] focus:text-[#551A8B] focus:outline-none hover:underline" rel="noopener noreferrer">{part}</a>;
             } else {
                 return <span key={index}>{part}</span>;
             }
@@ -58,7 +45,7 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
             <div className={`${message.right === true
                 ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
                 : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
-                } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  mb-[10px]  px-1 py-1 `} >
+                } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  px-1 py-1 `} >
 
                 <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
                 {
@@ -106,16 +93,17 @@ const Message = ({ message, color, scrollToMessage, index }: { message: ChatMess
                         <AiOutlineDown size={15} />
                     </span>
                 </span>
-                <div    
-                    className={`${optionPosition === 'bottom' ? message.right === true ? "top-12 right-0" : "-right-52 top-5" : message.right === true ? "bottom-12 right-0" : "left-0 bottom-12"} 
-                    ${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
+                <div style={message.right === true ? { top: 0, right: 50 } : { top: 0, left: 100 }}
+                    className={`${options ? "scale-y-100 opacity-100 translate-x-0 " : "scale-y-0 translate-x-10 w-0 opacity-0"} 
                     msgOptions `}>
                     <div className="" >
                         <button onClick={handleTagReply} className="options" role="menuitem" id="menu-item-1">
                             <span>reply</span>
                             <FaCircleChevronDown className="inline font-Rubik" />
                         </button>
-                        <button onClick={editMessage} className="options" role="menuitem" id="menu-item-0">edit</button>
+                        {message.right === true &&
+                            <button onClick={editMessage} className="options" role="menuitem" id="menu-item-0">edit</button>
+                        }
                         <Link to="#" className="options">delete Me</Link>
                         <Link to="#" className="options">delete All</Link>
                         <button className="options" role="menuitem" id="menu-item-0">Close Chat</button>

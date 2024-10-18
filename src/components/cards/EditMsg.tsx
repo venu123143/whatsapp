@@ -7,7 +7,7 @@ import { toggleEditMessage } from "../../Redux/reducers/utils/Features"
 import { AppDispatch, RootState } from "../../Redux/store";
 import { ChatMessage, updateChatMesssage } from "../../Redux/reducers/msg/MsgReducer";
 import { useEffect, useState } from "react";
-import { SocketContext } from "../../pages/Home";
+import { SocketContext } from "../../App";
 const EditMsg = ({ message }: { message: ChatMessage }) => {
     const dispatch: AppDispatch = useDispatch()
     const socket = useContext(SocketContext);

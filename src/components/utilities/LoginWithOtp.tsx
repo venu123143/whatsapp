@@ -1,5 +1,5 @@
 // import React from 'react'
-import { useState, useRef, useEffect, CSSProperties } from "react"
+import { useState, useRef, CSSProperties } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { BarLoader } from "react-spinners"
 import { AppDispatch, RootState } from "../../Redux/store"
@@ -18,11 +18,15 @@ let otpSchema = object({
 })
 const LoginWithOtp = () => {
     const [SendOtp, setSendOtp] = useState(false)
+    // const [otp, setOtp] = useState(['', '', '', '', '', '']);
+
     const [otp, setOtp] = useState<string[]>(new Array(6).fill(""))
     const codesRef = useRef<any>([]);
     const { isLoading } = useSelector((state: RootState) => state.auth)
     const dispatch: AppDispatch = useDispatch()
     const [err, setErr] = useState("")
+    const [color, setColor] = useState("")
+    console.log(isLoading, "isLoading");
 
     const override: CSSProperties = {
         display: "block",
@@ -32,30 +36,6 @@ const LoginWithOtp = () => {
         borderRadius: "30px",
         zIndex: 20,
     };
-    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>, index: number): void => {
-        const newOtp: string[] = [...otp]
-        newOtp[index] = e.target.value
-        setOtp(newOtp)
-    }
-
-    useEffect(() => {
-        // codesRef.current[0]?.focus();
-        codesRef.current.forEach((code: any, idx: any) => {
-            code?.addEventListener('keydown', (e: any) => {
-                if (e.key >= '0' && e.key <= '9') {
-                    codesRef.current[idx].value = '';
-                    setTimeout(() => codesRef.current[idx + 1]?.focus(), 10);
-
-                } else if (e.key === 'Backspace') {
-                    setTimeout(() => codesRef.current[idx - 1]?.focus(), 10);
-                } else {
-                    e.preventDefault();
-                    handleVerifyOtp(e);
-                }
-            });
-        });
-    }, [otp, SendOtp]);
-
     const formik = useFormik({
         initialValues: {
             mobile: '',
@@ -69,12 +49,28 @@ const LoginWithOtp = () => {
         },
     });
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const { value } = e.target;
+
+        const regex = /^[0-9]*$/;
+        if (value === '' || regex.test(value)) {
+            const newOtp = [...otp];
+            newOtp[index] = value.slice(-1);
+            setOtp(newOtp);
+
+            if (value && index < codesRef.current.length - 1) {
+                codesRef.current[index + 1].focus();
+            }
+            codesRef.current[index].style.borderColor = 'green';
+        }
+    };
+
     const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Check if all fields are filled
         const isAllFieldsFilled = otp.every(value => value.trim() !== "");
 
         if (!isAllFieldsFilled) {
+            setColor("border-red-500")
             setErr("Please Enter Correct Otp");
             return;
         }
@@ -88,7 +84,15 @@ const LoginWithOtp = () => {
             setErr(error.errors[0])
         }
     }
-
+    const handleCancelOtp = () => {
+        setSendOtp(false)
+        setColor("")
+        otp.map((_, index) => codesRef.current[index].style.borderColor = '')
+    }
+    const divStyle = {
+        backgroundColor: '#4158D0',
+        backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)',
+    };
     return (
         <section className=" w-full relative group">
             {/* <Link to="/" className="absolute top-2 left-2 text-[#777777] flex items-center hover:text-black dark:hover:text-white">
@@ -97,7 +101,7 @@ const LoginWithOtp = () => {
             </Link> */}
             <div className="flex justify-center items-center h-screen 400px:mx-5 py-5">
                 <div className=" w-full  flex justify-center">
-                    <div className=" w-full bg-gradient-to-r  from-[#0093E9] to-[#80D0C7] rounded-lg shadow-lg border 400px:mx-0 md:mt-0 sm:max-w-sm xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                    <div style={divStyle} className=" w-full rounded-lg shadow-lg border 400px:mx-0 md:mt-0 sm:max-w-sm xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                         <BarLoader
                             color="#361AE3"
                             loading={isLoading}
@@ -116,14 +120,24 @@ const LoginWithOtp = () => {
                                         </h1>
                                         <form onSubmit={handleVerifyOtp}>
                                             <div className="flex flex-col">
-                                                <span className="text-red-500 text-center font-[450]">{err !== "" ? err : null}</span>
+                                                <span className="text-black text-center font-[550]">{err !== "" ? err : null}</span>
                                                 <div className="flex flex-row items-center justify-between mx-auto w-full max-w-xs">
-                                                    {otp.map((_, idx) => (
-                                                        <div key={idx} className="w-10 h-10 ">
-                                                            <input
-                                                                className="codes w-full h-full flex flex-col items-center justify-center text-center outline-none rounded-lg border border-gray-500 text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700"
-                                                                maxLength={1} onChange={(e) => { handleOnChange(e, idx) }} value={otp[idx]} type="tel" ref={(el) => (codesRef.current[idx] = el)} />
-                                                        </div>
+                                                    {otp.map((value, index) => (
+                                                        <input
+                                                            key={index}
+                                                            type="tel"
+                                                            maxLength={1}
+                                                            value={value}
+                                                            onChange={(e) => { handleChange(e, index) }}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Backspace' && !otp[index]) {
+                                                                    codesRef.current[index - 1]?.focus();
+                                                                    codesRef.current[index].style.borderColor = 'red';
+                                                                }
+                                                            }}
+                                                            ref={(ref) => (codesRef.current[index] = ref)}
+                                                            className={`${color} codes w-10 h-10 mx-2 text-center text-lg font-semibold border-2  rounded focus:outline-none `}
+                                                        />
                                                     ))}
                                                 </div>
                                             </div>
@@ -131,7 +145,7 @@ const LoginWithOtp = () => {
                                                 <button type="submit" className="bg-[#00a884] shadow-xl hover:scale-105 transition-all border-black border hover:border-2 button my-[10px] text-white text-[0.91rem] px-[25px] py-[6px] rounded-[25px]">
                                                     Submit
                                                 </button> <br />
-                                                <button onClick={() => setSendOtp(false)} className="hover:underline dark:text-white my-[10px] text-[0.91rem] px-[25px] py-[6px] rounded-[25px]">
+                                                <button onClick={handleCancelOtp} className="hover:underline dark:text-white my-[10px] text-[0.91rem] px-[25px] py-[6px] rounded-[25px]">
                                                     Cancel
                                                 </button>
                                             </div>

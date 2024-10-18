@@ -63,7 +63,7 @@ header color- 233138
 }
 
 .options {
-    @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:bg-gray-700 dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2
+    @apply text-[#8696a0] line-clamp-1 hover:bg-[#111b21] hover:text-white dark:hover:bg-white dark:hover:text-black dark:text-white w-full flex justify-between items-center px-4 py-2
 }
 
 .notification {
@@ -76,7 +76,7 @@ header color- 233138
 
 /* full screen image modal */
 .fullscreen-overlay {
-    @apply transition-all duration-300 delay-75 scale-0 fixed top-0 left-0 w-full h-full z-40 bg-black bg-opacity-80;
+    @apply transition-all duration-300 delay-75 scale-0 absolute top-0 left-0 w-full h-full z-10 bg-black bg-opacity-80;
 }
 
 .active {
@@ -88,7 +88,7 @@ header color- 233138
 }
 
 .fullscreen-modal {
-    @apply z-50 flex flex-col items-center justify-center h-full relative
+    @apply flex flex-col items-center justify-center h-full relative
 }
 
 /* Close button */
@@ -123,3 +123,19 @@ header color- 233138
 .skeleton {
     @apply h-[20px] rounded-[4px] bg-[#cacaca];
 }
+
+
+/* video call mode button */
+.view-type-button {
+    @apply bg-gray-900 min-w-[100px] text-white py-2 px-4 rounded-lg text-sm font-medium transition-all ease-in-out duration-200;
+}
+
+.view-type-button:hover {
+    @apply bg-gray-800;
+}
+
+.view-type-button.active {
+    @apply bg-[#00a884]
+}
+
+/* video call mode button end*/
