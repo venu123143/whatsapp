@@ -1,11 +1,10 @@
 import React from "react"
 import { FaCircleUser } from "react-icons/fa6"
-import { CommonProperties } from "../../Redux/reducers/msg/MsgReducer"
 import { formatDate } from "./ReUseFunc"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
 import { IoCall } from "react-icons/io5"
 
-const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleOnClick?: any, isAdmin?: boolean, startCall?: boolean; }> = ({ value, contacts, handleOnClick, isAdmin, startCall }) => {
+const UserCard: React.FC<{ value?: any, contacts?: boolean, handleOnClick?: any, isAdmin?: boolean, startCall?: boolean; }> = ({ value, contacts, handleOnClick, isAdmin, startCall }) => {
   return (
     <>
       <section onClick={handleOnClick} className="singleuser w-full grid grid-cols-5 p-3  gap-1">
@@ -17,8 +16,19 @@ const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleO
           )}
         </div>
         <div className={`${isAdmin === true ? "col-span-2" : "col-span-3"}`}>
-          <h3 className="username">{value?.name ? value?.name : maskPhoneNumber(value?.mobile as string)}</h3>
-          <p className="lastmsg">{contacts === true ? value?.about : value?.lastMessage?.message}</p>
+          {
+            contacts === true ?
+              <>
+                <h3 className="username">{Number(value?.display_name) ? maskPhoneNumber(value?.display_name as string) : value?.display_name}</h3>
+                <p className="lastmsg">{value?.about}</p>
+              </>
+
+              :
+              <>
+                <h3 className="username">{Number(value?.display_name) ? maskPhoneNumber(value?.display_name as string) : value?.display_name}</h3>
+                <p className="lastmsg">{value?.lastMessage?.message}</p>
+              </>
+          }
         </div>
         <div className={`${isAdmin === true ? "col-span-2 " : "col-span-1 justify-between"}  flex flex-col `}>
           <div className="">
@@ -36,7 +46,7 @@ const UserCard: React.FC<{ value?: CommonProperties, contacts?: boolean, handleO
               <IoCall className="text-green-500" size={24} />
             </div>
           </div>
-          {value?.unreadCount !== 0 ? (
+          {value?.unreadCount !== 0 && contacts !== true ? (
             <div className="unreadmessage">
               {value?.unreadCount}
             </div>

@@ -10,7 +10,7 @@ import { setShowAttachFiles } from "../../Redux/reducers/utils/utilReducer"
 // import { FaMicrophone } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { FaMicrophone } from "react-icons/fa6";
-import { handleSendMessage, ChatMessage, handleSetReply } from "../../Redux/reducers/msg/MsgReducer";
+import { handleSendMessage, handleSetReply, IMessage } from "../../Redux/reducers/msg/MsgReducer";
 import { SocketContext } from "../../App";
 import useCloseDropDown from "../reuse/CloseDropDown";
 import { toggleisRecord } from "../../Redux/reducers/utils/Features";
@@ -32,30 +32,43 @@ const MessageBar = () => {
   }
 
   const handleSendMsg = () => {
-    let conn_type = friends[currentUserIndex] && friends[currentUserIndex].users ? "group" : "onetoone"
-    let users = friends[currentUserIndex] && friends[currentUserIndex].users ? friends[currentUserIndex].users : null
+    let conn_type = friends[currentUserIndex].conn_type as "group" | "onetoone"
+    // let users = friends[currentUserIndex] && friends[currentUserIndex].users ? friends[currentUserIndex].users : null;
+
     if (message.trim() !== '' && currentUserIndex !== null && friends[currentUserIndex]) {
-      const serializedValues: ChatMessage = {
+      const serializedValues: IMessage = {
+        room_id: friends[currentUserIndex].room_id,
         message: message.trim(),
         date: new Date().toISOString(),
-        right: true,
+        send: false,
         msgType: 'text',
-        senderId: user?.socket_id as string,
+        sender: {
+          id: user?._id as string,
+          name: user?.name as string,
+          mobile: user?.mobile as string
+        },
+        isMyMsg: true,
         conn_type: conn_type,
-        recieverId: friends[currentUserIndex].socket_id,
         seen: false,
-        users: users as any,
-        senderName: user?.name ? user.name : user?.mobile as string,
-        replyFor: replyMessage
+        replyFor: replyMessage ? {
+          id: replyMessage._id,
+          message: replyMessage.message,
+          name: replyMessage.senderName
+        } : null
       };
-      socket.emit("send_message", serializedValues);
-      dispatch(handleSendMessage(serializedValues));
-      setMessage('')
+
+      socket.emit("send_message", serializedValues, (message: any) => {
+        dispatch(handleSendMessage(message))
+      });
+      dispatch(handleSendMessage(serializedValues))
+      setMessage('');
+
       if (replyMessage !== null) {
-        dispatch(handleSetReply(null))
+        dispatch(handleSetReply(null));
       }
     }
-  }
+  };
+
 
   const handleSendMsgFunction = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value)
@@ -100,7 +113,7 @@ const MessageBar = () => {
               </div>
             </div>
             <div className=" w-full rounded-lg py-2 flex items-center">
-              <input  type="text" placeholder="Type a message"
+              <input type="text" placeholder="Type a message"
                 className="bg-[#111b21] text-white w-full font-sans focus:outline-none h-10 px-5 py-4 rounded-lg"
                 onChange={handleSendMsgFunction} value={message} />
             </div>

@@ -9,6 +9,8 @@ import { FaRegUserCircle } from 'react-icons/fa';
 import { formatTime } from '../../static/Static';
 import useWaveSurfer from '../reuse/WaveSurfer';
 import { FaPause, FaPlay } from 'react-icons/fa6';
+import { IMessage } from '../../Redux/reducers/msg/MsgReducer';
+import { LuTimer } from 'react-icons/lu';
 
 // const blob = new Blob([message.file.data], { type: 'audio/ogg; codecs=opus' });
 // const audioUrl = URL.createObjectURL(blob);
@@ -17,7 +19,7 @@ import { FaPause, FaPlay } from 'react-icons/fa6';
 
 interface AudioProps {
   onClick: () => void;
-  message: any;
+  message: IMessage;
   color: string
 }
 
@@ -27,12 +29,12 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const waveRef = useRef<HTMLDivElement | null>(null);
-  const wavesurferObj = useWaveSurfer(waveRef, message.right);
+  const wavesurferObj = useWaveSurfer(waveRef, message.isMyMsg);
 
   useEffect(() => {
     if (message.file && wavesurferObj) {
       try {
-        wavesurferObj.load(message.file.audio);
+        wavesurferObj.load(message.file);
         wavesurferObj.on('ready', () => {
           setTotalDuration(wavesurferObj.getDuration()); // Total duration
         });
@@ -75,21 +77,21 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
     setOptions(!options)
   }
   return (
-    <div id={`message-${message.date}`} className={`flex ${message.right === true ? null : "flex-row-reverse"} `}>
-      <div className={`${message.right === true
+    <div id={`message-${message.date}`} className={`flex ${message.isMyMsg === true ? null : "flex-row-reverse"} `}>
+      <div className={`${message.isMyMsg === true
         ? "ml-auto bg-[#008069] rounded-tl-md rounded-bl-md rounded-br-md"
         : "bg-[#233138] rounded-tr-md rounded-br-md rounded-bl-md  mr-auto"
         } group relative text-[.91rem] w-fit max-w-sm  text-[#ededef]  px-1 py-1 `} >
-        <h3 className={`${message.right === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.senderName}</h3>
-        <div className={`flex justify-center items-center gap-4 ${message.right === true ? "flex-row" : "flex-row-reverse"} `}>
+        <h3 className={`${message.isMyMsg === true ? "hidden" : message.conn_type === 'group' ? `block ${color} ` : "hidden"} font-Rubik tracking-wide font-[500] text-[.91rem]`}>~ {message?.sender.name ? message.sender.name : message.sender.mobile}</h3>
+        <div className={`flex justify-center items-center gap-4 ${message.isMyMsg === true ? "flex-row" : "flex-row-reverse"} `}>
           <div className="sm:cursor-pointer">
             {
-              message.file?.profile === "" || !message.file?.profile ? (
+              message.sender?.profile === "" || !message.sender?.profile ? (
                 <div className="">
                   <FaRegUserCircle size={40} className="text-black bg-white hover:bg-opacity-80 rounded-full sm:cursor-pointer " />
                 </div>
               ) :
-                <img src={message.file?.profile} className="object-cover sm:cursor-pointer hover:bg-black rounded-full w-[40px] h-[40px]" alt="Profile" />
+                <img src={message.sender.profile} className="object-cover sm:cursor-pointer hover:bg-black rounded-full w-[40px] h-[40px]" alt="Profile" />
             }
           </div>
           <div className='flex gap-4'>
@@ -121,28 +123,30 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
               })}
             </span>
             <span className='col-span-2 self-center'>
-              {message.seen === true ?
-                <BiCheckDouble
-                  className={`${message.right === true ? "inline text-[#4FB6EC]" : "hidden"
-                    }`}
-                  size={20}
-                /> :
-                friends[currentUserIndex]?.online_status === "true" ?
-                  <BiCheckDouble
-                    className={`${message.right === true ? "inline text-[#ffffff99]" : "hidden"
+              {
+                message.send === false ?
+                  <LuTimer size={15} className={`${message.isMyMsg === true ? "inline text-[#ffffff99]" : "hidden"}`} />
+                  :
+                  message.seen === true ? <BiCheckDouble
+                    className={`${message.isMyMsg === true ? "inline text-[#4FB6EC]" : "hidden"
                       }`}
                     size={20}
                   /> :
-                  <BiCheck
-                    className={`${message.right === true ? "inline text-[#f0f2f5]" : "hidden"
-                      }`}
-                    size={20}
-                  />
-
+                    friends[currentUserIndex]?.online_status === true ?
+                      <BiCheckDouble
+                        className={`${message.isMyMsg === true ? "inline text-[#ffffff99]" : "hidden"
+                          }`}
+                        size={20}
+                      /> :
+                      <BiCheck
+                        className={`${message.isMyMsg === true ? "inline text-[#f0f2f5]" : "hidden"
+                          }`}
+                        size={20}
+                      />
               }
             </span>
           </span>
-          <span className={`${message.right === true ? "bg-[#008069] " : "bg-[#233138] "} 
+          <span className={`${message.isMyMsg === true ? "bg-[#008069] " : "bg-[#233138] "} 
                     absolute top-0 right-2 group-hover:translate-y-0 translate-y-5 group-hover:visible invisible transition-all shadow-sm
                      shadow-black  p-1 rounded-b-full sm:cursor-pointer`}
             onClick={handleToggleOptions}>
@@ -150,7 +154,7 @@ const Audio: React.FC<AudioProps> = ({ message, color }) => {
           </span>
         </span>
       </div>
-      {message.right === true ? (
+      {message.isMyMsg === true ? (
         <span>
           <svg
             className={`ml-auto text-[#008069]  block align-middle`}

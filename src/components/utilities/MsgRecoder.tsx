@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 import { toggleisRecord } from '../../Redux/reducers/utils/Features';
 import { toast } from 'react-toastify';
-import { ChatMessage, handleSendMessage } from '../../Redux/reducers/msg/MsgReducer';
+import { handleSendMessage, IMessage } from '../../Redux/reducers/msg/MsgReducer';
 import { SocketContext } from "../../App";
 import WaveformVisualizer from './WaveForm';
 
@@ -115,22 +115,28 @@ const MsgRecoder = () => {
         }
 
         dispatch(toggleisRecord(false));
-        const base64 = await convertBlobToBase64(blobData);
-        const audio = { profile: user?.profile, audio: base64 };
-        const serializedValues: ChatMessage = {
+        const base64 = await convertBlobToBase64(blobData) as string;
+        const serializedValues: IMessage = {
             message: 'audio',
+            conn_type: friends[currentUserIndex].conn_type as "group" | "onetoone",
             date: new Date().toISOString(),
-            right: true,
+            isMyMsg: true,
             msgType: 'audio',
-            senderId: user?.socket_id as string,
-            conn_type: "onetoone",
-            recieverId: friends[currentUserIndex].socket_id,
-            file: audio,
-            seen: false
+            room_id: friends[currentUserIndex].room_id,
+            file: base64,
+            seen: false,
+            send: false,
+            replyFor: null,
+            sender: {
+                id: user?._id as any,
+                mobile: user?.mobile as any,
+                name: user?.name
+            }
         };
         dispatch(handleSendMessage(serializedValues));
-        socket.emit("send_message", serializedValues);
-
+        socket.emit("send_message", serializedValues, (ack: any) => {
+            dispatch(handleSendMessage(ack));
+        });
         // Reset state after sending
         setFileUrl(null);
         setBlobData(null);

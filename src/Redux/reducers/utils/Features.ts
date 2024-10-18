@@ -11,6 +11,7 @@ interface ActiveChat {
 interface InitialState {
   contacts: boolean;
   editmsg: boolean;
+  deleteMsg: boolean;
   activeChat: ActiveChat;
   // socket: any;
   createContact: boolean;
@@ -29,6 +30,7 @@ interface InitialState {
 const initialState: InitialState = {
   contacts: false,
   editmsg: false,
+  deleteMsg: false,
   activeChat: {
     name: "",
     id: "",
@@ -70,6 +72,9 @@ export const FeatureSlice = createSlice({
     },
     toggleEditMessage: (state, action) => {
       state.editmsg = action.payload;
+    },
+    toggleDeleteMessage: (state, action) => {
+      state.deleteMsg = action.payload;
     },
     handleActiveChat: (state, action) => {
       state.activeChat = action.payload;
@@ -130,7 +135,8 @@ export const {
   openfullScreen,
   setZoomLevel,
   setCurrentIndex,
-  toggleisRecord
+  toggleisRecord,
+  toggleDeleteMessage
 } = FeatureSlice.actions;
 
 export default FeatureSlice.reducer;

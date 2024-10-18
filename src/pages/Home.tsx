@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
+// import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 import DefaultComp from '../components/utilities/DefaultComp'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
 import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
@@ -19,6 +19,8 @@ import { Message } from "../components/interfaces/CallInterface"
 import { SocketContext } from "../App"
 import ImageModal from '../components/reuse/ImgModel'
 import { setIsFullscreen } from '../Redux/reducers/utils/Features';
+import EditMsg from '../components/cards/EditMsg'
+import DeleteMsg from '../components/cards/DeleteMsg'
 
 const cssOverride: CSSProperties = {
 }
@@ -32,11 +34,12 @@ const Home = () => {
   const callSocket = useContext(CallsContext)
   const socket = useContext(SocketContext)
 
+
   // const [socket, setSocket] = useState({} as Socket)
-  const { createGrp, currentUserIndex, friends, users, } = useSelector((state: RootState) => state.msg);
+  const { createGrp, currentUserIndex, friends, editMessage } = useSelector((state: RootState) => state.msg);
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
   const { currentImage } = useSelector((state: RootState) => state.features);
-  const [lstMsg, setLstMsg] = useState<any>(null)
+  // const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const incomingCallSound = useRef(new Audio(IncommingCall));
 
@@ -51,14 +54,20 @@ const Home = () => {
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
 
   useGetAllMsgs(socket, user as UserState)
-  useRecieveMessage(socket, users, lstMsg, setLstMsg, friends, currentUserIndex)
+  useRecieveMessage(socket, friends, currentUserIndex)
   useEffect(() => {
     if (user === null) {
       navigate('/login')
     } else {
-      dispatch(getAllGroups())
+      if (friends.length > 0) {
+        const onetotone = friends.filter((friend) => friend.conn_type === "onetoone").map((each) => each.room_id)
+        callSocket.emit('join_room', onetotone, (ack: any) => {
+          toast.info(ack.message)
+        })
+      }
+      // dispatch(getAllGroups())
     }
-  }, [user, createGrp])
+  }, [user, createGrp, friends])
 
   const handleDataChannelOpen = () => {
     console.log('Data channel is open');
@@ -91,6 +100,8 @@ const Home = () => {
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
+        console.log(data);
+
         dispatch(setStartCall({ userId: data.from, call: true }))
         setOffer(data.offer)
         // Play the incoming call sound
@@ -160,7 +171,7 @@ const Home = () => {
       connectionTimeout.current = setTimeout(() => {
         if (peerConnectionRef.current?.iceConnectionState !== 'connected') {
           handleEndCall();
-          callSocket.emit('stop-call', { to: friends[currentUserIndex]?.socket_id });
+          callSocket.emit('stop-call', { to: friends[currentUserIndex]?.room_id });
           toast.error("Connection timeout. Please try again.", { position: "top-left" });
         }
       }, 30000);
@@ -229,6 +240,9 @@ const Home = () => {
                   onClose={closeModal}
                 />
               </div>
+              <EditMsg message={editMessage} />
+              <DeleteMsg message={editMessage} />
+
               <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
                 <RingLoader
                   color="#36d7b7"

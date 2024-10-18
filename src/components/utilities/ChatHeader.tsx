@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "../../Redux/store"
 import { FaCircleChevronDown, FaCircleUser } from "react-icons/fa6"
 import { useEffect, useState } from "react"
-import { setCurrentGrpOrUser, toggleContactInfo } from "../../Redux/reducers/msg/MsgReducer"
+import { ChatUser, setCurrentGrpOrUser, toggleContactInfo } from "../../Redux/reducers/msg/MsgReducer"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 import { maskPhoneNumber } from "../cards/ReUseFunc"
 import { Link } from "react-router-dom"
@@ -19,13 +19,13 @@ const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
   const { currentUserIndex, friends } = useSelector((state: RootState) => state.msg)
   const [dropdown, setDropdown] = useCloseDropDown(false, '.dropdown')
 
-  function getUsersString(usersArray: any) {
-    return usersArray.map((user: any) => user.name || maskPhoneNumber(user.mobile)).join(', ');
+  function getUsersString(usersArray: ChatUser[]) {
+    return usersArray.map((user: ChatUser) => user.display_name || maskPhoneNumber(user.display_name)).join(', ');
   }
   useEffect(() => {
     // Check if 'users' array exists in currentUserorGroup
-    if (friends[currentUserIndex]?.users?.length! > 0) {
-      const usersString = getUsersString(friends[currentUserIndex]?.users);
+    if (friends[currentUserIndex]?.conn_type === "group") {
+      const usersString = friends[currentUserIndex]?.users ? getUsersString(friends[currentUserIndex]?.users) : "";
       setGrpUsers(usersString);
     } else {
       setGrpUsers("");
@@ -49,11 +49,11 @@ const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
     dispatch(toggleContactInfo(true))
   }
   const handleStartCall = () => {
-    if (friends[currentUserIndex]?.users) {
+    if (friends[currentUserIndex]?.conn_type === 'group') {
       toast.info("For group video call is not implemented", { position: "top-left" })
     } else {
-      if (friends[currentUserIndex]?.online_status === "true") {
-        handleSendOffer() 
+      if (friends[currentUserIndex]?.online_status === true) {
+        handleSendOffer()
       } else {
         toast.info("You cannot call offline user.", { position: "top-left" })
       }
@@ -68,24 +68,24 @@ const ChatHeader = ({ handleSendOffer }: { handleSendOffer: () => void }) => {
         {friends[currentUserIndex]?.profile ? (
           <div className="relative sm:p-1 sm:w-auto w-[50px]">
             <img src={friends[currentUserIndex].profile} alt="profile image" className="w-[40px] h-[40px] rounded-full object-cover" />
-            {friends[currentUserIndex]?.online_status === "true" ? (
+            {friends[currentUserIndex]?.online_status === true ? (
               <span className="blink_me absolute bottom-1 right-0"></span>
             ) : null}
           </div>
         ) : (
           <div className="relative p-1">
             <FaCircleUser size={40} className="text-slate-400" />
-            {friends[currentUserIndex]?.online_status === "true" ? (
+            {friends[currentUserIndex]?.online_status === true ? (
               <span className="blink_me absolute bottom-1 right-0"></span>
             ) : null}
           </div>
         )}
       </div>
       <div className="mr-auto sm:cursor-pointer" onClick={handleOopenProfile}>
-        <span className="username font-bold">{friends[currentUserIndex]?.name ? friends[currentUserIndex]?.name : maskPhoneNumber(friends[currentUserIndex]?.mobile as string)}</span>
+        <span className="username font-bold">{Number(friends[currentUserIndex]?.display_name) ? maskPhoneNumber(friends[currentUserIndex]?.display_name as string) : friends[currentUserIndex]?.display_name}</span>
         <span className="time text-sm line-clamp-1 max-w-[600px]"> {grpUsers !== ""
           ? grpUsers
-          : friends[currentUserIndex]?.online_status === "true"
+          : friends[currentUserIndex]?.online_status === true
             ? "online"
             : "offline"
         }</span>
