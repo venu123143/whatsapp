@@ -1,10 +1,10 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCamera } from "react-icons/ai";
 // AiOutlineArrowRight
 import { AppDispatch, RootState } from "../Redux/store";
-import { createGroup, toggleCreateGroup } from "../Redux/reducers/msg/MsgReducer";
+import {  toggleCreateGroup } from "../Redux/reducers/msg/MsgReducer";
 import { PiUserLight } from "react-icons/pi";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";

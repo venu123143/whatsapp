@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Message from "../cards/Message";
 import { AppDispatch, RootState } from "../../Redux/store";
@@ -116,7 +116,7 @@ const ChatPage = ({ scrollToMessage, handleOffer, rejectCall }: { scrollToMessag
   return (
     <div className=" h-full ">
       {
-        startCall.call && friends[currentUserIndex]._id === startCall.userId && (
+        startCall.call && friends[currentUserIndex].room_id === startCall.userId && (
           <div className="absolute z-[1]  w-full p-2">
             <IncomingCall acceptCall={handleOffer} rejectOnClick={rejectCall} imageUrl={friends[currentUserIndex]?.profile ? friends[currentUserIndex]?.profile : null} />
           </div>

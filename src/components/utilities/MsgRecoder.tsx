@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
 import { toggleisRecord } from '../../Redux/reducers/utils/Features';
 import { toast } from 'react-toastify';
-import { ChatMessage, handleSendMessage, IMessage } from '../../Redux/reducers/msg/MsgReducer';
+import { handleSendMessage, IMessage } from '../../Redux/reducers/msg/MsgReducer';
 import { SocketContext } from "../../App";
 import WaveformVisualizer from './WaveForm';
 

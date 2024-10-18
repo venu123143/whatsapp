@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import Profile from './Profile'
 import UserCard from '../cards/UserCard'
 import ProfileHeader from './ProfileHeader'
@@ -9,7 +9,7 @@ import CreateContact from './CreateContact'
 import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
-import { CommonProperties, handleSetStatus, setCurrentGrpOrUser, ConnectionResult } from '../../Redux/reducers/msg/MsgReducer'
+import {  handleSetStatus, setCurrentGrpOrUser, ConnectionResult } from '../../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../../App"
 // import { ClipLoader } from 'react-spinners'
 import UserSkeliton from '../reuse/UserSkeliton'
@@ -79,7 +79,7 @@ const Users = () => {
                 </div>
               </> :
                 friends.filter(handleSearch).map((each: ConnectionResult, index: number) => {
-                  let call = each._id === startCall.userId && startCall.call === true
+                  let call = each.room_id === startCall.userId && startCall.call === true
                   return (
                     <UserCard key={index} startCall={call} value={each} handleOnClick={() => handleOnClick(each)} />
                   )

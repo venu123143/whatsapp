@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { getStream, stopStream } from "./UseVideoCustom";
 import { pcConfig } from "../../static/Static"
 import { toast } from 'react-toastify'
-import { CommonProperties, ConnectionResult } from "../../Redux/reducers/msg/MsgReducer";
+import { ConnectionResult } from "../../Redux/reducers/msg/MsgReducer";
 import { Socket } from "socket.io-client";
 import { setStartCall } from "../../Redux/reducers/Auth/AuthReducer";
 
@@ -121,7 +121,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
             await peerConnectionRef.current?.setLocalDescription(answer);
             callSocket.emit('call-answer', { answer, to: friends[currentUserIndex].room_id });
             dispatch(setIsCalling(true))
-            dispatch(setStartCall({ userId: friends[currentUserIndex]._id, call: false }))
+            dispatch(setStartCall({ userId: friends[currentUserIndex].room_id, call: false }))
             incomingCallSound.current.pause();
             incomingCallSound.current.currentTime = 0;
         } catch (error: any) {

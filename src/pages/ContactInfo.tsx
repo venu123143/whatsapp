@@ -7,8 +7,8 @@ import { MdDelete } from "react-icons/md";
 import { MdBlock } from "react-icons/md";
 import { FaThumbsDown } from "react-icons/fa";
 import UserCard from '../components/cards/UserCard';
-import { UserState } from "../Redux/reducers/Auth/AuthReducer";
-import { ChatUser, ConnectionResult, setCurrentGrpOrUser, toggleContactInfo } from "../Redux/reducers/msg/MsgReducer";
+// import { UserState } from "../Redux/reducers/Auth/AuthReducer";
+import { ChatUser, setCurrentGrpOrUser, toggleContactInfo } from "../Redux/reducers/msg/MsgReducer";
 import { openfullScreen } from "../Redux/reducers/utils/Features";
 import { handleProfileOpen } from "../Redux/reducers/utils/utilReducer";
 import { maskPhoneNumber } from "../components/cards/ReUseFunc"
@@ -19,9 +19,9 @@ const ContactInfo = () => {
     const closeContact = () => {
         dispatch(toggleContactInfo(false))
     }
-    
+
     let onClickUser = (user: ChatUser) => {
-        
+
         const friendIndex = friends.map((friend) => friend.users?.includes(user))
         if (friendIndex) {
             dispatch(setCurrentGrpOrUser(friendIndex))

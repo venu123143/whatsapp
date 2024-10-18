@@ -281,6 +281,8 @@ const msgSlice = createSlice({
             state.friends[state.currentUserIndex].unreadCount = 0
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
+            console.log(state, action);
+
             // const { recieverId, date } = action.payload;
             // const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
             // if (friend) {
@@ -294,6 +296,8 @@ const msgSlice = createSlice({
             // }
         },
         handleSetFriends: (state, action) => {
+            console.log(state, action);
+
             // let isUserOrGrpAlreadyExists;
             // if (action.payload.users && action.payload.users.length > 0) {
             //     isUserOrGrpAlreadyExists = state.friends.some(user => user.socket_id?.toString() === action.payload.socket_id.toString());

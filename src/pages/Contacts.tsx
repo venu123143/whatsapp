@@ -9,7 +9,7 @@ import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Fea
 import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
-import { CommonProperties, ConnectionResult, getAllUsers } from "../Redux/reducers/msg/MsgReducer";
+import { CommonProperties, getAllUsers } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "../App";
 import UserSkeliton from "../components/reuse/UserSkeliton";
