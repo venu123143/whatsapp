@@ -1,5 +1,5 @@
 
-import { useEffect, useContext, useState, useRef, CSSProperties } from 'react'
+import React, { useEffect, useContext, useState, useRef, CSSProperties, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
@@ -52,20 +52,29 @@ const Home = () => {
 
   const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
+  const [hasJoinedRooms, setHasJoinedRooms] = useState(false); // State to track if rooms are joined
 
   useGetAllMsgs(socket, user as UserState)
   useRecieveMessage(socket, friends, currentUserIndex)
+  const onetotone = useMemo(() => {
+    if (friends.length > 0) {
+      return friends
+        .filter((friend) => friend.conn_type === "onetoone")
+        .map((each) => each.room_id);
+    }
+    return [];
+  }, [friends]);
   useEffect(() => {
     if (user === null) {
       navigate('/login')
     } else {
-      if (friends.length > 0) {
-        const onetotone = friends.filter((friend) => friend.conn_type === "onetoone").map((each) => each.room_id)
+      if (!hasJoinedRooms && onetotone.length > 0) {
         callSocket.emit('join_room', onetotone, (ack: any) => {
-          toast.info(ack.message)
-        })
+          toast.info(ack.message);
+        });
+
+        setHasJoinedRooms(true); // Mark that rooms have been joined
       }
-      // dispatch(getAllGroups())
     }
   }, [user, createGrp, friends])
 
@@ -100,8 +109,6 @@ const Home = () => {
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
-        console.log(data);
-
         dispatch(setStartCall({ userId: data.from, call: true }))
         setOffer(data.offer)
         // Play the incoming call sound
@@ -261,4 +268,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default React.memo(Home)

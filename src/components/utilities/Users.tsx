@@ -9,7 +9,7 @@ import CreateContact from './CreateContact'
 import { AppDispatch, RootState } from '../../Redux/store'
 import { useDispatch, useSelector } from 'react-redux'
 import CreateGroup from '../../pages/CreateGroup'
-import {  handleSetStatus, setCurrentGrpOrUser, ConnectionResult } from '../../Redux/reducers/msg/MsgReducer'
+import { handleSetStatus, setCurrentGrpOrUser, ConnectionResult } from '../../Redux/reducers/msg/MsgReducer'
 import { SocketContext } from "../../App"
 // import { ClipLoader } from 'react-spinners'
 import UserSkeliton from '../reuse/UserSkeliton'
@@ -17,7 +17,7 @@ import { toggleContacts } from "../..//Redux/reducers/utils/Features";
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { chatSearchValue, friends, users, isLoading } = useSelector((state: RootState) => state.msg)
+  const { chatSearchValue, friends, users, isLoading, currentUserIndex } = useSelector((state: RootState) => state.msg)
   const { startCall, user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
@@ -26,9 +26,11 @@ const Users = () => {
     if (friendIndex !== -1) {
       dispatch(setCurrentGrpOrUser(friendIndex))
     }
+    // console.log(friend);
+
     const data = {
       room_id: friend.room_id,
-      user_id: friend.conn_type === "onetoone" ? friend.users?.filter((users) => users._id !== user?._id)[0] : null
+      user_id: friend.conn_type === "onetoone" ? friend.users?.filter((users) => users._id !== user?._id)[0]._id : null
     }
     if (socket.connected) {
       socket.emit('online_status', data, (ack: any) => {
