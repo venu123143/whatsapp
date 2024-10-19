@@ -17,7 +17,7 @@ import { toggleContacts } from "../..//Redux/reducers/utils/Features";
 
 const Users = () => {
   const dispatch: AppDispatch = useDispatch()
-  const { chatSearchValue, friends, users, isLoading, currentUserIndex } = useSelector((state: RootState) => state.msg)
+  const { chatSearchValue, friends, users, isLoading } = useSelector((state: RootState) => state.msg)
   const { startCall, user } = useSelector((state: RootState) => state.auth)
   const socket = useContext(SocketContext)
 
