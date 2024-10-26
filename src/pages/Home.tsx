@@ -70,9 +70,10 @@ const Home = () => {
     if (user === null) {
       navigate('/login')
     } else {
-      if (!hasJoinedRooms && onetotone.length > 0) {
-        callSocket.emit('join_room', onetotone);
-
+      if (!hasJoinedRooms && onetotone.length > 0 && callSocket.connected) {
+        callSocket.emit('join_room', onetotone, (ack: any) => {
+          console.log(ack);
+        });
         setHasJoinedRooms(true); // Mark that rooms have been joined
       }
     }
@@ -254,7 +255,6 @@ const Home = () => {
               </div>
               <EditMsg message={editMessage} />
               <DeleteMsg message={editMessage} />
-              {/* <OpenCamera onClose={closeModal} /> */}
               {openCamera && (
                 <OpenCamera
                   onClose={closeModal}
