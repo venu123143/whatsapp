@@ -18,9 +18,10 @@ import useVideo from "../components/video/UseVideo"
 import { Message } from "../components/interfaces/CallInterface"
 import { SocketContext } from "../App"
 import ImageModal from '../components/reuse/ImgModel'
-import { setIsFullscreen } from '../Redux/reducers/utils/Features';
+import { setIsFullscreen, setOpenCamera } from '../Redux/reducers/utils/Features';
 import EditMsg from '../components/cards/EditMsg'
 import DeleteMsg from '../components/cards/DeleteMsg'
+import OpenCamera from "../components/video/openCamera"
 
 const cssOverride: CSSProperties = {
 }
@@ -38,7 +39,8 @@ const Home = () => {
   // const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, editMessage } = useSelector((state: RootState) => state.msg);
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
-  const { currentImage } = useSelector((state: RootState) => state.features);
+  const { currentImage, openCamera } = useSelector((state: RootState) => state.features);
+
   // const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const incomingCallSound = useRef(new Audio(IncommingCall));
@@ -69,9 +71,7 @@ const Home = () => {
       navigate('/login')
     } else {
       if (!hasJoinedRooms && onetotone.length > 0) {
-        callSocket.emit('join_room', onetotone, (ack: any) => {
-          toast.info(ack.message);
-        });
+        callSocket.emit('join_room', onetotone);
 
         setHasJoinedRooms(true); // Mark that rooms have been joined
       }
@@ -222,6 +222,11 @@ const Home = () => {
 
   const closeModal = () => {
     dispatch(setIsFullscreen(false))
+    dispatch(setOpenCamera(false))
+  };
+  const handleCapture = () => {
+    console.log("click photo");
+
   };
 
   return (
@@ -249,7 +254,14 @@ const Home = () => {
               </div>
               <EditMsg message={editMessage} />
               <DeleteMsg message={editMessage} />
-
+              {/* <OpenCamera onClose={closeModal} /> */}
+              {openCamera && (
+                <OpenCamera
+                  onClose={closeModal}
+                  onCapture={handleCapture}
+                  quality={0.92}
+                />
+              )}
               <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
                 <RingLoader
                   color="#36d7b7"

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { AiOutlineArrowLeft, AiOutlineCamera, } from "react-icons/ai"
 import { handleProfileOpen, } from "../../Redux/reducers/utils/utilReducer"
 import { upateUser, uploadProfile } from "../../Redux/reducers/Auth/AuthReducer"
-import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange, openfullScreen } from "../../Redux/reducers/utils/Features"
+import { handleNameEditClick, handleAboutEditClick, handleAboutChange, handleNameChange, openfullScreen, setOpenCamera } from "../../Redux/reducers/utils/Features"
 import { AiOutlineEdit, AiOutlineCheck } from "react-icons/ai"
 import { ClipLoader } from "react-spinners"
 import Dropzone from 'react-dropzone'
@@ -62,6 +62,9 @@ const Profile = () => {
   const removeProfile = () => {
     setShowOptions(false);
     dispatch(upateUser({ id: user?._id as string, value: { profile: "" } }))
+  }
+  const handleOpenCamerabutton = () => {
+    dispatch(setOpenCamera(true))
   }
   return (
     <>
@@ -199,7 +202,7 @@ const Profile = () => {
           <div className="dropdown" style={{ top: dropdownPosition.top, left: dropdownPosition.left }}>
             <div className="" >
               <button onClick={ShowFullImage} className="options " role="menuitem" id="menu-item-0">View Photo</button>
-              <button className="options" role="menuitem" id="menu-item-1">
+              <button onClick={handleOpenCamerabutton} className="options" role="menuitem" id="menu-item-1">
                 <span>Take Photo</span>
                 <HiOutlineCamera size={25} className="inline font-Rubik" />
               </button>
