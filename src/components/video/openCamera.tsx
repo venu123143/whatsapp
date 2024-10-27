@@ -3,10 +3,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import { X, Repeat, Download } from 'lucide-react';
 import { getTooltipStyle } from '../cards/Tooltip';
 import TooltipButton from '../cards/Tooltip';
+import { MdOutlineFileUpload } from "react-icons/md";
 
 interface ModernCameraProps {
     onClose: () => void;
-    onCapture?: (photo: string) => void;
+    onCapture?: (photo: File) => void;
     quality?: number;
 }
 
@@ -20,11 +21,24 @@ const ModernCamera: React.FC<ModernCameraProps> = ({
     const streamRef = useRef<MediaStream | null>(null);
     const styles = getTooltipStyle("top")
     const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
+    const [imageBlob, setImageBlob] = useState<File | null>(null);
     const [cameraState, setCameraState] = useState({
         isCameraReady: false,
         isLoading: true,
         error: null as string | null
     });
+    // const convertImageFileToBase64 = (file: File): Promise<string> => {
+    //     return new Promise((resolve, reject) => {
+    //         const reader = new FileReader();
+    //         reader.onloadend = () => {
+    //             resolve(reader.result as string);
+    //         };
+    //         reader.onerror = (error) => {
+    //             reject(error);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     });
+    // };
 
     const startCamera = async (): Promise<void> => {
         try {
@@ -67,7 +81,14 @@ const ModernCamera: React.FC<ModernCameraProps> = ({
         setCameraState(prev => ({ ...prev, isCameraReady: false }));
     };
 
-    const handleCapture = (): void => {
+    // Helper function to convert base64 to File
+    const convertBase64ToFile = async (base64: string, filename: string): Promise<File> => {
+        const res = await fetch(base64);
+        const blob = await res.blob();
+        return new File([blob], filename, { type: 'image/jpeg' });
+    };
+
+    const handleCapture = async () => {
         if (!videoRef.current || !cameraState.isCameraReady) return;
 
         const canvas = document.createElement('canvas');
@@ -80,24 +101,48 @@ const ModernCamera: React.FC<ModernCameraProps> = ({
         if (context) {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const photoDataUrl = canvas.toDataURL('image/jpeg', quality);
-            setCapturedPhoto(photoDataUrl);
-            onCapture?.(photoDataUrl);
+            setCapturedPhoto(photoDataUrl)
+            const imageBlob = await convertBase64ToFile(photoDataUrl, 'captured-photo.jpg')
+            setImageBlob(imageBlob);
         }
-
         stopCamera();
     };
-
+    const uploadProfile = () => {
+        if (!imageBlob) return
+        onCapture?.(imageBlob);
+    }
     const handleRetake = (): void => {
         setCapturedPhoto(null);
         startCamera();
     };
 
-    const handleDownload = (): void => {
+    const handleDownload = async () => {
         if (capturedPhoto) {
-            const link = document.createElement('a');
-            link.href = capturedPhoto;
-            link.download = `photo-${new Date().getTime()}.jpg`;
-            link.click();
+
+            const canvas = document.createElement('canvas');
+            const image = new Image();
+            image.src = capturedPhoto;
+
+            image.onload = () => {
+                canvas.width = image.width;
+                canvas.height = image.height;
+                const context = canvas.getContext('2d');
+
+                if (context) {
+                    context.scale(-1, 1); // Flip the image horizontally
+                    context.drawImage(image, -canvas.width, 0);
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/jpeg');
+                    link.download = `photo-${new Date().getTime()}.jpg`;
+                    link.click();
+                }
+            };
+
+            // const base64 = await convertImageFileToBase64(capturedPhoto)
+            // const link = document.createElement('a');
+            // link.href = base64;
+            // link.download = `photo-${new Date().getTime()}.jpg`;
+            // link.click();
         }
     };
     const handleCancel = () => {
@@ -216,6 +261,19 @@ const ModernCamera: React.FC<ModernCameraProps> = ({
                                         </div>
                                     </span>
                                     <Download className="w-6 h-6 text-black" />
+                                </button>
+                                <button
+                                    onClick={uploadProfile}
+                                    className={`relative group p-3 rounded-full  transition-all duration-300 bg-white cursor-not-allowed'`}
+                                    aria-label="Upload photo">
+                                    <span
+                                        className="tooltip font-Roboto absolute w-[100px] text-white text-xs bg-black p-2 rounded-md group-hover:opacity-100 opacity-0 transition-opacity duration-200"
+                                        style={styles?.tooltip}>
+                                        Upload
+                                        <div className="tooltip-arrow absolute" style={styles?.arrow}>
+                                        </div>
+                                    </span>
+                                    <MdOutlineFileUpload size={25} />
                                 </button>
                             </div>
                         )}

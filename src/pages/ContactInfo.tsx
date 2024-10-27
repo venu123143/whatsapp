@@ -63,7 +63,7 @@ const ContactInfo = () => {
                 </div>
                 <div className=''>
                     {
-                        friends[currentUserIndex].users && friends[currentUserIndex].users?.slice().reverse().map((user, index) => {
+                        friends[currentUserIndex]?.users && friends[currentUserIndex]?.users?.slice().reverse().map((user, index) => {
                             let admin = friends[currentUserIndex] && friends[currentUserIndex]?.admins!.some(admin => admin === user._id);
                             return (
                                 <UserCard key={index} value={user} contacts={true} isAdmin={admin} handleOnClick={() => onClickUser(user)} />

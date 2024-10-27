@@ -5,10 +5,9 @@ import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-// import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 import DefaultComp from '../components/utilities/DefaultComp'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
-import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
+import { UserState, setStartCall, uploadProfile } from '../Redux/reducers/Auth/AuthReducer'
 import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
@@ -30,11 +29,10 @@ const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
   const [callStarted, setCallStarted] = useState(false); // incomming-call
-  const { profileOpen } = useSelector((state: RootState) => state.utils)
+  const { profileOpen} = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
   const callSocket = useContext(CallsContext)
   const socket = useContext(SocketContext)
-
 
   // const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, editMessage } = useSelector((state: RootState) => state.msg);
@@ -225,9 +223,11 @@ const Home = () => {
     dispatch(setIsFullscreen(false))
     dispatch(setOpenCamera(false))
   };
-  const handleCapture = () => {
-    console.log("click photo");
-
+  const handleCapture = (file: File) => {
+    const formData = new FormData();
+    formData.append('images', file);
+    // toast.info("Your profile is uploading...", { position: 'top-right' });
+    dispatch(uploadProfile({ images: formData, _id: user?._id }))
   };
 
   return (
@@ -241,10 +241,10 @@ const Home = () => {
           :
           (
             <main className='overflow-hidden relative h-screen md:grid grid-cols-10 '>
-              <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
+              <section className={`md:col-span-3 md:static absolute top-0 right-0 md:z-0 z-10 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
                 <Users />
               </section>
-              <section className={`md:col-span-7 md:static h-screen absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
+              <section className={`md:col-span-7 z-0 md:static h-screen absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
                 {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
               </section>
               <div>

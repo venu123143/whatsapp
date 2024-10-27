@@ -12,6 +12,7 @@ import { Socket } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { RootState } from "./Redux/store";
 import createSocket from "./Redux/reducers/utils/socket/SocketConnection";
+import Status from "./pages/Status";
 
 export const CallsContext = createContext<Socket>({} as Socket);
 export const SocketContext = createContext<Socket>({} as Socket);
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/calls" element={<VideoHome />} />
+            <Route path="/status" element={<Status />} />
             <Route path="*" element={<Navigate to="/" />} />
             {/* <Route path="/video" element={<VideoCall localStream={sujiBday} remoteStream={Priests} />} /> */}
           </Routes>

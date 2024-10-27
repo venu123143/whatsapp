@@ -49,7 +49,7 @@ export const sendOtp = createAsyncThunk('authSlice/sendOtp', async (mobile: stri
     try {
         const res = await userService.sendotp(mobile)
         return res
-    } catch (error: any) {
+    } catch (error: any) {        
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })

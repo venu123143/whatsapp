@@ -6,36 +6,44 @@ import { handleProfileOpen } from "../../Redux/reducers/utils/utilReducer"
 import { toggleContacts } from "../../Redux/reducers/utils/Features"
 import { FaRegUserCircle } from "react-icons/fa";
 import { logout } from "../../Redux/reducers/Auth/AuthReducer"
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { FaCircleChevronDown } from "react-icons/fa6";
-import { Link } from "react-router-dom";
 import { BiAnalyse } from "react-icons/bi";
 import { SocketContext, CallsContext } from "../../App";
 import useCloseDropDown from "../reuse/CloseDropDown";
 import { handleSetAllUsersChat } from "../../Redux/reducers/msg/MsgReducer";
+import { useNavigate } from "react-router-dom";
 
 const ProfileHeader = () => {
+    const navigate = useNavigate()
     const dispatch: AppDispatch = useDispatch();
     const socket = useContext(SocketContext)
     const callsocket = useContext(CallsContext)
+    const [isToggled, setIsToggled] = useState(false);
 
     const { user } = useSelector((state: RootState) => state.auth)
     const { profileOpen } = useSelector((state: RootState) => state.utils);
     const [dropdown, setDropdown] = useCloseDropDown(false, '.dropdown')
 
+    const handleToggle = () => {
+        setIsToggled(!isToggled); // Toggle the state
+    };
+
+    console.log(isToggled);
     const handleLogout = () => {
         dispatch(logout())
         dispatch(handleSetAllUsersChat([]))
         setDropdown(false)
         if (socket.connected) {
-            socket.disconnect()
+            socket.disconnect();
+            socket.close();
         }
         if (callsocket.connected) {
             callsocket.disconnect();
-            callsocket.close()
+            callsocket.close();
         }
-
     }
+
     const openProfile = () => {
         dispatch(handleProfileOpen(!profileOpen))
         setDropdown(false)
@@ -61,7 +69,7 @@ const ProfileHeader = () => {
                     }
                 </div>
                 <div className=" flex items-center gap-2">
-                    <div className="icons p-3" onClick={() => dispatch(toggleContacts(true))}>
+                    <div className="icons p-3" onClick={() => navigate('/status')}>
                         <BiAnalyse className=" z-0" size={25} title="Status" />
                     </div>
                     <div className="icons" onClick={() => dispatch(toggleContacts(true))}>
@@ -79,7 +87,19 @@ const ProfileHeader = () => {
                                 <span>Theme</span>
                                 <FaCircleChevronDown className="inline font-Rubik" />
                             </button>
-                            <Link onClick={() => setDropdown(false)} to="#" className="options">Account settings</Link>
+                            <button className="flex options items-center justify-between w-full  p-2 ">
+                                <span>Notification</span>
+                                <label className="relative inline-flex items-center cursor-pointer switch">
+                                    <input
+                                        type="checkbox"
+                                        checked={isToggled}
+                                        onChange={handleToggle} // Update state on change
+                                        className="sr-only peer"
+                                    />
+                                    <div className="slider"></div>
+                                </label>
+                            </button>
+
                             <button onClick={handleLogout} className="options" role="menuitem" id="menu-item-0">Logout</button>
                         </div>
                     </div>
