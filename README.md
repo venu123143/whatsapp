@@ -1,15 +1,15 @@
-# [WhatsApp Clone with React, Node and Socket Io ](https://whatsapp-chat-imbu.onrender.com/)
+# [WhatsApp Clone with React, Node and Socket Io ](https://whatsapp-mongo.onrender.com/)
 
 This project is a WhatsApp-like messaging application built with a modern tech stack, including React, Vite, and TypeScript. It provides a wide range of features such as real-time communication, group chats, user authentication with OTP, and message management functionalities.
 
-You can check the hosted version of this project here [https://whatsapp-chat-imbu.onrender.com/](https://whatsapp-chat-imbu.onrender.com/).
+You can check the hosted version of this project here [https://whatsapp-mongo.onrender.com/](https://whatsapp-mongo.onrender.com/).
 
 ## Key Features
 
 
 - **Authentication**: User login with OTP for secure access.
 - **Chat Functionalities**: Group chats, individual chats, media sharing (photos, voice recordings), message replies, editing, and deletion.
-- **User Profiles**: Customizable profile pictures, names, and bios.
+- **User Profiles**: Customizable profile pictures, names, and bios. including the take phtoto and upload feature.
 - **Video Call**: One to One and Group video call feature is implemented using webrtc.
 - **Real-time Communication**: Enabled by Socket.io.
 - **State Management**: Managed with Redux and Redux Toolkit.
