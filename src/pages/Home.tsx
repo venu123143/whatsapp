@@ -241,10 +241,10 @@ const Home = () => {
           :
           (
             <main className='overflow-hidden relative h-screen md:grid grid-cols-10 '>
-              <section className={`md:col-span-3 md:static absolute top-0 right-0 md:z-0 z-10 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
+              <section className={`md:col-span-3 md:static sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
                 <Users />
               </section>
-              <section className={`md:col-span-7 z-0 md:static h-screen absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
+              <section className={`md:col-span-7 md:static h-screen absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : " -z-10 md:translate-x-0 translate-x-[25%]"}`}>
                 {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
               </section>
               <div>
