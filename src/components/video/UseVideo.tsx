@@ -49,9 +49,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
             peerConnection.ontrack = (event) => {
                 setRemoteStream(event.streams[0]);
             }
-            peerConnection.onicecandidate = (event) => {
-                console.log(event.candidate);
-                
+            peerConnection.onicecandidate = (event) => {                
                 if (event.candidate) {
                     callSocket.emit('ice-candidate-offer', { candidate: event.candidate, to: friends[currentUserIndex].room_id });
                 }
@@ -107,12 +105,8 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
                 setDataChannel(dataChannel); // Store the data channel
             };
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer as RTCSessionDescriptionInit));
-            // if (iceCandidate) {
-            console.log(iceCandidate);
             
             peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidate as RTCIceCandidate));
-            // }
-
             // await getStream() is having ==> await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             const stream = await getStream()
             setLocalStream(stream);
@@ -154,11 +148,7 @@ const useVideo = ({ callSocket, friends, currentUserIndex, setCallStarted, incom
     const handleICECandidate = useCallback((candidate: RTCIceCandidate) => {
         const peerConnection = peerConnectionRef.current
         if (peerConnection && candidate.candidate) {
-            peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).then(() => {
-                console.log('ICE candidate added successfully')
-            }).catch((error) => {
-                console.error('Error adding ICE candidate:', error)
-            })
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
         } else {
             toast.error(`😔 peer connection itself null`, { position: "top-left" })
         }

@@ -9,7 +9,7 @@ import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Fea
 import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
-import { CommonProperties, getAllUsers } from "../Redux/reducers/msg/MsgReducer";
+import { CommonProperties, getAllUsers, handleSetAllUsersChat, setIsMsgsLoading } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "../App";
 import UserSkeliton from "../components/reuse/UserSkeliton";
@@ -60,12 +60,16 @@ const ContactsList = () => {
 
 
     const createConnection = (user: UserState) => {
-        if (socket.connected) {
+        if (socket.connected) {            
             socket.emit("create_connection", [user._id], "onetoone", null, (ack: any) => {
                 if (ack.error) {
                     toast.error(ack.error, { position: "top-left" })
                     return
                 }
+                dispatch(setIsMsgsLoading(true))
+                socket.emit("get_all_messages", "message", (ack: any) => {
+                    dispatch(handleSetAllUsersChat(ack.connections))
+                });
             });
         }
         dispatch(toggleContacts(false))

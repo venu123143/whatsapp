@@ -21,11 +21,9 @@ interface StatusViewProps { }
 
 const StatusViewerModal: React.FC<StatusViewerModalProps> = ({ isOpen, onClose, status }) => {
     const DURATION = 10; // Total duration in seconds
-    const [progress, setProgress] = useState<number>(0);
     const [timeLeft, setTimeLeft] = useState<number>(DURATION);
     const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
     const [completedIndices, setCompletedIndices] = useState<Set<number>>(new Set());
-    console.log(progress);
 
     const modalRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<any>(null);
@@ -33,7 +31,6 @@ const StatusViewerModal: React.FC<StatusViewerModalProps> = ({ isOpen, onClose, 
 
     useEffect(() => {
         if (isOpen && status) {
-            setProgress(0);
             setTimeLeft(DURATION);
             setCurrentImageIndex(0);
             setCompletedIndices(new Set());
@@ -76,7 +73,6 @@ const StatusViewerModal: React.FC<StatusViewerModalProps> = ({ isOpen, onClose, 
         completeCurrentStatus();
 
         if (currentImageIndex < status.images.length - 1) {
-            // setProgress(0);
             setCurrentImageIndex(prev => prev + 1);
             setTimeLeft(DURATION);
             startImageTimer();
@@ -96,7 +92,6 @@ const StatusViewerModal: React.FC<StatusViewerModalProps> = ({ isOpen, onClose, 
 
         if (currentImageIndex > 0) {
             setCurrentImageIndex(prev => prev - 1);
-            setProgress(0);
             setTimeLeft(DURATION);
             startImageTimer();
         }
@@ -240,7 +235,6 @@ const StatusViewerModal: React.FC<StatusViewerModalProps> = ({ isOpen, onClose, 
                             alt={`Status ${currentImageIndex + 1}`}
                             className="max-w-full max-h-full object-contain rounded-lg"
                             onLoad={() => {
-                                setProgress(0);
                                 setTimeLeft(10);
                             }}
                         />

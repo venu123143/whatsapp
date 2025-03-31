@@ -65,6 +65,7 @@ export interface AppState {
     singleGroup: IGroup | null;
     isError: boolean;
     isLoading: boolean;
+    chatLoading: boolean;
     isSuccess: boolean;
     message: string;
     address: boolean;
@@ -110,6 +111,7 @@ const initialState: AppState = {
     singleGroup: null,
     isError: false,
     isLoading: false,
+    chatLoading: false,
     isCurrentLoading: false,
     isSuccess: false,
     message: "",
@@ -216,6 +218,9 @@ const msgSlice = createSlice({
         setCurrentLoading: (state, action) => {
             state.isCurrentLoading = action.payload;
         },
+        setIsMsgsLoading: (state, action) => {
+            state.chatLoading = action.payload;
+        },
         handleSendMessage: (state, action: PayloadAction<IMessage>) => {
             const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
 
@@ -282,41 +287,15 @@ const msgSlice = createSlice({
         },
         handleUpdateSeen: (state, action: PayloadAction<ChatMessage>) => {
             console.log(state, action);
-
-            // const { recieverId, date } = action.payload;
-            // const friend = state.friends.find(frnd => frnd.socket_id === recieverId);
-            // if (friend) {
-            //     // Update the seen status of the message in the friend's chat
-            //     friend.chat.forEach((msg: any, index: number) => {
-            //         if (msg.date === date) {
-            //             friend.chat[index] = action.payload
-            //         }
-            //     });
-            //     friend.unreadCount = 0
-            // }
         },
         handleSetFriends: (state, action) => {
             console.log(state, action);
-
-            // let isUserOrGrpAlreadyExists;
-            // if (action.payload.users && action.payload.users.length > 0) {
-            //     isUserOrGrpAlreadyExists = state.friends.some(user => user.socket_id?.toString() === action.payload.socket_id.toString());
-            // } else {
-            //     isUserOrGrpAlreadyExists = state.friends.some(user => user._id?.toString() === action.payload._id.toString());
-            // }
-            // if (!isUserOrGrpAlreadyExists) {
-            //     state.friends.unshift(action.payload)
-            // }
-            // state.isLoading = false
         },
         handleSetStatus: (state, action) => {
             const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
             if (friend) {
                 friend.online_status = action.payload?.online_status
             }
-            // const friend = state.friends.find(frnd => frnd.socket_id === action.payload.recieverId);
-            // if (friend) {
-            // }
         },
         updateLastMessage: (state, action: PayloadAction<ChatMessage>) => {
             const friend = state.friends.find(frnd => frnd.room_id === action.payload.room_id);
@@ -326,6 +305,7 @@ const msgSlice = createSlice({
         },
         handleSetAllUsersChat: (state, action) => {
             state.friends = action.payload
+            state.chatLoading = false
         },
         handleSetReply: (state, action) => {
             state.replyMessage = action.payload
@@ -437,7 +417,7 @@ const msgSlice = createSlice({
 
 })
 
-export const { handleSendMessage, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat, handleSetReply, handleEditMsg,
+export const { handleSendMessage, setIsMsgsLoading, handleUpdateSeen, handleSetStatus, handleSetAllUsersChat, handleSetReply, handleEditMsg,
     updateLastMessage, handleRecieveMessage, handleSetFriends, toggleCreateGroup, setCurrentLoading, makeUnreadCountZero,
     storeSelectedUsers, handleChatSearchValue, setCurrentGrpOrUser, updateChatMessage, toggleContactInfo } = msgSlice.actions
 export default msgSlice.reducer

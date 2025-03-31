@@ -47,12 +47,6 @@ const CreateCall = () => {
                 dispatch(setErrors({ otp: 'must fill otp' }))
             }
         }
-
-        // .then(() => {
-        //     console.log(title)
-        // })
-        // .catch(err => {
-        // });
     }
 
     return (

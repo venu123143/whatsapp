@@ -29,7 +29,6 @@ const ProfileHeader = () => {
         setIsToggled(!isToggled); // Toggle the state
     };
 
-    console.log(isToggled);
     const handleLogout = () => {
         dispatch(logout())
         dispatch(handleSetAllUsersChat([]))
