@@ -14,6 +14,15 @@ You can check the hosted version of this project here:  [https://vchat.nerchuko.
   Branch: `with_mongodb`  
   Repository: [https://github.com/venu123143/whatsapp_backend](https://github.com/venu123143/whatsapp_backend)
 
+## Environment Variables
+
+To run this project locally, you need to set some environment variables. Create a `.env` file in the root directory of your frontend and add the following variables:
+
+```bash
+VITE_API_CLIENT_URL=http://localhost:5000/api
+VITE_API_SOCKET_URL=http://localhost:5000
+VITE_API_CALLS_URL=http://localhost:5000/calls
+```
 
 ## Key Features
 
@@ -80,14 +89,3 @@ Description: This is the profile page where users can customize their profile pi
 
 ![Home page Gif](https://res.cloudinary.com/dsnq9xdwt/image/upload/v1715265914/Whatsapp-GoogleChrome2024-05-0920-07-28-ezgif.com-video-to-gif-converter_wlzlm5.gif)
 
-
-## Setup and Development
-
-## Environment Variables
-
-To run this project locally, you need to set some environment variables. Create a `.env` file in the root directory of your frontend and add the following variables:
-
-```bash
-VITE_API_CLIENT_URL=http://localhost:5000/api
-VITE_API_SOCKET_URL=http://localhost:5000
-VITE_API_CALLS_URL=http://localhost:5000/calls
