@@ -9,7 +9,7 @@ import { toggleContacts, toggleCreateContact } from "../Redux/reducers/utils/Fea
 import { AppDispatch, RootState } from "../Redux/store";
 import SingleChat from "../components/cards/UserCard";
 import { FaCircleUser } from "react-icons/fa6";
-import { CommonProperties, getAllUsers } from "../Redux/reducers/msg/MsgReducer";
+import { CommonProperties, getAllUsers, handleSetAllUsersChat, setIsMsgsLoading } from "../Redux/reducers/msg/MsgReducer";
 import { UserState } from "../Redux/reducers/Auth/AuthReducer";
 import { SocketContext } from "../App";
 import UserSkeliton from "../components/reuse/UserSkeliton";
@@ -60,12 +60,16 @@ const ContactsList = () => {
 
 
     const createConnection = (user: UserState) => {
-        if (socket.connected) {
+        if (socket.connected) {            
             socket.emit("create_connection", [user._id], "onetoone", null, (ack: any) => {
                 if (ack.error) {
                     toast.error(ack.error, { position: "top-left" })
                     return
                 }
+                dispatch(setIsMsgsLoading(true))
+                socket.emit("get_all_messages", "message", (ack: any) => {
+                    dispatch(handleSetAllUsersChat(ack.connections))
+                });
             });
         }
         dispatch(toggleContacts(false))
@@ -75,6 +79,7 @@ const ContactsList = () => {
         dispatch(toggleContacts(false))
         setSearchInput("")
     }
+
     const skeliton = new Array(10).fill(0)
     return (
         <div className={`h-screen w-full flex flex-col text-white absolute top-0 left-0 header-bg transition-all ease-linear  duration-300 delay-150 ${contacts === true ? "-translate-x-0  z-20" : "-translate-x-full"}`}>
@@ -116,7 +121,7 @@ const ContactsList = () => {
                                     <FaCircleUser size={50} className="text-[#00a884]" />
                                 </div>
                                 <div className="col-span-4 flex items-center">
-                                    <p className="text-[20px] font-bold">Create Group</p>
+                                    <p className="text-[20px] font-bold">Create Group {`{ ${users.length} }`}</p>
                                 </div>
                             </section>
 

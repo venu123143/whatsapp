@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../Redux/store';
-import { ConnectionResult, handleRecieveMessage, handleSetAllUsersChat, IMessage } from '../../Redux/reducers/msg/MsgReducer';
+import { ConnectionResult, handleRecieveMessage, handleSetAllUsersChat, IMessage, setIsMsgsLoading } from '../../Redux/reducers/msg/MsgReducer';
 import { Socket } from 'socket.io-client';
 import { UserState } from '../../Redux/reducers/Auth/AuthReducer';
 import RecieveRingtone from "../../static/incomming_msg.wav"
@@ -11,21 +11,21 @@ export const useGetAllMsgs = (socket: Socket, user: UserState) => {
 
     useEffect(() => {
         if (socket.connected && user !== null) {
-            if (socket.connected && user !== null) {
-                socket.emit("get_all_messages", "message", (ack: any) => {
-                    dispatch(handleSetAllUsersChat(ack.connections))
-                });
-            }
+            dispatch(setIsMsgsLoading(true))
+            socket.emit("get_all_messages", "message", (ack: any) => {
+                dispatch(handleSetAllUsersChat(ack.connections))
+            });
         }
         return () => {
             if (socket.connected) {
+                dispatch(setIsMsgsLoading(false))
                 socket.off("get_all_messages");
             }
         };
     }, [socket])
 };
 
-export const useRecieveMessage = (socket: Socket,friends: ConnectionResult[], currentUserIndex: null | number) => {
+export const useRecieveMessage = (socket: Socket, friends: ConnectionResult[], currentUserIndex: null | number) => {
     const dispatch: AppDispatch = useDispatch()
     const incomingMsgSound = useRef(new Audio(RecieveRingtone));
 

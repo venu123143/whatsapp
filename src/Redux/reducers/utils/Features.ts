@@ -23,6 +23,7 @@ interface InitialState {
   currentImage: any;
   zoomLevel: number;
   isRecord: boolean;
+  openCamera: boolean;
   images: any[];
   currentIndex: number | null;
 }
@@ -48,6 +49,7 @@ const initialState: InitialState = {
   currentIndex: null,
   zoomLevel: 1,
   isRecord: false,
+  openCamera: false,
   images: []
 };
 export const getAllUsers = createAsyncThunk("features/getAllUsers", async (_, thunkAPI) => {
@@ -117,6 +119,9 @@ export const FeatureSlice = createSlice({
     },
     toggleisRecord: (state, action) => {
       state.isRecord = action.payload
+    },
+    setOpenCamera: (state, action) => {
+      state.openCamera = action.payload
     }
   },
 });
@@ -136,7 +141,8 @@ export const {
   setZoomLevel,
   setCurrentIndex,
   toggleisRecord,
-  toggleDeleteMessage
+  toggleDeleteMessage,
+  setOpenCamera
 } = FeatureSlice.actions;
 
 export default FeatureSlice.reducer;

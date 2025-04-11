@@ -1,14 +1,13 @@
 
-import { useEffect, useContext, useState, useRef, CSSProperties } from 'react'
+import React, { useEffect, useContext, useState, useRef, CSSProperties, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../Redux/store'
 import Users from '../components/utilities/Users'
 import Chat from '../components/utilities/Chat'
 import { useNavigate } from 'react-router-dom'
-// import { getAllGroups } from '../Redux/reducers/msg/MsgReducer'
 import DefaultComp from '../components/utilities/DefaultComp'
 import { useGetAllMsgs, useRecieveMessage } from '../components/reuse/SocketChat'
-import { UserState, setStartCall } from '../Redux/reducers/Auth/AuthReducer'
+import { UserState, setStartCall, uploadProfile } from '../Redux/reducers/Auth/AuthReducer'
 import { toast } from 'react-toastify'
 import { CallsContext } from '../App'
 import VideoCall from '../components/video/VideoCall'
@@ -18,9 +17,10 @@ import useVideo from "../components/video/UseVideo"
 import { Message } from "../components/interfaces/CallInterface"
 import { SocketContext } from "../App"
 import ImageModal from '../components/reuse/ImgModel'
-import { setIsFullscreen } from '../Redux/reducers/utils/Features';
+import { setIsFullscreen, setOpenCamera } from '../Redux/reducers/utils/Features';
 import EditMsg from '../components/cards/EditMsg'
 import DeleteMsg from '../components/cards/DeleteMsg'
+import OpenCamera from "../components/video/openCamera"
 
 const cssOverride: CSSProperties = {
 }
@@ -29,16 +29,16 @@ const Home = () => {
   const navigate = useNavigate()
   const dispatch: AppDispatch = useDispatch()
   const [callStarted, setCallStarted] = useState(false); // incomming-call
-  const { profileOpen } = useSelector((state: RootState) => state.utils)
+  const { profileOpen} = useSelector((state: RootState) => state.utils)
   const { user } = useSelector((state: RootState) => state.auth)
   const callSocket = useContext(CallsContext)
   const socket = useContext(SocketContext)
 
-
   // const [socket, setSocket] = useState({} as Socket)
   const { createGrp, currentUserIndex, friends, editMessage } = useSelector((state: RootState) => state.msg);
   const { isCalling, isLoading } = useSelector((state: RootState) => state.calls);
-  const { currentImage } = useSelector((state: RootState) => state.features);
+  const { currentImage, openCamera } = useSelector((state: RootState) => state.features);
+
   // const [lstMsg, setLstMsg] = useState<any>(null)
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const incomingCallSound = useRef(new Audio(IncommingCall));
@@ -52,20 +52,28 @@ const Home = () => {
 
   const [offer, setOffer] = useState<RTCSessionDescriptionInit | null>(null)
   const [iceCandidate, setIceCandidate] = useState<RTCIceCandidate | null>(null)
+  const [hasJoinedRooms, setHasJoinedRooms] = useState(false); // State to track if rooms are joined
 
   useGetAllMsgs(socket, user as UserState)
   useRecieveMessage(socket, friends, currentUserIndex)
+  const onetotone = useMemo(() => {
+    if (friends.length > 0) {
+      return friends
+        .filter((friend) => friend.conn_type === "onetoone")
+        .map((each) => each.room_id);
+    }
+    return [];
+  }, [friends]);
   useEffect(() => {
     if (user === null) {
       navigate('/login')
     } else {
-      if (friends.length > 0) {
-        const onetotone = friends.filter((friend) => friend.conn_type === "onetoone").map((each) => each.room_id)
+      if (!hasJoinedRooms && onetotone.length > 0 && callSocket.connected) {
         callSocket.emit('join_room', onetotone, (ack: any) => {
-          toast.info(ack.message)
-        })
+          console.log(ack);
+        });
+        setHasJoinedRooms(true); // Mark that rooms have been joined
       }
-      // dispatch(getAllGroups())
     }
   }, [user, createGrp, friends])
 
@@ -100,8 +108,6 @@ const Home = () => {
         await handleICECandidate(data.candidate)
       });
       callSocket.on('call-offer', async (data) => {
-        console.log(data);
-
         dispatch(setStartCall({ userId: data.from, call: true }))
         setOffer(data.offer)
         // Play the incoming call sound
@@ -215,6 +221,13 @@ const Home = () => {
 
   const closeModal = () => {
     dispatch(setIsFullscreen(false))
+    dispatch(setOpenCamera(false))
+  };
+  const handleCapture = (file: File) => {
+    const formData = new FormData();
+    formData.append('images', file);
+    // toast.info("Your profile is uploading...", { position: 'top-right' });
+    dispatch(uploadProfile({ images: formData, _id: user?._id }))
   };
 
   return (
@@ -228,10 +241,10 @@ const Home = () => {
           :
           (
             <main className='overflow-hidden relative h-screen md:grid grid-cols-10 '>
-              <section className={`md:col-span-3 sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
+              <section className={`md:col-span-3 md:static sm:min-w-[300px] w-full ${profileOpen === false ? "overflow-hidden custom-scrollbar" : ""}`}>
                 <Users />
               </section>
-              <section className={`md:col-span-7 md:static h-screen absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : "md:translate-x-0 translate-x-[25%]"}`}>
+              <section className={`md:col-span-7 md:static h-screen absolute top-0 right-0 w-full transition-all ease-linear duration-150 delay-75 ${currentUserIndex !== null ? "md:translate-x-0 " : " -z-10 md:translate-x-0 translate-x-[25%]"}`}>
                 {currentUserIndex === null ? <DefaultComp /> : <Chat rejectCall={rejectCall} handleOffer={handleOffer} handleSendOffer={handleSendOffer} />}
               </section>
               <div>
@@ -242,7 +255,13 @@ const Home = () => {
               </div>
               <EditMsg message={editMessage} />
               <DeleteMsg message={editMessage} />
-
+              {openCamera && (
+                <OpenCamera
+                  onClose={closeModal}
+                  onCapture={handleCapture}
+                  quality={0.92}
+                />
+              )}
               <div className={`${isLoading === true ? "fixed top-0 left-0 flex justify-center items-center bg-black bg-opacity-70 w-full h-screen z-40" : "hidden"} `}>
                 <RingLoader
                   color="#36d7b7"
@@ -261,4 +280,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default React.memo(Home)

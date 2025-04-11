@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineCamera } from "react-icons/ai";
 // AiOutlineArrowRight
 import { AppDispatch, RootState } from "../Redux/store";
-import {  toggleCreateGroup } from "../Redux/reducers/msg/MsgReducer";
+import { handleSetAllUsersChat, setIsMsgsLoading, toggleCreateGroup } from "../Redux/reducers/msg/MsgReducer";
 import { PiUserLight } from "react-icons/pi";
 import { useState } from "react";
 import { ClipLoader } from "react-spinners";
@@ -37,8 +37,6 @@ const CreateGroup = () => {
             }
             if (socket.connected) {
                 socket.emit("create_connection", selectedUsersToGroup, "group", ConnectionInfo, (ack: any) => {
-                    console.log(ack);
-
                     if (ack.error) {
                         setIsLoading(false)
                         toast.error(ack.error, { position: "top-left" })
@@ -53,6 +51,10 @@ const CreateGroup = () => {
                         dispatch(toggleCreateContact(false))
                         dispatch(handleProfileOpen(true))
                         dispatch(toggleContacts(false))
+                        dispatch(setIsMsgsLoading(true))
+                        socket.emit("get_all_messages", "message", (ack: any) => {
+                            dispatch(handleSetAllUsersChat(ack.connections))
+                        });
                         return
                     }
                 });

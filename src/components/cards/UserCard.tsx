@@ -19,12 +19,13 @@ const UserCard: React.FC<{ value?: any, contacts?: boolean, handleOnClick?: any,
           {
             contacts === true ?
               <>
-                <h3 className="username">{Number(value?.display_name) ? maskPhoneNumber(value?.display_name as string) : value?.display_name}</h3>
+                <h3 className="username">{value.name ? value.name : value.mobile}</h3>
                 <p className="lastmsg">{value?.about}</p>
               </>
 
               :
               <>
+                {value.name}
                 <h3 className="username">{Number(value?.display_name) ? maskPhoneNumber(value?.display_name as string) : value?.display_name}</h3>
                 <p className="lastmsg">{value?.lastMessage?.message}</p>
               </>

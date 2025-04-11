@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-// import { useLocation, useNavigate, useParams, } from 'react-router-dom';
 import CallHistory from './CallHistory';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../Redux/store';
@@ -15,9 +14,6 @@ const VideoHome = () => {
     const { user } = useSelector((state: RootState) => state.auth)
 
     const [contactInfo, setContactInfo] = useState(false)
-    // const location = useLocation();
-    // console.log(location);
-    // const { userId } = useParams()
     useEffect(() => {
         dispatch(getAllCallsHistory())
         dispatch(getAllLiveCalls())
