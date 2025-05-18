@@ -10,7 +10,7 @@ You can check the live recording of this project here: [https://www.linkedin.com
 
 - **Frontend Code**  
   Branch: `with_mongodb`  
-  Repository: [https://github.com/venu123143/whatsapp_clone](https://github.com/venu123143/whatsapp_clone)
+  Repository: [https://github.com/venu123143/whatsapp](https://github.com/venu123143/whatsapp)
 
 - **Backend Code**  
   Branch: `with_mongodb`  
