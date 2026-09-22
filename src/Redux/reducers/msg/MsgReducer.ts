@@ -146,7 +146,7 @@ export const getAllUsers = createAsyncThunk('authSlice/getallUsers', async (_, t
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // session problems are handled centrally by the axios interceptor.
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -156,7 +156,7 @@ export const getAllGroups = createAsyncThunk('authSlice/getAllGroups', async (_,
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // session problems are handled centrally by the axios interceptor.
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -184,7 +184,7 @@ export const createGroup = createAsyncThunk('authSlice/createGroup', async (data
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        // session problems are handled centrally by the axios interceptor.
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })

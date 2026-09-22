@@ -1,16 +1,14 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import userService from "./AuthService";
+import userService, { clearCachedUser, readCachedUser } from "./AuthService";
 import { toast } from "react-toastify";
 import { CommonProperties } from "../msg/MsgReducer";
 
 
 
-const getUserFromLocalStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null
+const cachedUser = readCachedUser()
 
 export interface UserState extends CommonProperties {
-    password?: string | null;
-    refreshToken?: string | null;
     role?: string | null;
     isBlocked?: string | null;
     otp?: any;
@@ -40,7 +38,18 @@ export const logout = createAsyncThunk('authSlice/logoutUser', async (_, thunkAP
         return res
 
     } catch (error: any) {
-        localStorage.removeItem("token")
+        return thunkAPI.rejectWithValue(error?.response?.data)
+    }
+})
+
+/**
+ * Runs once on start up. The access cookie may already be expired, in which case
+ * the axios interceptor silently rotates the refresh cookie before this resolves.
+ */
+export const loadSession = createAsyncThunk('authSlice/loadSession', async (_, thunkAPI) => {
+    try {
+        return await userService.getMe()
+    } catch (error: any) {
         return thunkAPI.rejectWithValue(error?.response?.data)
     }
 })
@@ -72,18 +81,21 @@ interface AppState {
     isLoading: boolean;
     isProfileLoading: boolean;
     isSuccess: boolean;
+    /** false until /me has answered, so routes do not bounce to /login too early. */
+    bootstrapped: boolean;
     message: string;
     address: boolean;
     userName: string;
 }
 const initialState: AppState = {
     screen: false,
-    user: getUserFromLocalStorage,
+    user: cachedUser,
     startCall: { userId: null, call: false },
     isError: false,
     isLoading: false,
     isProfileLoading: false,
     isSuccess: false,
+    bootstrapped: false,
     message: "",
     address: false,
     userName: "",
@@ -98,8 +110,28 @@ const authSlice = createSlice({
         setStartCall: (state, action) => {
             state.startCall = action.payload
         },
+        /** The refresh token is dead; drop the session without calling the API. */
+        sessionExpired: (state) => {
+            clearCachedUser()
+            state.user = null
+            state.isLoading = false
+            state.bootstrapped = true
+        },
     },
     extraReducers: (builder) => {
+        builder.addCase(loadSession.pending, (state) => {
+            state.isLoading = true
+        }).addCase(loadSession.fulfilled, (state, action: PayloadAction<any>) => {
+            state.isLoading = false
+            state.bootstrapped = true
+            state.user = action.payload
+        }).addCase(loadSession.rejected, (state) => {
+            // no valid access or refresh cookie left -> treat as logged out, quietly.
+            clearCachedUser()
+            state.isLoading = false
+            state.bootstrapped = true
+            state.user = null
+        })
         builder.addCase(logout.pending, (state) => {
             state.isLoading = true
             state.isSuccess = false
@@ -113,6 +145,7 @@ const authSlice = createSlice({
                 position: 'top-right'
             })
         }).addCase(logout.rejected, (state, action: PayloadAction<any>) => {
+            clearCachedUser()
             state.isError = true
             state.isLoading = false
             state.user = null
@@ -144,8 +177,9 @@ const authSlice = createSlice({
         }).addCase(VerifyOtp.fulfilled, (state, action: PayloadAction<any>) => {
             state.isLoading = false
             state.isSuccess = true
+            state.bootstrapped = true
             state.message = action.payload?.message
-            state.user = action.payload.user
+            state.user = action.payload?.user
             toast.success(state.message, {
                 position: 'top-left'
             })
@@ -197,5 +231,5 @@ const authSlice = createSlice({
 
 })
 
-export const { handleUser, setStartCall } = authSlice.actions
+export const { handleUser, setStartCall, sessionExpired } = authSlice.actions
 export default authSlice.reducer

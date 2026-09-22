@@ -1,20 +1,20 @@
 
-import axios from "axios";
+import api from "../utils/axiosClient";
 
 const updateCall = async (id: string, value: { status?: string, userId?: string, callDuration?: number }) => {
-    const res = await axios.put(`${import.meta.env.VITE_API_CLIENT_URL}/calls/update-call/${id}`, value, { withCredentials: true })
+    const res = await api.put(`/calls/update-call/${id}`, value)
     return res.data
 }
 const getCallsHistory = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/calls/get-calls-history/`, { withCredentials: true })
+    const res = await api.get(`/calls/get-calls-history/`)
     return res.data
 }
 const getLiveCalls = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_CLIENT_URL}/calls/get-live-calls?status=live`, { withCredentials: true })
+    const res = await api.get(`/calls/get-live-calls?status=live`)
     return res.data
 }
 const createCall = async (title?: string, callType?: string, pin?: string) => {
-    const res = await axios.post(`${import.meta.env.VITE_API_CLIENT_URL}/calls/create-call`, { title, callType, pin }, { withCredentials: true })
+    const res = await api.post(`/calls/create-call`, { title, callType, pin })
     return res.data
 }
 

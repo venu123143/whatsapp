@@ -1,33 +1,42 @@
 import { io, Socket } from "socket.io-client";
-import { UserState } from "../../Auth/AuthReducer";
-// import { toast } from "react-toastify";
+import { refreshSession } from "../axiosClient";
 
-const createSocket = (user: UserState | null, url: string): Promise<Socket> => {
-    const startTime = performance.now();  // Start time
+/**
+ * The server authenticates the handshake with the httpOnly access cookie, so the
+ * client sends credentials instead of a token it should never have been able to read.
+ * If the cookie is expired we rotate the refresh token once and retry the handshake.
+ */
+const createSocket = (url: string): Promise<Socket> => {
     return new Promise<Socket>((resolve, reject) => {
         const socket = io(url, {
             autoConnect: false,
             withCredentials: true,
-            auth: { token: user?.refreshToken },
         });
-        socket.on('connect', () => {
-            // const endTime = performance.now();  // End time
-            // const duration = endTime - startTime;  // Calculate duration
-            // toast.success(`${url.includes("calls") ? "call " : "chat "} connected successfully in ${duration.toFixed(2)} ms.`, { position: 'top-center' })
-            resolve(socket);
-        });
-        socket.on('connect_error', (error) => {
-            const endTime = performance.now();  // End time
-            const duration = endTime - startTime;  // Calculate duration
-            console.error(`Connection error after ${duration.toFixed(2)} ms:`, error);
+
+        let retriedAfterRefresh = false;
+
+        socket.on("connect", () => resolve(socket));
+
+        socket.on("connect_error", async (error) => {
+            if (!retriedAfterRefresh) {
+                retriedAfterRefresh = true;
+                try {
+                    await refreshSession();
+                    socket.connect();
+                    return;
+                } catch {
+                    // fall through, the session is really gone.
+                }
+            }
+            console.error(`Socket connection error on ${url}:`, error.message);
+            socket.close();
             reject(error);
         });
-        socket.on('disconnect', (reason) => {
+
+        socket.on("disconnect", (reason) => {
             console.warn(`Socket disconnected: ${reason}`);
         });
-        socket.on('close', (reason) => {
-            console.warn(`Socket closed: ${reason}`);
-        });
+
         socket.connect();
     });
 };

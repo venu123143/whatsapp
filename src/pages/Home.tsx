@@ -30,7 +30,7 @@ const Home = () => {
   const dispatch: AppDispatch = useDispatch()
   const [callStarted, setCallStarted] = useState(false); // incomming-call
   const { profileOpen} = useSelector((state: RootState) => state.utils)
-  const { user } = useSelector((state: RootState) => state.auth)
+  const { user, bootstrapped } = useSelector((state: RootState) => state.auth)
   const callSocket = useContext(CallsContext)
   const socket = useContext(SocketContext)
 
@@ -66,7 +66,8 @@ const Home = () => {
   }, [friends]);
   useEffect(() => {
     if (user === null) {
-      navigate('/login')
+      // only once /me has answered, a pending refresh must not bounce us out.
+      if (bootstrapped) navigate('/login')
     } else {
       if (!hasJoinedRooms && onetotone.length > 0 && callSocket.connected) {
         callSocket.emit('join_room', onetotone, (ack: any) => {
@@ -75,7 +76,7 @@ const Home = () => {
         setHasJoinedRooms(true); // Mark that rooms have been joined
       }
     }
-  }, [user, createGrp, friends])
+  }, [user, bootstrapped, createGrp, friends])
 
   const handleDataChannelOpen = () => {
     console.log('Data channel is open');

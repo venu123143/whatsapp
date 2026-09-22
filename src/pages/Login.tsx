@@ -6,16 +6,20 @@ import { backgroundImages } from "../static/Static"
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../Redux/store"
 import { useSelector } from "react-redux";
+
 const Login = () => {
   const [backgroundImage, setBackgroundImage] = useState('');
-  const { user, isLoading, isError, isSuccess } = useSelector((state: RootState) => state.auth)
+  const { user } = useSelector((state: RootState) => state.auth)
 
   const navigate = useNavigate()
+
   useEffect(() => {
+    // replace, so the back button cannot walk into the login page of a live session.
     if (user !== null) {
-      navigate('/')
+      navigate('/', { replace: true })
     }
-  }, [user, isLoading, isError, isSuccess])
+  }, [user, navigate])
+
   useEffect(() => {
     // Function to generate or select a random background image URL
     const getRandomBackgroundImage = () => {
@@ -25,6 +29,7 @@ const Login = () => {
     };
     setBackgroundImage(getRandomBackgroundImage());
   }, []);
+
   return (
     <section className="w-full overflow-hidden  h-screen grid md:grid-cols-3 ">
       <div className="hidden md:block md:col-span-2 shadow-lg">

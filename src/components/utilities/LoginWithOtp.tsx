@@ -40,11 +40,16 @@ const LoginWithOtp = () => {
             mobile: '',
         },
         validationSchema: otpSchema,
-        onSubmit: (values) => {
-            dispatch(sendOtp(values.mobile)).then(() => {
+        onSubmit: async (values) => {
+            try {
+                // unwrap, so a rejected request no longer walks the user to the OTP screen.
+                await dispatch(sendOtp(values.mobile)).unwrap()
                 setSendOtp(true)
                 setOtp(new Array(6).fill(""))
-            })
+                setErr("")
+            } catch {
+                setSendOtp(false)
+            }
         },
     });
 
@@ -58,9 +63,11 @@ const LoginWithOtp = () => {
             setOtp(newOtp);
 
             if (value && index < codesRef.current.length - 1) {
-                codesRef.current[index + 1].focus();
+                codesRef.current[index + 1]?.focus();
             }
-            codesRef.current[index].style.borderColor = 'green';
+            if (codesRef.current[index]) {
+                codesRef.current[index].style.borderColor = value ? 'green' : '';
+            }
         }
     };
 
@@ -75,18 +82,24 @@ const LoginWithOtp = () => {
         }
         try {
             await otpValid.validate({ otp }, { abortEarly: false });
-            dispatch(VerifyOtp({ otp })).then(() => {
-                formik.resetForm()
-            })
             setErr("")
+            await dispatch(VerifyOtp({ otp })).unwrap()
+            // only a real login clears the form; a wrong OTP keeps the screen open.
+            formik.resetForm()
         } catch (error: any) {
-            setErr(error.errors[0])
+            setColor("border-red-500")
+            setErr(error?.errors?.[0] || error?.message || "Invalid OTP, please try again")
         }
     }
     const handleCancelOtp = () => {
         setSendOtp(false)
         setColor("")
-        otp.map((_, index) => codesRef.current[index].style.borderColor = '')
+        setErr("")
+        setOtp(new Array(6).fill(""))
+        // the inputs unmount with the OTP screen, so every ref has to be optional here.
+        codesRef.current.forEach((input: HTMLInputElement | null) => {
+            if (input) input.style.borderColor = ''
+        })
     }
     const divStyle = {
         backgroundColor: '#4158D0',
@@ -129,12 +142,15 @@ const LoginWithOtp = () => {
                                                             value={value}
                                                             onChange={(e) => { handleChange(e, index) }}
                                                             onKeyDown={(e) => {
-                                                                if (e.key === 'Backspace' && !otp[index]) {
+                                                                // index 0 has no previous box; the old code crashed on that ref.
+                                                                if (e.key === 'Backspace' && !otp[index] && index > 0) {
                                                                     codesRef.current[index - 1]?.focus();
-                                                                    codesRef.current[index].style.borderColor = 'red';
+                                                                    if (codesRef.current[index]) {
+                                                                        codesRef.current[index].style.borderColor = 'red';
+                                                                    }
                                                                 }
                                                             }}
-                                                            ref={(ref) => (codesRef.current[index] = ref)}
+                                                            ref={(ref) => { codesRef.current[index] = ref }}
                                                             className={`${color} codes w-10 h-10 mx-2 text-center text-lg font-semibold border-2  rounded focus:outline-none `}
                                                         />
                                                     ))}
